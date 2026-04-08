@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Accordion,
   AccordionSummary,
@@ -23,21 +23,11 @@ import SelectField from '../common/components/SelectField';
 import { useCatch } from '../reactHelper';
 import { snackBarDurationLongMs } from '../common/util/duration';
 import useSettingsStyles from './common/useSettingsStyles';
-import fetchOrThrow from '../common/util/fetchOrThrow';
 
-const allowedProperties = [
-  'valid',
-  'latitude',
-  'longitude',
-  'altitude',
-  'speed',
-  'course',
-  'address',
-  'accuracy',
-];
+const allowedProperties = ['valid', 'latitude', 'longitude', 'altitude', 'speed', 'course', 'address', 'accuracy'];
 
 const ComputedAttributePage = () => {
-  const { classes } = useSettingsStyles();
+  const classes = useSettingsStyles();
   const t = useTranslation();
 
   const positionAttributes = usePositionAttributes(t);
@@ -46,13 +36,11 @@ const ComputedAttributePage = () => {
   const [deviceId, setDeviceId] = useState();
   const [result, setResult] = useState();
 
-  const options = Object.entries(positionAttributes)
-    .filter(([key, value]) => !value.property || allowedProperties.includes(key))
-    .map(([key, value]) => ({
-      key,
-      name: value.name,
-      type: value.type,
-    }));
+  const options = Object.entries(positionAttributes).filter(([key, value]) => !value.property || allowedProperties.includes(key)).map(([key, value]) => ({
+    key,
+    name: value.name,
+    type: value.type,
+  }));
 
   const filter = createFilterOptions({
     stringify: (option) => option.name,
@@ -61,12 +49,16 @@ const ComputedAttributePage = () => {
   const testAttribute = useCatch(async () => {
     const query = new URLSearchParams({ deviceId });
     const url = `/api/attributes/computed/test?${query.toString()}`;
-    const response = await fetchOrThrow(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item),
     });
-    setResult(await response.text());
+    if (response.ok) {
+      setResult(await response.text());
+    } else {
+      throw Error(await response.text());
+    }
   });
 
   const validate = () => item && item.description && item.expression;
@@ -84,7 +76,9 @@ const ComputedAttributePage = () => {
         <>
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">{t('sharedRequired')}</Typography>
+              <Typography variant="subtitle1">
+                {t('sharedRequired')}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
               <TextField
@@ -93,13 +87,10 @@ const ComputedAttributePage = () => {
                 label={t('sharedDescription')}
               />
               <Autocomplete
-                freeSolo
-                value={
-                  options.find((option) => option.key === item.attribute) || item.attribute || null
-                }
+                value={options.find((option) => option.key === item.attribute) || item.attribute}
                 onChange={(_, option) => {
-                  const attribute = option ? option.key || option.inputValue || option : null;
-                  if (option && (option.type || option.inputValue)) {
+                  const attribute = option ? option.key || option : null;
+                  if (option && option.type) {
                     setItem({ ...item, attribute, type: option.type });
                   } else {
                     setItem({ ...item, attribute });
@@ -107,23 +98,25 @@ const ComputedAttributePage = () => {
                 }}
                 filterOptions={(options, params) => {
                   const filtered = filter(options, params);
-                  if (
-                    params.inputValue &&
-                    !options.some((x) => (typeof x === 'object' ? x.key : x) === params.inputValue)
-                  ) {
+                  if (params.inputValue) {
                     filtered.push({
-                      inputValue: params.inputValue,
-                      name: `${t('sharedAdd')} "${params.inputValue}"`,
+                      key: params.inputValue,
+                      name: params.inputValue,
                     });
                   }
                   return filtered;
                 }}
                 options={options}
-                getOptionLabel={(option) =>
-                  typeof option === 'object' ? option.inputValue || option.name : option
-                }
-                renderOption={(props, option) => <li {...props}>{option.name || option}</li>}
-                renderInput={(params) => <TextField {...params} label={t('sharedAttribute')} />}
+                getOptionLabel={(option) => option.name || option}
+                renderOption={(props, option) => (
+                  <li {...props}>
+                    {option.name}
+                  </li>
+                )}
+                renderInput={(params) => (
+                  <TextField {...params} label={t('sharedAttribute')} />
+                )}
+                freeSolo
               />
               <TextField
                 value={item.expression || ''}
@@ -148,7 +141,9 @@ const ComputedAttributePage = () => {
           </Accordion>
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">{t('sharedExtra')}</Typography>
+              <Typography variant="subtitle1">
+                {t('sharedExtra')}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
               <TextField
@@ -161,7 +156,9 @@ const ComputedAttributePage = () => {
           </Accordion>
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">{t('sharedTest')}</Typography>
+              <Typography variant="subtitle1">
+                {t('sharedTest')}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
               <SelectField

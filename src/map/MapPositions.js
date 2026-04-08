@@ -1,7 +1,7 @@
 import { useId, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/styles';
 import { map } from './core/MapView';
 import { formatTime, getStatusColor } from '../common/util/formatter';
 import { mapIconKey } from './core/preloadImages';
@@ -9,14 +9,7 @@ import { useAttributePreference } from '../common/util/preferences';
 import { useCatchCallback } from '../reactHelper';
 import { findFonts } from './core/mapUtil';
 
-const MapPositions = ({
-  positions,
-  onMapClick,
-  onMarkerClick,
-  showStatus,
-  selectedPosition,
-  titleField,
-}) => {
+const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleField }) => {
   const id = useId();
   const clusters = `${id}-clusters`;
   const selected = `${id}-selected`;
@@ -63,44 +56,35 @@ Distance : ${Number(position.attributes.distance?.toFixed(2))}
 };
   };
 
-  const onMouseEnter = () => (map.getCanvas().style.cursor = 'pointer');
-  const onMouseLeave = () => (map.getCanvas().style.cursor = '');
+  const onMouseEnter = () => map.getCanvas().style.cursor = 'pointer';
+  const onMouseLeave = () => map.getCanvas().style.cursor = '';
 
-  const onMapClickCallback = useCallback(
-    (event) => {
-      if (!event.defaultPrevented && onMapClick) {
-        onMapClick(event.lngLat.lat, event.lngLat.lng);
-      }
-    },
-    [onMapClick],
-  );
+  const onMapClick = useCallback((event) => {
+    if (!event.defaultPrevented && onClick) {
+      onClick(event.lngLat.lat, event.lngLat.lng);
+    }
+  }, [onClick]);
 
-  const onMarkerClickCallback = useCallback(
-    (event) => {
-      event.preventDefault();
-      const feature = event.features[0];
-      if (onMarkerClick) {
-        onMarkerClick(feature.properties.id, feature.properties.deviceId);
-      }
-    },
-    [onMarkerClick],
-  );
+  const onMarkerClick = useCallback((event) => {
+    event.preventDefault();
+    const feature = event.features[0];
+    if (onClick) {
+      onClick(feature.properties.id, feature.properties.deviceId);
+    }
+  }, [onClick]);
 
-  const onClusterClick = useCatchCallback(
-    async (event) => {
-      event.preventDefault();
-      const features = map.queryRenderedFeatures(event.point, {
-        layers: [clusters],
-      });
-      const clusterId = features[0].properties.cluster_id;
-      const zoom = await map.getSource(id).getClusterExpansionZoom(clusterId);
-      map.easeTo({
-        center: features[0].geometry.coordinates,
-        zoom,
-      });
-    },
-    [clusters],
-  );
+  const onClusterClick = useCatchCallback(async (event) => {
+    event.preventDefault();
+    const features = map.queryRenderedFeatures(event.point, {
+      layers: [clusters],
+    });
+    const clusterId = features[0].properties.cluster_id;
+    const zoom = await map.getSource(id).getClusterExpansionZoom(clusterId);
+    map.easeTo({
+      center: features[0].geometry.coordinates,
+      zoom,
+    });
+  }, [clusters]);
 
   useEffect(() => {
     map.addSource(id, {
@@ -127,7 +111,6 @@ Distance : ${Number(position.attributes.distance?.toFixed(2))}
         source,
         filter: ['!has', 'point_count'],
         layout: {
-<<<<<<< HEAD
   'icon-image': '{category}-{color}',
   'icon-size': iconScale,
   'icon-allow-overlap': true,
@@ -139,29 +122,20 @@ Distance : ${Number(position.attributes.distance?.toFixed(2))}
   'text-size': 12,
 }
 ,
-=======
-          'icon-image': '{category}-{color}',
-          'icon-size': iconScale,
-          'icon-allow-overlap': true,
-          'text-field': `{${titleField || 'name'}}`,
-          'text-allow-overlap': true,
-          'text-anchor': 'bottom',
-          'text-offset': [0, -2 * iconScale],
-          'text-font': findFonts(map),
-          'text-size': 12,
-          'symbol-sort-key': ['get', 'id'],
-        },
->>>>>>> 5f656ae1c84a3b998923f70336c267cd2130efc8
         paint: {
           'text-halo-color': 'white',
-          'text-halo-width': 2,
+          'text-halo-width': 1,
         },
       });
       map.addLayer({
         id: `direction-${source}`,
         type: 'symbol',
         source,
-        filter: ['all', ['!has', 'point_count'], ['==', 'direction', true]],
+        filter: [
+          'all',
+          ['!has', 'point_count'],
+          ['==', 'direction', true],
+        ],
         layout: {
           'icon-image': 'direction',
           'icon-size': iconScale,
@@ -173,7 +147,7 @@ Distance : ${Number(position.attributes.distance?.toFixed(2))}
 
       map.on('mouseenter', source, onMouseEnter);
       map.on('mouseleave', source, onMouseLeave);
-      map.on('click', source, onMarkerClickCallback);
+      map.on('click', source, onMarkerClick);
     });
     map.addLayer({
       id: clusters,
@@ -192,13 +166,13 @@ Distance : ${Number(position.attributes.distance?.toFixed(2))}
     map.on('mouseenter', clusters, onMouseEnter);
     map.on('mouseleave', clusters, onMouseLeave);
     map.on('click', clusters, onClusterClick);
-    map.on('click', onMapClickCallback);
+    map.on('click', onMapClick);
 
     return () => {
       map.off('mouseenter', clusters, onMouseEnter);
       map.off('mouseleave', clusters, onMouseLeave);
       map.off('click', clusters, onClusterClick);
-      map.off('click', onMapClickCallback);
+      map.off('click', onMapClick);
 
       if (map.getLayer(clusters)) {
         map.removeLayer(clusters);
@@ -207,7 +181,7 @@ Distance : ${Number(position.attributes.distance?.toFixed(2))}
       [id, selected].forEach((source) => {
         map.off('mouseenter', source, onMouseEnter);
         map.off('mouseleave', source, onMouseLeave);
-        map.off('click', source, onMarkerClickCallback);
+        map.off('click', source, onMarkerClick);
 
         if (map.getLayer(source)) {
           map.removeLayer(source);
@@ -220,17 +194,14 @@ Distance : ${Number(position.attributes.distance?.toFixed(2))}
         }
       });
     };
-  }, [mapCluster, clusters, onMarkerClickCallback, onClusterClick]);
+  }, [mapCluster, clusters, onMarkerClick, onClusterClick]);
 
   useEffect(() => {
     [id, selected].forEach((source) => {
       map.getSource(source)?.setData({
         type: 'FeatureCollection',
-        features: positions
-          .filter((it) => devices.hasOwnProperty(it.deviceId))
-          .filter((it) =>
-            source === id ? it.deviceId !== selectedDeviceId : it.deviceId === selectedDeviceId,
-          )
+        features: positions.filter((it) => devices.hasOwnProperty(it.deviceId))
+          .filter((it) => (source === id ? it.deviceId !== selectedDeviceId : it.deviceId === selectedDeviceId))
           .map((position) => ({
             type: 'Feature',
             geometry: {

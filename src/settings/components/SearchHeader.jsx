@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import { TextField } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import React from 'react';
+import { TextField, useTheme, useMediaQuery } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from '../../common/components/LocalizationProvider';
 
-const useStyles = makeStyles()((theme) => ({
+export const filterByKeyword = (keyword) => (item) => !keyword || JSON.stringify(item).toLowerCase().includes(keyword.toLowerCase());
+
+const useStyles = makeStyles((theme) => ({
   header: {
     position: 'sticky',
     left: 0,
@@ -15,27 +17,22 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const SearchHeader = ({ keyword, setKeyword }) => {
-  const { classes } = useStyles();
+  const theme = useTheme();
+  const classes = useStyles();
   const t = useTranslation();
 
-  const [input, setInput] = useState(keyword);
-  const timerRef = useRef();
+  const phone = useMediaQuery(theme.breakpoints.down('sm'));
 
-  useEffect(() => {
-    timerRef.current = setTimeout(() => setKeyword(input), 500);
-    return () => clearTimeout(timerRef.current);
-  }, [input, setKeyword]);
-
-  return (
+  return phone ? (
     <div className={classes.header}>
       <TextField
         variant="outlined"
         placeholder={t('sharedSearch')}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
+        value={keyword}
+        onChange={(e) => setKeyword(e.target.value)}
       />
     </div>
-  );
+  ) : '';
 };
 
 export default SearchHeader;

@@ -3,15 +3,14 @@ import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffectAsync } from '../../reactHelper';
 import { sessionActions } from '../../store';
-import fetchOrThrow from '../util/fetchOrThrow';
 
-export const nativeEnvironment =
-  window.appInterface || (window.webkit && window.webkit.messageHandlers.appInterface);
+export const nativeEnvironment = window.appInterface || (window.webkit && window.webkit.messageHandlers.appInterface);
 
 export const nativePostMessage = (message) => {
   if (window.webkit && window.webkit.messageHandlers.appInterface) {
     window.webkit.messageHandlers.appInterface.postMessage(message);
-  } else if (window.appInterface) {
+  }
+  if (window.appInterface) {
     window.appInterface.postMessage(message);
   }
 };
@@ -28,7 +27,7 @@ export const generateLoginToken = async () => {
       if (response.ok) {
         token = await response.text();
       }
-    } catch {
+    } catch (error) {
       token = '';
     }
     nativePostMessage(`login|${token}`);
@@ -43,11 +42,6 @@ window.handleLoginToken = (token) => {
 const updateNotificationTokenListeners = new Set();
 window.updateNotificationToken = (token) => {
   updateNotificationTokenListeners.forEach((listener) => listener(token));
-};
-
-export const handleNativeNotificationListeners = new Set();
-window.handleNativeNotification = (message) => {
-  handleNativeNotificationListeners.forEach((listener) => listener(message));
 };
 
 const NativeInterface = () => {
@@ -77,12 +71,17 @@ const NativeInterface = () => {
           },
         };
 
-        const response = await fetchOrThrow(`/api/users/${user.id}`, {
+        const response = await fetch(`/api/users/${user.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedUser),
         });
-        dispatch(sessionActions.updateUser(await response.json()));
+
+        if (response.ok) {
+          dispatch(sessionActions.updateUser(await response.json()));
+        } else {
+          throw Error(await response.text());
+        }
       }
     }
   }, [user, notificationToken, setNotificationToken]);

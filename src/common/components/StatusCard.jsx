@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { Rnd } from 'react-rnd';
+import Draggable from 'react-draggable';
 import {
   Card,
   CardContent,
@@ -19,10 +19,10 @@ import {
   Link,
   Tooltip,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
-import RouteIcon from '@mui/icons-material/Route';
-import SendIcon from '@mui/icons-material/Send';
+import ReplayIcon from '@mui/icons-material/Replay';
+import PublishIcon from '@mui/icons-material/Publish';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PendingIcon from '@mui/icons-material/Pending';
@@ -30,14 +30,13 @@ import PendingIcon from '@mui/icons-material/Pending';
 import { useTranslation } from './LocalizationProvider';
 import RemoveDialog from './RemoveDialog';
 import PositionValue from './PositionValue';
-import { useDeviceReadonly, useRestriction } from '../util/permissions';
+import { useDeviceReadonly } from '../util/permissions';
 import usePositionAttributes from '../attributes/usePositionAttributes';
 import { devicesActions } from '../../store';
 import { useCatch, useCatchCallback } from '../../reactHelper';
 import { useAttributePreference } from '../util/preferences';
-import fetchOrThrow from '../util/fetchOrThrow';
 
-const useStyles = makeStyles()((theme, { desktopPadding }) => ({
+const useStyles = makeStyles((theme) => ({
   card: {
     pointerEvents: 'auto',
     width: theme.dimensions.popupMaxWidth,
@@ -49,7 +48,7 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
     alignItems: 'flex-start',
   },
   mediaButton: {
-    color: theme.palette.common.white,
+    color: theme.palette.primary.contrastText,
     mixBlendMode: 'difference',
   },
   header: {
@@ -74,7 +73,7 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
       paddingLeft: 0,
       paddingRight: 0,
     },
-    '& .MuiTableCell-sizeSmall:first-of-type': {
+    '& .MuiTableCell-sizeSmall:first-child': {
       paddingRight: theme.spacing(1),
     },
   },
@@ -84,7 +83,7 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
   actions: {
     justifyContent: 'space-between',
   },
-  root: {
+  root: ({ desktopPadding }) => ({
     pointerEvents: 'none',
     position: 'fixed',
     zIndex: 5,
@@ -98,11 +97,11 @@ const useStyles = makeStyles()((theme, { desktopPadding }) => ({
       bottom: `calc(${theme.spacing(3)} + ${theme.dimensions.bottomBarHeight}px)`,
     },
     transform: 'translateX(-50%)',
-  },
+  }),
 }));
 
 const StatusRow = ({ name, content }) => {
-  const { classes } = useStyles({ desktopPadding: 0 });
+  const classes = useStyles();
 
   return (
     <TableRow>
@@ -110,21 +109,18 @@ const StatusRow = ({ name, content }) => {
         <Typography variant="body2">{name}</Typography>
       </TableCell>
       <TableCell className={classes.cell}>
-        <Typography variant="body2" color="textSecondary">
-          {content}
-        </Typography>
+        <Typography variant="body2" color="textSecondary">{content}</Typography>
       </TableCell>
     </TableRow>
   );
 };
 
 const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPadding = 0 }) => {
-  const { classes } = useStyles({ desktopPadding });
+  const classes = useStyles({ desktopPadding });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
 
-  const readonly = useRestriction('readonly');
   const deviceReadonly = useDeviceReadonly();
 
   const shareDisabled = useSelector((state) => state.session.server.attributes.disableShare);
@@ -134,10 +130,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   const deviceImage = device?.attributes?.deviceImage;
 
   const positionAttributes = usePositionAttributes(t);
-  const positionItems = useAttributePreference(
-    'positionItems',
-    'fixTime,address,speed,totalDistance',
-  );
+  const positionItems = useAttributePreference('positionItems', 'fixTime,address,speed,totalDistance');
 
   const navigationAppLink = useAttributePreference('navigationAppLink');
   const navigationAppTitle = useAttributePreference('navigationAppTitle');
@@ -148,8 +141,12 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
 
   const handleRemove = useCatch(async (removed) => {
     if (removed) {
-      const response = await fetchOrThrow('/api/devices');
-      dispatch(devicesActions.refresh(await response.json()));
+      const response = await fetch('/api/devices');
+      if (response.ok) {
+        dispatch(devicesActions.refresh(await response.json()));
+      } else {
+        throw Error(await response.text());
+      }
     }
     setRemoving(false);
   });
@@ -159,46 +156,58 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
       name: t('sharedGeofence'),
       area: `CIRCLE (${position.latitude} ${position.longitude}, 50)`,
     };
-    const response = await fetchOrThrow('/api/geofences', {
+    const response = await fetch('/api/geofences', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newItem),
     });
-    const item = await response.json();
-    await fetchOrThrow('/api/permissions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deviceId: position.deviceId, geofenceId: item.id }),
-    });
-    navigate(`/settings/geofence/${item.id}`);
+    if (response.ok) {
+      const item = await response.json();
+      const permissionResponse = await fetch('/api/permissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ deviceId: position.deviceId, geofenceId: item.id }),
+      });
+      if (!permissionResponse.ok) {
+        throw Error(await permissionResponse.text());
+      }
+      navigate(`/settings/geofence/${item.id}`);
+    } else {
+      throw Error(await response.text());
+    }
   }, [navigate, position]);
 
   return (
     <>
       <div className={classes.root}>
         {device && (
-          <Rnd
-            default={{ x: 0, y: 0, width: 'auto', height: 'auto' }}
-            enableResizing={false}
-            dragHandleClassName="draggable-header"
-            style={{ position: 'relative' }}
+          <Draggable
+            handle={`.${classes.media}, .${classes.header}`}
           >
             <Card elevation={3} className={classes.card}>
               {deviceImage ? (
                 <CardMedia
-                  className={`${classes.media} draggable-header`}
+                  className={classes.media}
                   image={`/api/media/${device.uniqueId}/${deviceImage}`}
                 >
-                  <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
+                  <IconButton
+                    size="small"
+                    onClick={onClose}
+                    onTouchStart={onClose}
+                  >
                     <CloseIcon fontSize="small" className={classes.mediaButton} />
                   </IconButton>
                 </CardMedia>
               ) : (
-                <div className={`${classes.header} draggable-header`}>
+                <div className={classes.header}>
                   <Typography variant="body2" color="textSecondary">
                     {device.name}
                   </Typography>
-                  <IconButton size="small" onClick={onClose} onTouchStart={onClose}>
+                  <IconButton
+                    size="small"
+                    onClick={onClose}
+                    onTouchStart={onClose}
+                  >
                     <CloseIcon fontSize="small" />
                   </IconButton>
                 </div>
@@ -207,33 +216,26 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                 <CardContent className={classes.content}>
                   <Table size="small" classes={{ root: classes.table }}>
                     <TableBody>
-                      {positionItems
-                        .split(',')
-                        .filter(
-                          (key) =>
-                            position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key),
-                        )
-                        .map((key) => (
-                          <StatusRow
-                            key={key}
-                            name={positionAttributes[key]?.name || key}
-                            content={
-                              <PositionValue
-                                position={position}
-                                property={position.hasOwnProperty(key) ? key : null}
-                                attribute={position.hasOwnProperty(key) ? null : key}
-                              />
-                            }
-                          />
-                        ))}
+                      {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
+                        <StatusRow
+                          key={key}
+                          name={positionAttributes[key]?.name || key}
+                          content={(
+                            <PositionValue
+                              position={position}
+                              property={position.hasOwnProperty(key) ? key : null}
+                              attribute={position.hasOwnProperty(key) ? null : key}
+                            />
+                          )}
+                        />
+                      ))}
+
                     </TableBody>
                     <TableFooter>
                       <TableRow>
                         <TableCell colSpan={2} className={classes.cell}>
                           <Typography variant="body2">
-                            <Link component={RouterLink} to={`/position/${position.id}`}>
-                              {t('sharedShowDetails')}
-                            </Link>
+                            <Link component={RouterLink} to={`/position/${position.id}`}>{t('sharedShowDetails')}</Link>
                           </Typography>
                         </TableCell>
                       </TableRow>
@@ -253,10 +255,10 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                 </Tooltip>
                 <Tooltip title={t('reportReplay')}>
                   <IconButton
-                    onClick={() => navigate(`/replay?deviceId=${deviceId}`)}
+                    onClick={() => navigate('/replay')}
                     disabled={disableActions || !position}
                   >
-                    <RouteIcon />
+                    <ReplayIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title={t('commandTitle')}>
@@ -264,7 +266,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     onClick={() => navigate(`/settings/device/${deviceId}/command`)}
                     disabled={disableActions}
                   >
-                    <SendIcon />
+                    <PublishIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title={t('sharedEdit')}>
@@ -286,48 +288,18 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                 </Tooltip>
               </CardActions>
             </Card>
-          </Rnd>
+          </Draggable>
         )}
       </div>
       {position && (
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-          {!readonly && <MenuItem onClick={handleGeofence}>{t('sharedCreateGeofence')}</MenuItem>}
-          <MenuItem
-            component="a"
-            target="_blank"
-            href={`https://www.google.com/maps/search/?api=1&query=${position.latitude}%2C${position.longitude}`}
-          >
-            {t('linkGoogleMaps')}
-          </MenuItem>
-          <MenuItem
-            component="a"
-            target="_blank"
-            href={`http://maps.apple.com/?ll=${position.latitude},${position.longitude}`}
-          >
-            {t('linkAppleMaps')}
-          </MenuItem>
-          <MenuItem
-            component="a"
-            target="_blank"
-            href={`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${position.latitude}%2C${position.longitude}&heading=${position.course}`}
-          >
-            {t('linkStreetView')}
-          </MenuItem>
-          {navigationAppTitle && (
-            <MenuItem
-              component="a"
-              target="_blank"
-              href={navigationAppLink
-                .replace('{latitude}', position.latitude)
-                .replace('{longitude}', position.longitude)}
-            >
-              {navigationAppTitle}
-            </MenuItem>
-          )}
+          <MenuItem onClick={handleGeofence}>{t('sharedCreateGeofence')}</MenuItem>
+          <MenuItem component="a" target="_blank" href={`https://www.google.com/maps/search/?api=1&query=${position.latitude}%2C${position.longitude}`}>{t('linkGoogleMaps')}</MenuItem>
+          <MenuItem component="a" target="_blank" href={`http://maps.apple.com/?ll=${position.latitude},${position.longitude}`}>{t('linkAppleMaps')}</MenuItem>
+          <MenuItem component="a" target="_blank" href={`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${position.latitude}%2C${position.longitude}&heading=${position.course}`}>{t('linkStreetView')}</MenuItem>
+          {navigationAppTitle && <MenuItem component="a" target="_blank" href={navigationAppLink.replace('{latitude}', position.latitude).replace('{longitude}', position.longitude)}>{navigationAppTitle}</MenuItem>}
           {!shareDisabled && !user.temporary && (
-            <MenuItem onClick={() => navigate(`/settings/device/${deviceId}/share`)}>
-              <Typography color="secondary">{t('sharedShare')}</Typography>
-            </MenuItem>
+            <MenuItem onClick={() => navigate(`/settings/device/${deviceId}/share`)}><Typography color="secondary">{t('deviceShare')}</Typography></MenuItem>
           )}
         </Menu>
       )}

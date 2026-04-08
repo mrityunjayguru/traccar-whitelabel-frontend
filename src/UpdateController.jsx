@@ -1,5 +1,6 @@
 import { Snackbar, IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { useTranslation } from './common/components/LocalizationProvider';
@@ -8,9 +9,7 @@ import { useTranslation } from './common/components/LocalizationProvider';
 const UpdateController = () => {
   const t = useTranslation();
 
-  const swUpdateInterval = useSelector(
-    (state) => state.session.server.attributes.serviceWorkerUpdateInterval || 3600000,
-  );
+  const swUpdateInterval = useSelector((state) => state.session.server.attributes.serviceWorkerUpdateInterval || 3600000);
 
   const {
     needRefresh: [needRefresh],
@@ -23,7 +22,7 @@ const UpdateController = () => {
             return;
           }
 
-          if ('connection' in navigator && !navigator.onLine) {
+          if (('connection' in navigator) && !navigator.onLine) {
             return;
           }
 
@@ -47,11 +46,11 @@ const UpdateController = () => {
     <Snackbar
       open={needRefresh}
       message={t('settingsUpdateAvailable')}
-      action={
+      action={(
         <IconButton color="inherit" onClick={() => updateServiceWorker(true)}>
           <RefreshIcon />
         </IconButton>
-      }
+      )}
     />
   );
 };

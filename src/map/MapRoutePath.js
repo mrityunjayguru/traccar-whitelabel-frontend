@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/styles';
 import { useId, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { map } from './core/MapView';
@@ -54,6 +54,9 @@ const MapRoutePath = ({ positions }) => {
     });
 
     return () => {
+      if (map.getLayer(`${id}-title`)) {
+        map.removeLayer(`${id}-title`);
+      }
       if (map.getLayer(`${id}-line`)) {
         map.removeLayer(`${id}-line`);
       }
@@ -72,13 +75,14 @@ const MapRoutePath = ({ positions }) => {
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: [
-            [positions[i].longitude, positions[i].latitude],
-            [positions[i + 1].longitude, positions[i + 1].latitude],
-          ],
+          coordinates: [[positions[i].longitude, positions[i].latitude], [positions[i + 1].longitude, positions[i + 1].latitude]],
         },
         properties: {
-          color: reportColor || getSpeedColor(positions[i + 1].speed, minSpeed, maxSpeed),
+          color: reportColor || getSpeedColor(
+            positions[i + 1].speed,
+            minSpeed,
+            maxSpeed,
+          ),
           width: mapLineWidth,
           opacity: mapLineOpacity,
         },
@@ -88,7 +92,7 @@ const MapRoutePath = ({ positions }) => {
       type: 'FeatureCollection',
       features,
     });
-  }, [theme, positions, reportColor, mapLineWidth, mapLineOpacity]);
+  }, [theme, positions, reportColor]);
 
   return null;
 };

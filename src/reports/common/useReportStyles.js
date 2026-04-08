@@ -1,6 +1,6 @@
-import { makeStyles } from 'tss-react/mui';
+import { makeStyles } from '@mui/styles';
 
-export default makeStyles()((theme) => ({
+export default makeStyles((theme) => ({
   container: {
     height: '100%',
     display: 'flex',
@@ -23,21 +23,12 @@ export default makeStyles()((theme) => ({
   columnAction: {
     width: '1%',
     paddingLeft: theme.spacing(1),
-    '@media print': {
-      display: 'none',
-    },
-  },
-  columnActionContainer: {
-    display: 'flex',
   },
   filter: {
     display: 'inline-flex',
     flexWrap: 'wrap',
     gap: theme.spacing(2),
     padding: theme.spacing(3, 2, 2),
-    '@media print': {
-      display: 'none !important',
-    },
   },
   filterItem: {
     minWidth: 0,
@@ -59,9 +50,6 @@ export default makeStyles()((theme) => ({
     '&.MuiTableCell-body': {
       paddingTop: 0,
       paddingBottom: 0,
-    },
-    '@media print': {
-      display: 'none',
     },
   },
 }));

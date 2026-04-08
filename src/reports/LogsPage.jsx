@@ -1,16 +1,10 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Table,
-  TableRow,
-  TableCell,
-  TableHead,
-  TableBody,
-  IconButton,
-  Tooltip,
+  Table, TableRow, TableCell, TableHead, TableBody, IconButton, Tooltip,
 } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import makeStyles from '@mui/styles/makeStyles';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useTranslation } from '../common/components/LocalizationProvider';
@@ -18,7 +12,7 @@ import PageLayout from '../common/components/PageLayout';
 import ReportsMenu from './components/ReportsMenu';
 import { sessionActions } from '../store';
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles((theme) => ({
   columnAction: {
     width: '1%',
     paddingLeft: theme.spacing(1),
@@ -26,7 +20,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const LogsPage = () => {
-  const { classes } = useStyles();
+  const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
@@ -34,7 +28,7 @@ const LogsPage = () => {
   useEffect(() => {
     dispatch(sessionActions.enableLogs(true));
     return () => dispatch(sessionActions.enableLogs(false));
-  }, [dispatch]);
+  }, []);
 
   const items = useSelector((state) => state.session.logs);
 
@@ -55,7 +49,7 @@ const LogsPage = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {items.map((item, index) => (
+          {items.map((item, index) => /* eslint-disable react/no-array-index-key */ (
             <TableRow key={index}>
               <TableCell className={classes.columnAction} padding="none">
                 {item.deviceId ? (
@@ -64,11 +58,7 @@ const LogsPage = () => {
                   </IconButton>
                 ) : (
                   <Tooltip title={t('loginRegister')}>
-                    <IconButton
-                      color="error"
-                      size="small"
-                      onClick={() => registerDevice(item.uniqueId)}
-                    >
+                    <IconButton color="error" size="small" onClick={() => registerDevice(item.uniqueId)}>
                       <HelpOutlineIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>

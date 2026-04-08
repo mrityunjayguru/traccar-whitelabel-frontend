@@ -1,3 +1,4 @@
+import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import maplibregl from 'maplibre-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -5,14 +6,13 @@ import { useEffect, useMemo } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/styles';
 import { map } from '../core/MapView';
 import { findFonts, geofenceToFeature, geometryToArea } from '../core/mapUtil';
 import { errorsActions, geofencesActions } from '../../store';
 import { useCatchCallback } from '../../reactHelper';
 import drawTheme from './theme';
 import { useTranslation } from '../../common/components/LocalizationProvider';
-import fetchOrThrow from '../../common/util/fetchOrThrow';
 
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
 MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
@@ -24,48 +24,45 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
   const navigate = useNavigate();
   const t = useTranslation();
 
-  const draw = useMemo(
-    () =>
-      new MapboxDraw({
-        displayControlsDefault: false,
-        controls: {
-          polygon: true,
-          line_string: true,
-          trash: true,
-        },
-        userProperties: true,
-        styles: [
-          ...drawTheme,
-          {
-            id: 'gl-draw-title',
-            type: 'symbol',
-            filter: ['all'],
-            layout: {
-              'text-field': '{user_name}',
-              'text-font': findFonts(map),
-              'text-size': 12,
-            },
-            paint: {
-              'text-halo-color': 'white',
-              'text-halo-width': 1,
-            },
-          },
-        ],
-      }),
-    [],
-  );
+  const draw = useMemo(() => new MapboxDraw({
+    displayControlsDefault: false,
+    controls: {
+      polygon: true,
+      line_string: true,
+      trash: true,
+    },
+    userProperties: true,
+    styles: [...drawTheme, {
+      id: 'gl-draw-title',
+      type: 'symbol',
+      filter: ['all'],
+      layout: {
+        'text-field': '{user_name}',
+        'text-font': findFonts(map),
+        'text-size': 12,
+      },
+      paint: {
+        'text-halo-color': 'white',
+        'text-halo-width': 1,
+      },
+    }],
+  }), []);
 
   const geofences = useSelector((state) => state.geofences.items);
 
   const refreshGeofences = useCatchCallback(async () => {
-    const response = await fetchOrThrow('/api/geofences');
-    dispatch(geofencesActions.refresh(await response.json()));
+    const response = await fetch('/api/geofences');
+    if (response.ok) {
+      dispatch(geofencesActions.refresh(await response.json()));
+    } else {
+      throw Error(await response.text());
+    }
   }, [dispatch]);
 
   useEffect(() => {
     refreshGeofences();
 
-    map.addControl(draw, theme.direction === 'rtl' ? 'top-right' : 'top-left');
+    map.addControl(draw, 'top-left');
     return () => map.removeControl(draw);
   }, [refreshGeofences]);
 
@@ -75,13 +72,17 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
       const newItem = { name: t('sharedGeofence'), area: geometryToArea(feature.geometry) };
       draw.delete(feature.id);
       try {
-        const response = await fetchOrThrow('/api/geofences', {
+        const response = await fetch('/api/geofences', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newItem),
         });
-        const item = await response.json();
-        navigate(`/settings/geofence/${item.id}`);
+        if (response.ok) {
+          const item = await response.json();
+          navigate(`/settings/geofence/${item.id}`);
+        } else {
+          throw Error(await response.text());
+        }
       } catch (error) {
         dispatch(errorsActions.push(error.message));
       }
@@ -95,8 +96,12 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
     const listener = async (event) => {
       const feature = event.features[0];
       try {
-        await fetchOrThrow(`/api/geofences/${feature.id}`, { method: 'DELETE' });
-        refreshGeofences();
+        const response = await fetch(`/api/geofences/${feature.id}`, { method: 'DELETE' });
+        if (response.ok) {
+          refreshGeofences();
+        } else {
+          throw Error(await response.text());
+        }
       } catch (error) {
         dispatch(errorsActions.push(error.message));
       }
@@ -113,12 +118,16 @@ const MapGeofenceEdit = ({ selectedGeofenceId }) => {
       if (item) {
         const updatedItem = { ...item, area: geometryToArea(feature.geometry) };
         try {
-          await fetchOrThrow(`/api/geofences/${feature.id}`, {
+          const response = await fetch(`/api/geofences/${feature.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(updatedItem),
           });
-          refreshGeofences();
+          if (response.ok) {
+            refreshGeofences();
+          } else {
+            throw Error(await response.text());
+          }
         } catch (error) {
           dispatch(errorsActions.push(error.message));
         }

@@ -1,3 +1,4 @@
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { ThemeProvider, useMediaQuery } from '@mui/material';
 import { CacheProvider } from '@emotion/react';
@@ -30,7 +31,9 @@ const AppThemeProvider = ({ children }) => {
 
   return (
     <CacheProvider value={cache[direction]}>
-      <ThemeProvider theme={themeInstance}>{children}</ThemeProvider>
+      <ThemeProvider theme={themeInstance}>
+        {children}
+      </ThemeProvider>
     </CacheProvider>
   );
 };

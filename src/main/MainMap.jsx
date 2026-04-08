@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,12 +29,9 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
 
   const features = useFeatures();
 
-  const onMarkerClick = useCallback(
-    (_, deviceId) => {
-      dispatch(devicesActions.selectId(deviceId));
-    },
-    [dispatch],
-  );
+  const onMarkerClick = useCallback((_, deviceId) => {
+    dispatch(devicesActions.selectId(deviceId));
+  }, [dispatch]);
 
   return (
     <>
@@ -42,10 +39,10 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         <MapOverlay />
         <MapGeofence />
         <MapAccuracy positions={filteredPositions} />
-        <MapLiveRoutes deviceIds={filteredPositions.map((p) => p.deviceId)} />
+        <MapLiveRoutes />
         <MapPositions
           positions={filteredPositions}
-          onMarkerClick={onMarkerClick}
+          onClick={onMarkerClick}
           selectedPosition={selectedPosition}
           showStatus
         />
@@ -60,11 +57,7 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         <MapNotification enabled={eventsAvailable} onClick={onEventsClick} />
       )}
       {desktop && (
-        <MapPadding
-          start={
-            parseInt(theme.dimensions.drawerWidthDesktop, 10) + parseInt(theme.spacing(1.5), 10)
-          }
-        />
+        <MapPadding left={parseInt(theme.dimensions.drawerWidthDesktop, 10) + parseInt(theme.spacing(1.5), 10)} />
       )}
     </>
   );

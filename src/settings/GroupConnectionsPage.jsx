@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Accordion,
@@ -16,7 +17,7 @@ import useFeatures from '../common/util/useFeatures';
 import useSettingsStyles from './common/useSettingsStyles';
 
 const GroupConnectionsPage = () => {
-  const { classes } = useSettingsStyles();
+  const classes = useSettingsStyles();
   const t = useTranslation();
 
   const { id } = useParams();
@@ -31,7 +32,9 @@ const GroupConnectionsPage = () => {
       <Container maxWidth="xs" className={classes.container}>
         <Accordion defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="subtitle1">{t('sharedConnections')}</Typography>
+            <Typography variant="subtitle1">
+              {t('sharedConnections')}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails className={classes.details}>
             <LinkField

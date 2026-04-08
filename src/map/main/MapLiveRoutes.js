@@ -1,10 +1,10 @@
 import { useId, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/styles';
 import { map } from '../core/MapView';
 import { useAttributePreference } from '../../common/util/preferences';
 
-const MapLiveRoutes = ({ deviceIds }) => {
+const MapLiveRoutes = () => {
   const id = useId();
 
   const theme = useTheme();
@@ -60,29 +60,28 @@ const MapLiveRoutes = ({ deviceIds }) => {
 
   useEffect(() => {
     if (type !== 'none') {
-      const visibleIds = deviceIds
+      const deviceIds = Object.values(devices)
+        .map((device) => device.id)
         .filter((id) => (type === 'selected' ? id === selectedDeviceId : true))
-        .filter((id) => history.hasOwnProperty(id))
-        .filter((id) => devices[id]);
+        .filter((id) => history.hasOwnProperty(id));
 
       map.getSource(id)?.setData({
         type: 'FeatureCollection',
-        features: visibleIds.map((deviceId) => ({
+        features: deviceIds.map((deviceId) => ({
           type: 'Feature',
           geometry: {
             type: 'LineString',
             coordinates: history[deviceId],
           },
           properties: {
-            color:
-              devices[deviceId]?.attributes?.['web.reportColor'] || theme.palette.geometry.main,
+            color: devices[deviceId].attributes['web.reportColor'] || theme.palette.geometry.main,
             width: mapLineWidth,
             opacity: mapLineOpacity,
           },
         })),
       });
     }
-  }, [theme, type, devices, selectedDeviceId, history, deviceIds]);
+  }, [theme, type, devices, selectedDeviceId, history]);
 
   return null;
 };

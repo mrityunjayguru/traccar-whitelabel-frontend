@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
-import { Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+import {
+  Accordion, AccordionSummary, AccordionDetails, Typography,
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditItemView from './components/EditItemView';
 import EditAttributesAccordion from './components/EditAttributesAccordion';
@@ -9,7 +11,7 @@ import SettingsMenu from './components/SettingsMenu';
 import useSettingsStyles from './common/useSettingsStyles';
 
 const DriverPage = () => {
-  const { classes } = useSettingsStyles();
+  const classes = useSettingsStyles();
   const t = useTranslation();
 
   const [item, setItem] = useState();
@@ -29,7 +31,9 @@ const DriverPage = () => {
         <>
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">{t('sharedRequired')}</Typography>
+              <Typography variant="subtitle1">
+                {t('sharedRequired')}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
               <TextField

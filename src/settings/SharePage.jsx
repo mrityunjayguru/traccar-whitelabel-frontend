@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
@@ -17,45 +17,46 @@ import PageLayout from '../common/components/PageLayout';
 import SettingsMenu from './components/SettingsMenu';
 import { useCatchCallback } from '../reactHelper';
 import useSettingsStyles from './common/useSettingsStyles';
-import fetchOrThrow from '../common/util/fetchOrThrow';
 
 const SharePage = () => {
   const navigate = useNavigate();
-  const { classes } = useSettingsStyles();
+  const classes = useSettingsStyles();
   const t = useTranslation();
 
-  const { type, id } = useParams();
+  const { id } = useParams();
 
-  const item = useSelector((state) =>
-    type === 'group' ? state.groups.items[id] : state.devices.items[id],
-  );
+  const device = useSelector((state) => state.devices.items[id]);
 
-  const [expiration, setExpiration] = useState(
-    dayjs().add(1, 'week').locale('en').format('YYYY-MM-DD'),
-  );
+  const [expiration, setExpiration] = useState(dayjs().add(1, 'week').locale('en').format('YYYY-MM-DD'));
   const [link, setLink] = useState();
 
   const handleShare = useCatchCallback(async () => {
     const expirationTime = dayjs(expiration).toISOString();
-    const response = await fetchOrThrow(`/api/share/${type}`, {
+    const response = await fetch('/api/devices/share', {
       method: 'POST',
-      body: new URLSearchParams(`${type}Id=${id}&expiration=${expirationTime}`),
+      body: new URLSearchParams(`deviceId=${id}&expiration=${expirationTime}`),
     });
-    const token = await response.text();
-    setLink(`${window.location.origin}?token=${token}`);
-  }, [id, expiration, type, setLink]);
+    if (response.ok) {
+      const token = await response.text();
+      setLink(`${window.location.origin}?token=${token}`);
+    } else {
+      throw Error(await response.text());
+    }
+  }, [id, expiration, setLink]);
 
   return (
-    <PageLayout menu={<SettingsMenu />} breadcrumbs={['sharedShare']}>
+    <PageLayout menu={<SettingsMenu />} breadcrumbs={['deviceShare']}>
       <Container maxWidth="xs" className={classes.container}>
         <Accordion defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="subtitle1">{t('sharedRequired')}</Typography>
+            <Typography variant="subtitle1">
+              {t('sharedRequired')}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails className={classes.details}>
             <TextField
-              value={item.name}
-              label={t(type === 'group' ? 'groupDialog' : 'sharedDevice')}
+              value={device.name}
+              label={t('sharedDevice')}
               disabled
             />
             <TextField
@@ -64,19 +65,30 @@ const SharePage = () => {
               value={expiration}
               onChange={(e) => setExpiration(e.target.value)}
             />
-            <Button variant="outlined" color="primary" onClick={handleShare}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleShare}
+            >
               {t('reportShow')}
             </Button>
             <TextField
               value={link || ''}
               onChange={(e) => setLink(e.target.value)}
               label={t('sharedLink')}
-              slotProps={{ input: { readOnly: true } }}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </AccordionDetails>
         </Accordion>
         <div className={classes.buttons}>
-          <Button type="button" color="primary" variant="outlined" onClick={() => navigate(-1)}>
+          <Button
+            type="button"
+            color="primary"
+            variant="outlined"
+            onClick={() => navigate(-1)}
+          >
             {t('sharedCancel')}
           </Button>
           <Button

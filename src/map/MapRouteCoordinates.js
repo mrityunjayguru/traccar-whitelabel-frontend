@@ -1,4 +1,4 @@
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/styles';
 import { useId, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { map } from './core/MapView';
@@ -91,7 +91,7 @@ const MapRouteCoordinates = ({ name, coordinates, deviceId }) => {
         opacity: mapLineOpacity,
       },
     });
-  }, [theme, coordinates, reportColor, mapLineWidth, mapLineOpacity]);
+  }, [theme, coordinates, reportColor]);
 
   return null;
 };

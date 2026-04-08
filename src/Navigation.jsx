@@ -1,8 +1,11 @@
-import { Route, Routes, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import {
+  Route, Routes, useLocation, useNavigate,
+} from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import MainPage from './main/MainPage';
 import CombinedReportPage from './reports/CombinedReportPage';
-import PositionsReportPage from './reports/PositionsReportPage';
+import RouteReportPage from './reports/RouteReportPage';
 import ServerPage from './settings/ServerPage';
 import UsersPage from './settings/UsersPage';
 import DevicePage from './settings/DevicePage';
@@ -14,7 +17,6 @@ import GroupPage from './settings/GroupPage';
 import PositionPage from './other/PositionPage';
 import NetworkPage from './other/NetworkPage';
 import EventReportPage from './reports/EventReportPage';
-import GeofenceReportPage from './reports/GeofenceReportPage';
 import ReplayPage from './other/ReplayPage';
 import TripReportPage from './reports/TripReportPage';
 import StopReportPage from './reports/StopReportPage';
@@ -40,6 +42,7 @@ import RegisterPage from './login/RegisterPage';
 import ResetPasswordPage from './login/ResetPasswordPage';
 import GeofencesPage from './other/GeofencesPage';
 import GeofencePage from './settings/GeofencePage';
+import useQuery from './common/util/useQuery';
 import { useEffectAsync } from './reactHelper';
 import { devicesActions } from './store';
 import EventPage from './other/EventPage';
@@ -61,58 +64,52 @@ import EmulatorPage from './other/EmulatorPage';
 import Loader from './common/components/Loader';
 import { generateLoginToken } from './common/components/NativeInterface';
 import { useLocalization } from './common/components/LocalizationProvider';
-import fetchOrThrow from './common/util/fetchOrThrow';
-import AuditPage from './reports/AuditPage';
 
 const Navigation = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { setLocalLanguage } = useLocalization();
+  const { setLanguage } = useLocalization();
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [redirectsHandled, setRedirectsHandled] = useState(false);
 
-  const hasQueryParams = ['locale', 'token', 'uniqueId', 'openid'].some((key) =>
-    searchParams.has(key),
-  );
+  const { pathname } = useLocation();
+  const query = useQuery();
 
   useEffectAsync(async () => {
-    if (!hasQueryParams) {
-      return;
+    if (query.get('locale')) {
+      setLanguage(query.get('locale'));
     }
-
-    const newParams = new URLSearchParams(searchParams);
-
-    if (searchParams.has('locale')) {
-      setLocalLanguage(searchParams.get('locale'));
-      newParams.delete('locale');
-    }
-
-    if (searchParams.has('token')) {
-      const token = searchParams.get('token');
+    if (query.get('token')) {
+      const token = query.get('token');
       await fetch(`/api/session?token=${encodeURIComponent(token)}`);
-      newParams.delete('token');
-    }
-
-    if (searchParams.has('uniqueId')) {
-      const response = await fetchOrThrow(`/api/devices?uniqueId=${searchParams.get('uniqueId')}`);
-      const items = await response.json();
-      if (items.length > 0) {
-        dispatch(devicesActions.selectId(items[0].id));
+      navigate(pathname);
+    } else if (query.get('deviceId')) {
+      const deviceId = query.get('deviceId');
+      const response = await fetch(`/api/devices?uniqueId=${deviceId}`);
+      if (response.ok) {
+        const items = await response.json();
+        if (items.length > 0) {
+          dispatch(devicesActions.selectId(items[0].id));
+        }
+      } else {
+        throw Error(await response.text());
       }
-      newParams.delete('uniqueId');
-    }
-
-    if (searchParams.has('openid')) {
-      if (searchParams.get('openid') === 'success') {
+      navigate('/');
+    } else if (query.get('eventId')) {
+      const eventId = parseInt(query.get('eventId'), 10);
+      navigate(`/event/${eventId}`);
+    } else if (query.get('openid')) {
+      if (query.get('openid') === 'success') {
         generateLoginToken();
       }
-      newParams.delete('openid');
+      navigate('/');
+    } else {
+      setRedirectsHandled(true);
     }
+  }, [query]);
 
-    setSearchParams(newParams, { replace: true });
-  }, [hasQueryParams, searchParams, setSearchParams]);
-
-  if (hasQueryParams) {
-    return <Loader />;
+  if (!redirectsHandled) {
+    return (<Loader />);
   }
   return (
     <Routes>
@@ -131,7 +128,6 @@ const Navigation = () => {
         <Route path="emulator" element={<EmulatorPage />} />
 
         <Route path="settings">
-          <Route path=":type/:id/share" element={<SharePage />} />
           <Route path="accumulators/:deviceId" element={<AccumulatorsPage />} />
           <Route path="announcement" element={<AnnouncementPage />} />
           <Route path="calendars" element={<CalendarsPage />} />
@@ -146,6 +142,7 @@ const Navigation = () => {
           <Route path="devices" element={<DevicesPage />} />
           <Route path="device/:id/connections" element={<DeviceConnectionsPage />} />
           <Route path="device/:id/command" element={<CommandDevicePage />} />
+          <Route path="device/:id/share" element={<SharePage />} />
           <Route path="device/:id" element={<DevicePage />} />
           <Route path="device" element={<DevicePage />} />
           <Route path="drivers" element={<DriversPage />} />
@@ -175,23 +172,17 @@ const Navigation = () => {
         <Route path="reports">
           <Route path="combined" element={<CombinedReportPage />} />
           <Route path="chart" element={<ChartReportPage />} />
-          <Route path="events" element={<EventReportPage />} />
-          <Route path="geofences" element={<GeofenceReportPage />} />
-          <Route path="route" element={<PositionsReportPage />} />
-          <Route path="stops" element={<StopReportPage />} />
+          <Route path="event" element={<EventReportPage />} />
+          <Route path="route" element={<RouteReportPage />} />
+          <Route path="stop" element={<StopReportPage />} />
           <Route path="summary" element={<SummaryReportPage />} />
-<<<<<<< HEAD
           <Route path="travel" element={<TravelReportPage />} />
           <Route path="distance" element={<DistanceReportPage />} />
           <Route path="alert" element={<AlertReportPage />} />
           
           <Route path="trip" element={<TripReportPage />} />
-=======
-          <Route path="trips" element={<TripReportPage />} />
->>>>>>> 5f656ae1c84a3b998923f70336c267cd2130efc8
           <Route path="scheduled" element={<ScheduledPage />} />
           <Route path="statistics" element={<StatisticsPage />} />
-          <Route path="audit" element={<AuditPage />} />
           <Route path="logs" element={<LogsPage />} />
         </Route>
       </Route>

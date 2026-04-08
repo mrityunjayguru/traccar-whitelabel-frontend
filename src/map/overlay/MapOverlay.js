@@ -9,9 +9,7 @@ const MapOverlay = () => {
   const mapOverlays = useMapOverlays();
   const selectedMapOverlay = useAttributePreference('selectedMapOverlay');
 
-  const activeOverlay = mapOverlays
-    .filter((overlay) => overlay.available)
-    .find((overlay) => overlay.id === selectedMapOverlay);
+  const activeOverlay = mapOverlays.filter((overlay) => overlay.available).find((overlay) => overlay.id === selectedMapOverlay);
 
   useEffect(() => {
     if (activeOverlay) {

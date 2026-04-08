@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { makeStyles } from 'tss-react/mui';
-import { List } from 'react-window';
+import makeStyles from '@mui/styles/makeStyles';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import { devicesActions } from '../store';
 import { useEffectAsync } from '../reactHelper';
 import DeviceRow from './DeviceRow';
-import fetchOrThrow from '../common/util/fetchOrThrow';
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles((theme) => ({
   list: {
-    height: '100%',
-    direction: theme.direction,
+    maxHeight: '100%',
   },
   listInner: {
     position: 'relative',
@@ -19,8 +18,13 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const DeviceList = ({ devices }) => {
-  const { classes } = useStyles();
+  const classes = useStyles();
   const dispatch = useDispatch();
+  const listInnerEl = useRef(null);
+
+  if (listInnerEl.current) {
+    listInnerEl.current.className = classes.listInner;
+  }
 
   const [, setTime] = useState(Date.now());
 
@@ -32,19 +36,30 @@ const DeviceList = ({ devices }) => {
   }, []);
 
   useEffectAsync(async () => {
-    const response = await fetchOrThrow('/api/devices');
-    dispatch(devicesActions.refresh(await response.json()));
+    const response = await fetch('/api/devices');
+    if (response.ok) {
+      dispatch(devicesActions.refresh(await response.json()));
+    } else {
+      throw Error(await response.text());
+    }
   }, []);
 
   return (
-    <List
-      className={classes.list}
-      rowComponent={DeviceRow}
-      rowCount={devices.length}
-      rowHeight={72}
-      rowProps={{ devices }}
-      overscanCount={5}
-    />
+    <AutoSizer className={classes.list}>
+      {({ height, width }) => (
+        <FixedSizeList
+          width={width}
+          height={height}
+          itemCount={devices.length}
+          itemData={devices}
+          itemSize={72}
+          overscanCount={10}
+          innerRef={listInnerEl}
+        >
+          {DeviceRow}
+        </FixedSizeList>
+      )}
+    </AutoSizer>
   );
 };
 

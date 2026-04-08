@@ -3,12 +3,10 @@ import maplibregl from 'maplibre-gl';
 import MaplibreGeocoder from '@maplibre/maplibre-gl-geocoder';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { useTheme } from '@mui/material';
 import { map } from '../core/MapView';
 import { errorsActions } from '../../store';
 
 const MapGeocoder = () => {
-  const theme = useTheme();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -48,7 +46,7 @@ const MapGeocoder = () => {
       maplibregl,
       collapsed: true,
     });
-    map.addControl(control, theme.direction === 'rtl' ? 'top-left' : 'top-right');
+    map.addControl(control);
     return () => map.removeControl(control);
   }, [dispatch]);
 

@@ -1,12 +1,12 @@
+import React from 'react';
 import Button from '@mui/material/Button';
 import { Snackbar } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
+import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from './LocalizationProvider';
 import { useCatch } from '../../reactHelper';
 import { snackBarDurationLongMs } from '../util/duration';
-import fetchOrThrow from '../util/fetchOrThrow';
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     [theme.breakpoints.down('md')]: {
       bottom: `calc(${theme.dimensions.bottomBarHeight}px + ${theme.spacing(1)})`,
@@ -19,13 +19,19 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-const RemoveDialog = ({ open, endpoint, itemId, onResult }) => {
-  const { classes } = useStyles();
+const RemoveDialog = ({
+  open, endpoint, itemId, onResult,
+}) => {
+  const classes = useStyles();
   const t = useTranslation();
 
   const handleRemove = useCatch(async () => {
-    await fetchOrThrow(`/api/${endpoint}/${itemId}`, { method: 'DELETE' });
-    onResult(true);
+    const response = await fetch(`/api/${endpoint}/${itemId}`, { method: 'DELETE' });
+    if (response.ok) {
+      onResult(true);
+    } else {
+      throw Error(await response.text());
+    }
   });
 
   return (
@@ -35,11 +41,11 @@ const RemoveDialog = ({ open, endpoint, itemId, onResult }) => {
       autoHideDuration={snackBarDurationLongMs}
       onClose={() => onResult(false)}
       message={t('sharedRemoveConfirm')}
-      action={
+      action={(
         <Button size="small" className={classes.button} color="error" onClick={handleRemove}>
           {t('sharedRemove')}
         </Button>
-      }
+      )}
     />
   );
 };

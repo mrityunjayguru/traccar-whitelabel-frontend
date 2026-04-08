@@ -1,22 +1,20 @@
-import { useState } from 'react';
-import { Button, TextField, Typography, Snackbar, IconButton } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import {
+  Button, TextField, Typography, Snackbar, IconButton,
+} from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
+import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LoginLayout from './LoginLayout';
 import { useTranslation } from '../common/components/LocalizationProvider';
+import useQuery from '../common/util/useQuery';
 import { snackBarDurationShortMs } from '../common/util/duration';
 import { useCatch } from '../reactHelper';
-import BackIcon from '../common/components/BackIcon';
-import fetchOrThrow from '../common/util/fetchOrThrow';
 
-<<<<<<< HEAD
 
 
 
 const useStyles = makeStyles((theme) => ({
-=======
-const useStyles = makeStyles()((theme) => ({
->>>>>>> 5f656ae1c84a3b998923f70336c267cd2130efc8
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -35,12 +33,12 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const ResetPasswordPage = () => {
-  const { classes } = useStyles();
+  const classes = useStyles();
   const navigate = useNavigate();
   const t = useTranslation();
+  const query = useQuery();
 
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('passwordReset');
+  const token = query.get('passwordReset');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,20 +46,23 @@ const ResetPasswordPage = () => {
 
   const handleSubmit = useCatch(async (event) => {
     event.preventDefault();
+    let response;
     if (!token) {
-      await fetchOrThrow('/api/password/reset', {
+      response = await fetch('/api/password/reset', {
         method: 'POST',
         body: new URLSearchParams(`email=${encodeURIComponent(email)}`),
       });
     } else {
-      await fetchOrThrow('/api/password/update', {
+      response = await fetch('/api/password/update', {
         method: 'POST',
-        body: new URLSearchParams(
-          `token=${encodeURIComponent(token)}&password=${encodeURIComponent(password)}`,
-        ),
+        body: new URLSearchParams(`token=${encodeURIComponent(token)}&password=${encodeURIComponent(password)}`),
       });
     }
-    setSnackbarOpen(true);
+    if (response.ok) {
+      setSnackbarOpen(true);
+    } else {
+      throw Error(await response.text());
+    }
   });
 
   
@@ -73,7 +74,7 @@ const [showPassword, setShowPassword] = useState(false);
       <div className={classes.container}>
         <div className={classes.header}>
           <IconButton color="primary" onClick={() => navigate('/login')}>
-            <BackIcon />
+            <ArrowBackIcon />
           </IconButton>
           <Typography className={classes.title} color="primary">
             {t('loginReset')}

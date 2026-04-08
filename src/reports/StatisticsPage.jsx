@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { Table, TableRow, TableCell, TableHead, TableBody } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  Table, TableRow, TableCell, TableHead, TableBody,
+} from '@mui/material';
 import { formatTime } from '../common/util/formatter';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import PageLayout from '../common/components/PageLayout';
@@ -10,7 +12,6 @@ import ColumnSelect from './components/ColumnSelect';
 import { useCatch } from '../reactHelper';
 import useReportStyles from './common/useReportStyles';
 import TableShimmer from '../common/components/TableShimmer';
-import fetchOrThrow from '../common/util/fetchOrThrow';
 
 const columnsArray = [
   ['captureTime', 'statisticsCaptureTime'],
@@ -27,24 +28,23 @@ const columnsArray = [
 const columnsMap = new Map(columnsArray);
 
 const StatisticsPage = () => {
-  const { classes } = useReportStyles();
+  const classes = useReportStyles();
   const t = useTranslation();
 
-  const [columns, setColumns] = usePersistedState('statisticsColumns', [
-    'captureTime',
-    'activeUsers',
-    'activeDevices',
-    'messagesStored',
-  ]);
+  const [columns, setColumns] = usePersistedState('statisticsColumns', ['captureTime', 'activeUsers', 'activeDevices', 'messagesStored']);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const onShow = useCatch(async ({ from, to }) => {
+  const handleSubmit = useCatch(async ({ from, to }) => {
     setLoading(true);
     try {
       const query = new URLSearchParams({ from, to });
-      const response = await fetchOrThrow(`/api/statistics?${query.toString()}`);
-      setItems(await response.json());
+      const response = await fetch(`/api/statistics?${query.toString()}`);
+      if (response.ok) {
+        setItems(await response.json());
+      } else {
+        throw Error(await response.text());
+      }
     } finally {
       setLoading(false);
     }
@@ -53,32 +53,26 @@ const StatisticsPage = () => {
   return (
     <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'statisticsTitle']}>
       <div className={classes.header}>
-        <ReportFilter onShow={onShow} deviceType="none" loading={loading}>
+        <ReportFilter handleSubmit={handleSubmit} showOnly ignoreDevice loading={loading}>
           <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
         </ReportFilter>
       </div>
       <Table>
         <TableHead>
           <TableRow>
-            {columns.map((key) => (
-              <TableCell key={key}>{t(columnsMap.get(key))}</TableCell>
-            ))}
+            {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {!loading ? (
-            items.map((item) => (
-              <TableRow key={item.id}>
-                {columns.map((key) => (
-                  <TableCell key={key}>
-                    {key === 'captureTime' ? formatTime(item[key], 'date') : item[key]}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableShimmer columns={columns.length} />
-          )}
+          {!loading ? items.map((item) => (
+            <TableRow key={item.id}>
+              {columns.map((key) => (
+                <TableCell key={key}>
+                  {key === 'captureTime' ? formatTime(item[key], 'date') : item[key]}
+                </TableCell>
+              ))}
+            </TableRow>
+          )) : (<TableShimmer columns={columns.length} />)}
         </TableBody>
       </Table>
     </PageLayout>
