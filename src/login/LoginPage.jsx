@@ -112,10 +112,10 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                 
                 try {
                   const responseotp = await axios.post(
-                    'https://app.trackroutepro.com/Auth/send_otp/',
+                    'https://stagingapplabel.trackroutepro.com/Auth/send_otp/',
                     {
-                      "emailAddress": myemail,
-                      "role": 'User', 
+                      "emailAddress": myemail
+                      
                     },
                     {
                       headers: {

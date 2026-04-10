@@ -102,12 +102,17 @@ const ServerPage = () => {
                   label={t('mapCustomLabel')}
                 />
 
-              <TextField
-                  value={item.enableotp || ''}
-                  onChange={(event) => setItem({ ...item, enableotp: event.target.value })}
-                  label="Enable OTP"
-                />
-
+              <FormControlLabel
+  control={
+    <Checkbox
+      checked={!!item.enableotp}
+      onChange={(e) =>
+        setItem({ ...item, enableotp: e.target.checked })
+      }
+    />
+  }
+  label="Enable OTP"
+/>
 
               <TextField
                   value={item.masterotp || ''}
