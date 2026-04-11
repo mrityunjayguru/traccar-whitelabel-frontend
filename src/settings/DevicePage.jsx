@@ -64,6 +64,7 @@ const DevicePage = () => {
     >
       {item && (
         <>
+        
           <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
@@ -170,9 +171,14 @@ const DevicePage = () => {
             setAttributes={(attributes) => setItem({ ...item, attributes })}
             definitions={{ ...commonDeviceAttributes, ...deviceAttributes }}
           />
+          
         </>
       )}
+
+
+
     </EditItemView>
+    
   );
 };
 
