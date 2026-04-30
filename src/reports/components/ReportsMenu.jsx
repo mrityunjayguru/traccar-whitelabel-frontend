@@ -56,6 +56,30 @@ const ReportsMenu = () => {
           icon={<PauseCircleFilledIcon />}
           selected={location.pathname === '/reports/stop'}
         />
+
+      <MenuItem
+          title={"Summary L"}
+          link="/reports/summarylivi"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/summarylivi'}
+        />
+
+
+
+      <MenuItem
+          title={"Consolidated Summary"}
+          link="/reports/ConsolidatedSummary"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/ConsolidatedSummary'}
+        />
+
+    
+<MenuItem
+          title={"Summary + Position"}
+          link="/reports/SummaryPosition"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/SummaryPosition'}
+        />
         <MenuItem
           title={t('reportSummary')}
           link="/reports/summary"

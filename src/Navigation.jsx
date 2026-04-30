@@ -64,6 +64,9 @@ import EmulatorPage from './other/EmulatorPage';
 import Loader from './common/components/Loader';
 import { generateLoginToken } from './common/components/NativeInterface';
 import { useLocalization } from './common/components/LocalizationProvider';
+import SummaryLivi from './reports/SummaryLivi';
+import SummaryPosition from './reports/SummaryPosition';
+import ConsolidatedSummary from './reports/ConsolidatedSummary';
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -175,6 +178,9 @@ const Navigation = () => {
           <Route path="event" element={<EventReportPage />} />
           <Route path="route" element={<RouteReportPage />} />
           <Route path="stop" element={<StopReportPage />} />
+          <Route path="summarylivi" element={<SummaryLivi />} />
+          <Route path="ConsolidatedSummary" element={<ConsolidatedSummary />} />
+          <Route path="summaryposition" element={<SummaryPosition />} />
           <Route path="summary" element={<SummaryReportPage />} />
           <Route path="travel" element={<TravelReportPage />} />
           <Route path="distance" element={<DistanceReportPage />} />
