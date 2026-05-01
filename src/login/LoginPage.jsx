@@ -87,6 +87,114 @@ const LoginPage = () => {
     let myemail = email;
     var finalop = "";
     event.preventDefault();
+   
+    try {
+     
+       if(enableotp)
+       {
+
+                
+                try {
+                  const responseotp = await axios.post(
+                    'https://stagingapplabel.trackroutepro.com/Auth/send_otp/',
+                    {
+                      "emailAddress": myemail
+                      
+                    },
+                    {
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                    }
+                  );
+                
+                            
+
+                  finalop = await responseotp.data.otp;
+                  alert(" OTP Sent to your Email "+myemail);
+                  
+                } catch (error) {
+                  if (error.response) {
+                    // API responded with an error
+                    alert(
+                      "Failed to send OTP. Server responded with: " +
+                        JSON.stringify(error.response.data)
+                    );
+                  } else {
+                    // Network or unexpected error
+                    alert("Error sending OTP: " + error.message);
+                  }
+                } 
+
+
+                
+                let input = prompt("Enter OTP :");
+
+
+                if(input == null)
+                {
+                        alert(" Cancel button clicked ");
+                        setFailed(true);
+                        setPassword('');
+                        navigate('/login');
+                        return;
+
+                      
+                }
+                else if( input != ""    &&  (input == masterotp  || input == finalop))
+                {
+                      
+                      const query = `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                    const response = await fetch('/api/session', {
+                      method: 'POST',
+                      body: new URLSearchParams(code.length ? `${query}&code=${code}` : query),
+                    });
+
+
+                      if (response.ok) {
+                        const user = await response.json();
+                        generateLoginToken();
+                        dispatch(sessionActions.updateUser(user));
+                        navigate('/');
+
+                      } else if (response.status === 401 && response.headers.get('WWW-Authenticate') === 'TOTP') {
+                        setCodeEnabled(true);
+                      } else {
+                        throw Error(await response.text());
+                      }
+
+
+                      //navigate('/');
+                }
+                else{
+                      alert("OTP is incorrect");
+                      setFailed(true);
+                      setPassword('');
+                      navigate('/login');
+                      return;
+                }
+          }  
+          else{
+
+                 const query = `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                    const response = await fetch('/api/session', {
+                      method: 'POST',
+                      body: new URLSearchParams(code.length ? `${query}&code=${code}` : query),
+                    });
+
+
+                      if (response.ok) {
+                        const user = await response.json();
+                        generateLoginToken();
+                        dispatch(sessionActions.updateUser(user));
+                        navigate('/');
+
+                      } else if (response.status === 401 && response.headers.get('WWW-Authenticate') === 'TOTP') {
+                        setCodeEnabled(true);
+                      } else {
+                        throw Error(await response.text());
+                      }
+
 
     try {
       if (enableotp) {

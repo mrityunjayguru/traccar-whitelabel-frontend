@@ -70,7 +70,17 @@ const SummaryReportPage = () => {
           headers: { Accept: 'application/json' },
         });
         if (response.ok) {
+
+
           setItems(await response.json());
+
+          console.log(" Summary Data ");
+          console.log(" Summary Data ");
+          console.log(items);
+          console.log(" Summary Data ");
+          console.log(" Summary Data ");
+
+
         } else {
           throw Error(await response.text());
         }

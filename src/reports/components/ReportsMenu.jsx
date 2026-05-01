@@ -40,6 +40,102 @@ const ReportsMenu = () => {
     { title: t('reportChart'), link: '/reports/chart', icon: <InsertChartRoundedIcon /> },
     { title: t('reportReplay'), link: '/replay', icon: <RouteIcon /> },
   ];
+  return (
+    <>
+      <List>
+        <MenuItem
+          title={t('reportCombined')}
+          link="/reports/combined"
+          icon={<StarIcon />}
+          selected={location.pathname === '/reports/combined'}
+        />
+        <MenuItem
+          title={t('reportRoute')}
+          link="/reports/route"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/route'}
+        />
+        <MenuItem
+          title={t('reportEvents')}
+          link="/reports/event"
+          icon={<NotificationsActiveIcon />}
+          selected={location.pathname === '/reports/event'}
+        />
+        <MenuItem
+          title={t('reportTrips')}
+          link="/reports/trip"
+          icon={<PlayCircleFilledIcon />}
+          selected={location.pathname === '/reports/trip'}
+        />
+        <MenuItem
+          title={t('reportStops')}
+          link="/reports/stop"
+          icon={<PauseCircleFilledIcon />}
+          selected={location.pathname === '/reports/stop'}
+        />
+
+      <MenuItem
+          title={"Summary L"}
+          link="/reports/summarylivi"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/summarylivi'}
+        />
+
+
+
+      <MenuItem
+          title={"Consolidated Summary"}
+          link="/reports/ConsolidatedSummary"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/ConsolidatedSummary'}
+        />
+
+
+      <MenuItem
+          title={"Mobilization "}
+          link="/reports/Mobilization"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/Mobilization'}
+        />
+
+
+    
+<MenuItem
+          title={"Summary + Position"}
+          link="/reports/SummaryPosition"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/SummaryPosition'}
+        />
+        <MenuItem
+          title={t('reportSummary')}
+          link="/reports/summary"
+          icon={<FormatListBulletedIcon />}
+          selected={location.pathname === '/reports/summary'}
+        />
+
+{/*
+  <MenuItem
+    title='Travel'
+    link="/reports/travel"
+    icon={<FormatListBulletedIcon />}
+    selected={location.pathname === '/reports/travel'}
+  />
+
+  <MenuItem
+    title='Alert'
+    link="/reports/alert"
+    icon={<FormatListBulletedIcon />}
+    selected={location.pathname === '/reports/alert'}
+  />
+
+  <MenuItem
+    title='Distance'
+    link="/reports/distance"
+    icon={<FormatListBulletedIcon />}
+    selected={location.pathname === '/reports/distance'}
+  />
+*/}
+
 
   const secondaryItems = [
     { title: t('sharedLogs'), link: '/reports/logs', icon: <NotesIcon /> },
