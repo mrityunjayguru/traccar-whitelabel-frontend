@@ -73,6 +73,15 @@ const ReportsMenu = () => {
           selected={location.pathname === '/reports/ConsolidatedSummary'}
         />
 
+
+      <MenuItem
+          title={"Mobilization "}
+          link="/reports/Mobilization"
+          icon={<TimelineIcon />}
+          selected={location.pathname === '/reports/Mobilization'}
+        />
+
+
     
 <MenuItem
           title={"Summary + Position"}

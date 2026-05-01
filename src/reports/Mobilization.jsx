@@ -38,7 +38,16 @@ const Mobilization = () => {
   const distanceUnit = useAttributePreference('distanceUnit');
   const positionAttributes = usePositionAttributes(t);
   const devices = useSelector((state) => state.devices.items);
+
   const readonly = useRestriction('readonly');
+  const users = useSelector((state) => state.users);
+
+const user = useSelector(state => state.session.user);
+
+  console.log("Devices ");
+ 
+  console.log(devices);
+  console.log("Devices ");
 
   const minutesToHHMMSS = (minutes) => {
     if (minutes == null || isNaN(minutes)) return '';
@@ -71,7 +80,7 @@ const Mobilization = () => {
 
   // ✅ Columns with label + key
   const [columns, setColumns] = useState([
-    { key: 'distanceKm', label: 'Total Distance (Kms)' },
+   /* { key: 'distanceKm', label: 'Total Distance (Kms)' },
     { key: 'avgSpeed', label: 'Average Speed (Km/h)' },
     { key: 'maxSpeed', label: 'Max Speed (Km/h)' },
     { key: 'maxSpeedTime', label: 'Max Speed Time' },
@@ -79,22 +88,30 @@ const Mobilization = () => {
     { key: 'idleTime', label: 'Idle Time' },
     { key: 'Start Coords', label: 'Start Coords' },
     { key: 'End Coords', label: 'End Coords' },
+*/
     { key:'startAddress', label: 'Start Address' },
-    { key: 'endAddress', label: 'End Address' },
-    { key: 'startTime', label: 'Start Time' },
+    { key: 'endAddress', label: 'End Address' }
+   /* { key: 'startTime', label: 'Start Time' },
     { key: 'endTime', label: 'End Time' },
 
     {key:'geofenceInTime', label: 'Geofence In (Times)' },
     {key:'geofenceOutTime', label: 'Geofence Out (Times)' },
     {key:'ignitionOnTime', label: 'Ignition On (Times)' },
     {key:'ignitionOffTime', label: 'Ignition Off (Times)' },
-
+*/
     
   ]);
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+
+
+  console.log("Items ");
+  console.log(items);
+  console.log("Items ");
+
+
 
   const selectedIcon = useRef();
 
@@ -230,6 +247,8 @@ const Mobilization = () => {
               <TableRow>
                 <TableCell />
                 <TableCell>{t('sharedDevice')}</TableCell>
+                <TableCell>{"User Name"}</TableCell>
+                <TableCell>{"Type"}</TableCell>
 
                 {columns.map((col) => (
                   <TableCell key={col.key}>
@@ -251,9 +270,23 @@ const Mobilization = () => {
                     </IconButton>
                   </TableCell>
 
+
+                  
                   <TableCell>
                     {devices[item.deviceId]?.name || 'Unknown'}
                   </TableCell>
+
+
+                  <TableCell>
+                    {user.name }
+                  </TableCell>
+
+                  <TableCell>
+                    {devices[item.deviceId]?.uniqueId || 'Unknown'}
+                  </TableCell>
+                  
+
+                  
 
                   {columns.map((col) => (
                     <TableCell key={col.key}>

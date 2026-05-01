@@ -68,6 +68,8 @@ import SummaryLivi from './reports/SummaryLivi';
 import SummaryPosition from './reports/SummaryPosition';
 import ConsolidatedSummary from './reports/ConsolidatedSummary';
 
+import Mobilization from './reports/Mobilization';
+
 const Navigation = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -180,6 +182,10 @@ const Navigation = () => {
           <Route path="stop" element={<StopReportPage />} />
           <Route path="summarylivi" element={<SummaryLivi />} />
           <Route path="ConsolidatedSummary" element={<ConsolidatedSummary />} />
+
+          <Route path="Mobilization" element={<Mobilization />} />
+
+          
           <Route path="summaryposition" element={<SummaryPosition />} />
           <Route path="summary" element={<SummaryReportPage />} />
           <Route path="travel" element={<TravelReportPage />} />
