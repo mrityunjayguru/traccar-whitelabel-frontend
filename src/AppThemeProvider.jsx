@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { ThemeProvider, useMediaQuery } from '@mui/material';
 import { CacheProvider } from '@emotion/react';
@@ -26,6 +26,14 @@ const AppThemeProvider = ({ children }) => {
   const serverDarkMode = server?.attributes?.darkMode;
   const preferDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const darkMode = serverDarkMode !== undefined ? serverDarkMode : preferDarkMode;
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
 
   const themeInstance = theme(server, darkMode, direction);
 

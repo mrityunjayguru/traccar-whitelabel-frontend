@@ -6,8 +6,7 @@ import { useEffectAsync } from '../reactHelper';
 import { prefixString } from '../common/util/stringUtils';
 import { formatBoolean } from '../common/util/formatter';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import PageLayout from '../common/components/PageLayout';
-import SettingsMenu from './components/SettingsMenu';
+import SettingsLayout from './components/SettingsLayout';
 import CollectionFab from './components/CollectionFab';
 import CollectionActions from './components/CollectionActions';
 import TableShimmer from '../common/components/TableShimmer';
@@ -49,7 +48,7 @@ const NotificationsPage = () => {
   };
 
   return (
-    <PageLayout menu={<SettingsMenu />} breadcrumbs={['settingsTitle', 'sharedNotifications']}>
+    <SettingsLayout breadcrumbs={['settingsTitle', 'sharedNotifications']}>
       <SearchHeader keyword={searchKeyword} setKeyword={setSearchKeyword} />
       <Table className={classes.table}>
         <TableHead>
@@ -78,7 +77,7 @@ const NotificationsPage = () => {
         </TableBody>
       </Table>
       <CollectionFab editPath="/settings/notification" />
-    </PageLayout>
+    </SettingsLayout>
   );
 };
 

@@ -19,6 +19,9 @@ import useReportStyles from './common/useReportStyles';
 import TableShimmer from '../common/components/TableShimmer';
 import scheduleReport from './common/scheduleReport';
 
+import ReportLayout from './components/ReportLayout';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
+
 const columnsArray = [
   ['startTime', 'reportStartDate'],
   ['distance', 'sharedDistance'],
@@ -124,11 +127,17 @@ const SummaryReportPage = () => {
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportSummary']}>
-      <div className={classes.header}>
-        <ReportFilter handleSubmit={handleSubmit} handleSchedule={handleSchedule} multiDevice includeGroups loading={loading}>
-          <div className={classes.filterItem}>
-            <FormControl fullWidth>
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportSummary']}
+      handleSubmit={handleSubmit}
+      handleSchedule={handleSchedule}
+      multiDevice
+      includeGroups
+      loading={loading}
+      filterExtension={(
+        <>
+          <div className="mb-4">
+            <FormControl fullWidth size="small">
               <InputLabel>{t('sharedType')}</InputLabel>
               <Select label={t('sharedType')} value={daily} onChange={(e) => setDaily(e.target.value)}>
                 <MenuItem value={false}>{t('reportSummary')}</MenuItem>
@@ -137,29 +146,34 @@ const SummaryReportPage = () => {
             </FormControl>
           </div>
           <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
-        </ReportFilter>
-      </div>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>{t('sharedDevice')}</TableCell>
-            {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {!loading ? items.map((item) => (
-            <TableRow key={(`${item.deviceId}_${Date.parse(item.startTime)}`)}>
-              <TableCell>{devices[item.deviceId].name}</TableCell>
-              {columns.map((key) => (
-                <TableCell key={key}>
-                  {formatValue(item, key)}
-                </TableCell>
-              ))}
+        </>
+      )}
+    >
+      <div className={classes.containerMain}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('sharedDevice')}</TableCell>
+              {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
             </TableRow>
-          )) : (<TableShimmer columns={columns.length + 1} />)}
-        </TableBody>
-      </Table>
-    </PageLayout>
+          </TableHead>
+          <TableBody>
+            {!loading ? (
+              items.length ? items.map((item) => (
+                <TableRow key={(`${item.deviceId}_${Date.parse(item.startTime)}`)}>
+                  <TableCell>{devices[item.deviceId].name}</TableCell>
+                  {columns.map((key) => (
+                    <TableCell key={key}>
+                      {formatValue(item, key)}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              )) : <ReportTableEmptyState colSpan={columns.length + 1} />
+            ) : (<TableShimmer columns={columns.length + 1} />)}
+          </TableBody>
+        </Table>
+      </div>
+    </ReportLayout>
   );
 };
 

@@ -29,6 +29,9 @@ import MapScale from '../map/MapScale';
 
 import CustomAddressValue from './CustomAddressValue';
 
+import ReportLayout from './components/ReportLayout';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
+
 const columnsArray = [
   ['startTime', 'reportStartTime'],
   ['startOdometer', 'reportStartOdometer'],
@@ -158,8 +161,15 @@ const TripReportPage = () => {
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportTrips']}>
-      
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportTrips']}
+      handleSubmit={handleSubmit}
+      handleSchedule={handleSchedule}
+      loading={loading}
+      filterExtension={(
+        <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
+      )}
+    >
       <div className={classes.container}>
         {selectedItem && (
           <div className={classes.containerMap}>
@@ -177,44 +187,42 @@ const TripReportPage = () => {
           </div>
         )}
         <div className={classes.containerMain}>
-          <div className={classes.header}>
-            <ReportFilter handleSubmit={handleSubmit} handleSchedule={handleSchedule} loading={loading}>
-              <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
-            </ReportFilter>
-          </div>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell className={classes.columnAction} />
                 {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading ? items.map((item) => (
-                <TableRow key={item.startPositionId}>
-                  <TableCell className={classes.columnAction} padding="none">
-                    {selectedItem === item ? (
-                      <IconButton size="small" onClick={() => setSelectedItem(null)}>
-                        <GpsFixedIcon fontSize="small" />
-                      </IconButton>
-                    ) : (
-                      <IconButton size="small" onClick={() => setSelectedItem(item)}>
-                        <LocationSearchingIcon fontSize="small" />
-                      </IconButton>
-                    )}
-                  </TableCell>
-                  {columns.map((key) => (
-                    <TableCell key={key}>
-                      {formatValue(item, key)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              )) : (<TableShimmer columns={columns.length + 1} startAction />)}
+              {!loading ? (
+                items.length ? items.map((item) => (
+                  <TableRow key={item.startPositionId}>
+                    {columns.map((key, index) => (
+                      <TableCell key={key}>
+                        {index === 0 ? (
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {selectedItem === item ? (
+                              <IconButton size="small" onClick={() => setSelectedItem(null)}>
+                                <GpsFixedIcon fontSize="small" />
+                              </IconButton>
+                            ) : (
+                              <IconButton size="small" onClick={() => setSelectedItem(item)}>
+                                <LocationSearchingIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                            {formatValue(item, key)}
+                          </div>
+                        ) : formatValue(item, key)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )) : <ReportTableEmptyState colSpan={columns.length} />
+              ) : (<TableShimmer columns={columns.length} startAction />)}
             </TableBody>
           </Table>
         </div>
       </div>
-    </PageLayout>
+    </ReportLayout>
   );
 };
 

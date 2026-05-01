@@ -13,8 +13,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import PageLayout from '../common/components/PageLayout';
-import SettingsMenu from './components/SettingsMenu';
+import SettingsLayout from './components/SettingsLayout';
 import { useCatchCallback } from '../reactHelper';
 import useSettingsStyles from './common/useSettingsStyles';
 
@@ -45,9 +44,9 @@ const SharePage = () => {
   }, [id, expiration, setLink]);
 
   return (
-    <PageLayout menu={<SettingsMenu />} breadcrumbs={['deviceShare']}>
-      <Container maxWidth="xs" className={classes.container}>
-        <Accordion defaultExpanded>
+    <SettingsLayout breadcrumbs={['deviceShare']}>
+      <Container maxWidth="md" className={classes.container}>
+        <Accordion defaultExpanded className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="subtitle1">
               {t('sharedRequired')}
@@ -102,7 +101,7 @@ const SharePage = () => {
           </Button>
         </div>
       </Container>
-    </PageLayout>
+    </SettingsLayout>
   );
 };
 

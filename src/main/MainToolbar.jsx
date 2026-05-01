@@ -1,36 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
-  Toolbar, IconButton, OutlinedInput, InputAdornment, Popover, FormControl, InputLabel, Select, MenuItem, FormGroup, FormControlLabel, Checkbox, Badge, ListItemButton, ListItemText, Tooltip,
+  IconButton, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, Tooltip, OutlinedInput, ListItemText,
 } from '@mui/material';
-import { makeStyles, useTheme } from '@mui/styles';
-import MapIcon from '@mui/icons-material/Map';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import AddIcon from '@mui/icons-material/Add';
-import TuneIcon from '@mui/icons-material/Tune';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import { useDeviceReadonly } from '../common/util/permissions';
-import DeviceRow from './DeviceRow';
-
-const useStyles = makeStyles((theme) => ({
-  toolbar: {
-    display: 'flex',
-    gap: theme.spacing(1),
-  },
-  filterPanel: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(2),
-    gap: theme.spacing(2),
-    width: theme.dimensions.drawerWidthTablet,
-  },
-}));
+import PLUS from "../resources/images/icon/plus.svg"
 
 const MainToolbar = ({
-  filteredDevices,
-  devicesOpen,
-  setDevicesOpen,
   keyword,
   setKeyword,
   filter,
@@ -39,141 +17,111 @@ const MainToolbar = ({
   setFilterSort,
   filterMap,
   setFilterMap,
+  handleStatusToggle,
 }) => {
-  const classes = useStyles();
-  const theme = useTheme();
   const navigate = useNavigate();
   const t = useTranslation();
 
   const deviceReadonly = useDeviceReadonly();
-
   const groups = useSelector((state) => state.groups.items);
-  const devices = useSelector((state) => state.devices.items);
-
-  const toolbarRef = useRef();
-  const inputRef = useRef();
-  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
-  const [devicesAnchorEl, setDevicesAnchorEl] = useState(null);
-
-  const deviceStatusCount = (status) => Object.values(devices).filter((d) => d.status === status).length;
 
   return (
-    <Toolbar ref={toolbarRef} className={classes.toolbar}>
-      <IconButton edge="start" onClick={() => setDevicesOpen(!devicesOpen)}>
-        {devicesOpen ? <MapIcon /> : <ViewListIcon />}
+    <div className="flex items-center gap-4 w-full py-0.5">
+      <IconButton
+        onClick={() => navigate('/settings/device')}
+        disabled={deviceReadonly}
+        className="bg-[#D9E821]! p-1 hover:bg-[#c5d31d] shadow-sm shrink-0!"
+        sx={{ borderRadius: '50%' }}
+      >
+        <img src={PLUS} alt="plus-icon" className="w-4 h-4 brightness-0" />
       </IconButton>
-      <OutlinedInput
-        ref={inputRef}
-        placeholder={t('sharedSearchDevices')}
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-        onFocus={() => setDevicesAnchorEl(toolbarRef.current)}
-        onBlur={() => setDevicesAnchorEl(null)}
-        endAdornment={(
-          <InputAdornment position="end">
-            <IconButton size="small" edge="end" onClick={() => setFilterAnchorEl(inputRef.current)}>
-              <Badge color="info" variant="dot" invisible={!filter.statuses.length && !filter.groups.length}>
-                <TuneIcon fontSize="small" />
-              </Badge>
-            </IconButton>
-          </InputAdornment>
-        )}
-        size="small"
-        fullWidth
+
+      <div className="grow max-w-[400px]">
+        <FormControl size="small" fullWidth>
+          <OutlinedInput
+            placeholder={t('sharedSearchDevices')}
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            sx={{ borderRadius: '8px', height: 40 }}
+          />
+        </FormControl>
+      </div>
+
+      <FormControl size="small" sx={{ minWidth: 170 }}>
+        <InputLabel id="status-label">{t('deviceStatus')}</InputLabel>
+        <Select
+          labelId="status-label"
+          label={t('deviceStatus')}
+          multiple
+          value={filter.statuses}
+          onChange={(e) => {
+            const value = e.target.value;
+            setFilter({ ...filter, statuses: typeof value === 'string' ? value.split(',') : value });
+          }}
+          renderValue={(selected) => selected.map(s => t(`deviceStatus${s.charAt(0).toUpperCase() + s.slice(1)}`)).join(', ')}
+          sx={{ borderRadius: '8px', height: 40 }}
+        >
+          {['online', 'offline', 'unknown'].map((status) => (
+            <MenuItem key={status} value={status}>
+              <Checkbox checked={filter.statuses.indexOf(status) > -1} size="small" />
+              <ListItemText
+                primary={t(`deviceStatus${status.charAt(0).toUpperCase() + status.slice(1)}`)}
+                primaryTypographyProps={{
+                  style: { color: status === 'online' ? '#24B467' : status === 'offline' ? '#ef4444' : '#f59e0b' }
+                }}
+              />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl size="small" sx={{ minWidth: 170 }}>
+        <InputLabel id="groups-label">{t('settingsGroups')}</InputLabel>
+        <Select
+          labelId="groups-label"
+          label={t('settingsGroups')}
+          multiple
+          value={filter.groups}
+          onChange={(e) => setFilter({ ...filter, groups: e.target.value })}
+          renderValue={(selected) => selected.map(id => groups[id]?.name).join(', ')}
+          sx={{ borderRadius: '8px', height: 40 }}
+        >
+          {Object.values(groups).sort((a, b) => a.name.localeCompare(b.name)).map((group) => (
+            <MenuItem key={group.id} value={group.id}>
+              <Checkbox checked={filter.groups.indexOf(group.id) > -1} size="small" />
+              <ListItemText primary={group.name} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl size="small" sx={{ minWidth: 170 }}>
+        <InputLabel id="sort-label">{t('sharedSortBy')}</InputLabel>
+        <Select
+          labelId="sort-label"
+          label={t('sharedSortBy')}
+          value={filterSort}
+          onChange={(e) => setFilterSort(e.target.value)}
+          sx={{ borderRadius: '8px', height: 40 }}
+        >
+          <MenuItem value=""><em>None</em></MenuItem>
+          <MenuItem value="name">{t('sharedName')}</MenuItem>
+          <MenuItem value="lastUpdate">{t('deviceLastUpdate')}</MenuItem>
+        </Select>
+      </FormControl>
+
+      <FormControlLabel
+        control={
+          <Checkbox
+            size="small"
+            checked={filterMap}
+            onChange={(e) => setFilterMap(e.target.checked)}
+          />
+        }
+        label={<span className="text-sm whitespace-nowrap text-gray-600">{t('sharedFilterMap')}</span>}
+        sx={{ mr: 0 }}
       />
-      <Popover
-        open={!!devicesAnchorEl && !devicesOpen}
-        anchorEl={devicesAnchorEl}
-        onClose={() => setDevicesAnchorEl(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: Number(theme.spacing(2).slice(0, -2)),
-        }}
-        marginThreshold={0}
-        slotProps={{
-          paper: {
-            style: { width: `calc(${toolbarRef.current?.clientWidth}px - ${theme.spacing(4)})` },
-          },
-        }}
-        elevation={1}
-        disableAutoFocus
-        disableEnforceFocus
-      >
-        {filteredDevices.slice(0, 3).map((_, index) => (
-          <DeviceRow key={filteredDevices[index].id} data={filteredDevices} index={index} />
-        ))}
-        {filteredDevices.length > 3 && (
-          <ListItemButton alignItems="center" onClick={() => setDevicesOpen(true)}>
-            <ListItemText
-              primary={t('notificationAlways')}
-              style={{ textAlign: 'center' }}
-            />
-          </ListItemButton>
-        )}
-      </Popover>
-      <Popover
-        open={!!filterAnchorEl}
-        anchorEl={filterAnchorEl}
-        onClose={() => setFilterAnchorEl(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <div className={classes.filterPanel}>
-          <FormControl>
-            <InputLabel>{t('deviceStatus')}</InputLabel>
-            <Select
-              label={t('deviceStatus')}
-              value={filter.statuses}
-              onChange={(e) => setFilter({ ...filter, statuses: e.target.value })}
-              multiple
-            >
-              <MenuItem value="online">{`${t('deviceStatusOnline')} (${deviceStatusCount('online')})`}</MenuItem>
-              <MenuItem value="offline">{`${t('deviceStatusOffline')} (${deviceStatusCount('offline')})`}</MenuItem>
-              <MenuItem value="unknown">{`${t('deviceStatusUnknown')} (${deviceStatusCount('unknown')})`}</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl>
-            <InputLabel>{t('settingsGroups')}</InputLabel>
-            <Select
-              label={t('settingsGroups')}
-              value={filter.groups}
-              onChange={(e) => setFilter({ ...filter, groups: e.target.value })}
-              multiple
-            >
-              {Object.values(groups).sort((a, b) => a.name.localeCompare(b.name)).map((group) => (
-                <MenuItem key={group.id} value={group.id}>{group.name}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl>
-            <InputLabel>{t('sharedSortBy')}</InputLabel>
-            <Select
-              label={t('sharedSortBy')}
-              value={filterSort}
-              onChange={(e) => setFilterSort(e.target.value)}
-              displayEmpty
-            >
-              <MenuItem value="">{'\u00a0'}</MenuItem>
-              <MenuItem value="name">{t('sharedName')}</MenuItem>
-              <MenuItem value="lastUpdate">{t('deviceLastUpdate')}</MenuItem>
-            </Select>
-          </FormControl>
-          <FormGroup>
-            <FormControlLabel
-              control={<Checkbox checked={filterMap} onChange={(e) => setFilterMap(e.target.checked)} />}
-              label={t('sharedFilterMap')}
-            />
-          </FormGroup>
-        </div>
-      </Popover>
-      <IconButton edge="end" onClick={() => navigate('/settings/device')} disabled={deviceReadonly}>
-        <Tooltip open={!deviceReadonly && Object.keys(devices).length === 0} title={t('deviceRegisterFirst')} arrow>
-          <AddIcon />
-        </Tooltip>
-      </IconButton>
-    </Toolbar>
+    </div>
   );
 };
 

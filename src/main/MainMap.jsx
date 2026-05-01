@@ -17,6 +17,7 @@ import MapOverlay from '../map/overlay/MapOverlay';
 import MapGeocoder from '../map/geocoder/MapGeocoder';
 import MapScale from '../map/MapScale';
 import MapNotification from '../map/notification/MapNotification';
+import MapScreenshot from '../map/screenshot/MapScreenshot';
 import useFeatures from '../common/util/useFeatures';
 
 const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
@@ -40,25 +41,29 @@ const MainMap = ({ filteredPositions, selectedPosition, onEventsClick }) => {
         <MapGeofence />
         <MapAccuracy positions={filteredPositions} />
         <MapLiveRoutes />
+        
+        <MapDefaultCamera />
+        <MapSelectedDevice />
+        <PoiMap />
         <MapPositions
           positions={filteredPositions}
           onClick={onMarkerClick}
           selectedPosition={selectedPosition}
           showStatus
         />
-        <MapDefaultCamera />
-        <MapSelectedDevice />
-        <PoiMap />
       </MapView>
-      <MapScale />
+      
       <MapCurrentLocation />
       <MapGeocoder />
+      
       {!features.disableEvents && (
         <MapNotification enabled={eventsAvailable} onClick={onEventsClick} />
       )}
+      <MapScreenshot />
       {desktop && (
-        <MapPadding left={parseInt(theme.dimensions.drawerWidthDesktop, 10) + parseInt(theme.spacing(1.5), 10)} />
+        <MapPadding left={320 + 80} />
       )}
+      <MapScale />
     </>
   );
 };

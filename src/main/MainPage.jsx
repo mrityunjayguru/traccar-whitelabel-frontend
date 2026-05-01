@@ -1,8 +1,7 @@
 import React, {
   useState, useCallback, useEffect,
 } from 'react';
-import { Paper } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { Checkbox, FormControlLabel } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,61 +15,20 @@ import useFilter from './useFilter';
 import MainToolbar from './MainToolbar';
 import MainMap from './MainMap';
 import { useAttributePreference } from '../common/util/preferences';
+import SideBarNav from '../common/components/SideBarNav';
+import { useTranslation } from '../common/components/LocalizationProvider';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '100%',
-  },
-  sidebar: {
-    pointerEvents: 'none',
-    display: 'flex',
-    flexDirection: 'column',
-    [theme.breakpoints.up('md')]: {
-      position: 'fixed',
-      left: 0,
-      top: 0,
-      height: `calc(100% - ${theme.spacing(3)})`,
-      width: theme.dimensions.drawerWidthDesktop,
-      margin: theme.spacing(1.5),
-      zIndex: 3,
-    },
-    [theme.breakpoints.down('md')]: {
-      height: '100%',
-      width: '100%',
-    },
-  },
-  header: {
-    pointerEvents: 'auto',
-    zIndex: 6,
-  },
-  footer: {
-    pointerEvents: 'auto',
-    zIndex: 5,
-  },
-  middle: {
-    flex: 1,
-    display: 'grid',
-  },
-  contentMap: {
-    pointerEvents: 'auto',
-    gridArea: '1 / 1',
-  },
-  contentList: {
-    pointerEvents: 'auto',
-    gridArea: '1 / 1',
-    zIndex: 4,
-  },
-}));
 
 const MainPage = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
+  const t = useTranslation();
 
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
 
   const mapOnSelect = useAttributePreference('mapOnSelect', true);
 
+  const devices = useSelector((state) => state.devices.items);
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
   const positions = useSelector((state) => state.session.positions);
   const [filteredPositions, setFilteredPositions] = useState([]);
@@ -99,58 +57,105 @@ const MainPage = () => {
 
   useFilter(keyword, filter, filterSort, filterMap, positions, setFilteredDevices, setFilteredPositions);
 
+  const deviceStatusCount = (status) => Object.values(devices).filter((d) => d.status === status).length;
+
+  const handleStatusToggle = (status) => {
+    const newStatuses = filter.statuses.includes(status)
+      ? filter.statuses.filter((s) => s !== status)
+      : [...filter.statuses, status];
+    setFilter({ ...filter, statuses: newStatuses });
+  };
+
   return (
-    <div className={classes.root}>
-      {desktop && (
+    <div className="h-full relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
         <MainMap
           filteredPositions={filteredPositions}
           selectedPosition={selectedPosition}
           onEventsClick={onEventsClick}
         />
-      )}
-      <div className={classes.sidebar}>
-        <Paper square elevation={3} className={classes.header}>
-          <MainToolbar
-            filteredDevices={filteredDevices}
-            devicesOpen={devicesOpen}
-            setDevicesOpen={setDevicesOpen}
-            keyword={keyword}
-            setKeyword={setKeyword}
-            filter={filter}
-            setFilter={setFilter}
-            filterSort={filterSort}
-            setFilterSort={setFilterSort}
-            filterMap={filterMap}
-            setFilterMap={setFilterMap}
-          />
-        </Paper>
-        <div className={classes.middle}>
-          {!desktop && (
-            <div className={classes.contentMap}>
-              <MainMap
-                filteredPositions={filteredPositions}
-                selectedPosition={selectedPosition}
-                onEventsClick={onEventsClick}
-              />
-            </div>
-          )}
-          <Paper square className={classes.contentList} style={devicesOpen ? {} : { visibility: 'hidden' }}>
-            <DeviceList devices={filteredDevices} />
-          </Paper>
+      </div>
+
+      {desktop && (
+        <div className="absolute left-20 top-3 right-2 z-10 pointer-events-none flex">
+          <div className="pointer-events-auto bg-white dark:bg-[#1A1C1E]! px-4 py-1 rounded-full shadow-lg border border-gray-100 dark:border-gray-800 flex items-center w-fit">
+            <MainToolbar
+              keyword={keyword}
+              setKeyword={setKeyword}
+              filter={filter}
+              setFilter={setFilter}
+              filterSort={filterSort}
+              setFilterSort={setFilterSort}
+              filterMap={filterMap}
+              setFilterMap={setFilterMap}
+              handleStatusToggle={handleStatusToggle}
+            />
+          </div>
         </div>
-        {desktop && (
-          <div className={classes.footer}>
-            <BottomMenu />
+      )}
+
+      <div className={`pointer-events-none absolute inset-0 flex flex-col md:p-0 ${desktop ? 'md:left-20 md:top-20' : 'md:left-2 md:top-3'} md:bottom-10 md:w-80 md:z-10 md:h-auto md:inset-auto`}>
+        {!desktop && (
+          <div className="pointer-events-auto z-6 bg-white dark:bg-[#1A1C1E]! dark:text-white rounded-2xl border border-gray-100 dark:border-gray-800">
+            <MainToolbar
+              keyword={keyword}
+              setKeyword={setKeyword}
+              filter={filter}
+              setFilter={setFilter}
+              filterSort={filterSort}
+              setFilterSort={setFilterSort}
+              filterMap={filterMap}
+              setFilterMap={setFilterMap}
+              handleStatusToggle={handleStatusToggle}
+            />
           </div>
         )}
+
+        {desktop && (
+          <>
+            <div className="bg-white shadow-md rounded-full flex justify-center items-center px-2 py-2 gap-1 mb-2">
+              <p className="px-3 py-1 bg-[#D9E821] text-[#10110f] text-xs font-medium w-fit rounded-full">Total:
+                <span>{Object.values(devices).length}</span>
+
+              </p>
+              <p className="px-3 py-1 bg-green-200 text-[#24B467] text-xs font-medium w-fit rounded-full">
+                Online:<span>
+                  3
+                </span>
+              </p>
+              <p className="px-3 py-1 bg-red-200 text-[#ef4444] text-xs font-medium w-fit rounded-full">
+                Offline:<span>
+                  1
+                </span>
+              </p>
+              <p className="px-3 py-1 bg-gray-200 text-gray-600 text-xs font-medium w-fit rounded-full">
+                Unknown:<span>
+                  0
+                </span>
+              </p>
+            </div>
+
+            <div className="pointer-events-auto flex-1 overflow-y-auto z-5 bg-white dark:bg-[#1A1C1E]! dark:text-white p-2 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
+              <DeviceList devices={filteredDevices} />
+            </div>
+          </>
+        )}
       </div>
+
+      {!desktop && (
+        <div className="absolute bottom-0 left-0 right-0 z-10">
+          <BottomMenu />
+        </div>
+      )}
+
       <EventsDrawer open={eventsOpen} onClose={() => setEventsOpen(false)} />
+
       {selectedDeviceId && (
         <StatusCard
           deviceId={selectedDeviceId}
           position={selectedPosition}
           onClose={() => dispatch(devicesActions.selectId(null))}
-          desktopPadding={theme.dimensions.drawerWidthDesktop}
+          desktop={desktop}
         />
       )}
     </div>

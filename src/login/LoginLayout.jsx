@@ -1,60 +1,44 @@
-import React from 'react';
-import { useMediaQuery, Paper } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import { useTheme } from '@mui/material/styles';
-import LogoImage from './LogoImage';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    height: '100%',
-  },
-  sidebar: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    background: theme.palette.primary.main,
-    paddingBottom: theme.spacing(5),
-    width: theme.dimensions.sidebarWidth,
-    [theme.breakpoints.down('lg')]: {
-      width: theme.dimensions.sidebarWidthTablet,
-    },
-    [theme.breakpoints.down('sm')]: {
-      width: '0px',
-    },
-  },
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    boxShadow: '-2px 0px 16px rgba(0, 0, 0, 0.25)',
-    [theme.breakpoints.up('lg')]: {
-      padding: theme.spacing(0, 25, 0, 0),
-    },
-  },
-  form: {
-    maxWidth: theme.spacing(52),
-    padding: theme.spacing(5),
-    width: '100%',
-  },
-}));
+import { Paper } from "@mui/material";
+import LogoImage from "./LogoImage";
 
 const LoginLayout = ({ children }) => {
-  const classes = useStyles();
-  const theme = useTheme();
-
   return (
-    <main className={classes.root}>
-      <div className={classes.sidebar}>
-        {!useMediaQuery(theme.breakpoints.down('lg')) && <LogoImage color={theme.palette.secondary.contrastText} />}
+    <main className="flex justify-center items-center min-h-screen w-full bg-[#DDE1E8]  p-4 md:p-10">
+      <div className="flex flex-col md:flex-row items-stretch w-full max-w-[1300px] gap-6 md:gap-10">
+        <div className="relative flex flex-col justify-between items-start w-full md:w-[60%] min-h-[300px] md:min-h-[450px] p-8 md:p-12 bg-[#1A1C1E] rounded-[30px] overflow-hidden shadow-xl">
+          <div
+            className="absolute inset-0 bg-cover bg-center z-0"
+            style={{ backgroundImage: "url('/src/resources/images/base.svg')" }}
+          />
+          <div className="absolute inset-0 bg-black/40 z-10" />
+          <div className="relative z-20 flex flex-col justify-between h-full w-full">
+            <div className="mt-8">
+              <div className="flex items-center gap-2">
+                <LogoImage color="#E2E8F0" />
+              </div>
+
+              <h1 className="text-4xl md:text-7xl font-normal text-[#B5BAD2] leading-tight my-auto">
+                Tracking Portal
+              </h1>
+            </div>
+            <div>
+              <p className="text-xs text-white/50 mt-8">
+                Copyright © 2026 Brillovate | Marketed by DesignDemonz. All rights reserved.
+              </p>
+            </div>
+          </div>
+        </div>
+        <Paper
+          square={false}
+          elevation={0}
+          className="flex flex-col justify-center items-center w-full md:w-[40%] bg-white dark:bg-[#1A1C1E]! p-8 md:p-12 rounded-[32px] shadow-xl"
+          sx={{ borderRadius: '30px !important' }}
+        >
+          <div className="w-full max-w-[400px]">
+            {children}
+          </div>
+        </Paper>
       </div>
-      <Paper className={classes.paper}>
-        <form className={classes.form}>
-          {children}
-        </form>
-      </Paper>
     </main>
   );
 };

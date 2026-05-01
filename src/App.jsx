@@ -12,10 +12,19 @@ import UpdateController from './UpdateController';
 import TermsDialog from './common/components/TermsDialog';
 import Loader from './common/components/Loader';
 
+import SideBarNav from './common/components/SideBarNav';
+
 const useStyles = makeStyles(() => ({
   page: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
+  content: {
+    height: '100%',
     flexGrow: 1,
-    overflow: 'auto',
+    overflow: 'hidden',
   },
   menu: {
     zIndex: 4,
@@ -72,8 +81,17 @@ const App = () => {
       <SocketController />
       <CachingController />
       <UpdateController />
-      <div className={classes.page}>
-        <Outlet />
+      <div className={classes.page + " relative"}>
+        {desktop && (
+          <div className="absolute left-0 top-0 bottom-0 z-20 w-20 flex items-center justify-center pointer-events-none">
+            <div className="pointer-events-auto h-full">
+              <SideBarNav />
+            </div>
+          </div>
+        )}
+        <div className={classes.content}>
+          <Outlet />
+        </div>
       </div>
       {!desktop && (
         <div className={classes.menu}>

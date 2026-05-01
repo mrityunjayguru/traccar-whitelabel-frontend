@@ -11,8 +11,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import PageLayout from '../common/components/PageLayout';
-import SettingsMenu from './components/SettingsMenu';
+import SettingsLayout from './components/SettingsLayout';
 import { useCatchCallback } from '../reactHelper';
 import useSettingsStyles from './common/useSettingsStyles';
 import SelectField from '../common/components/SelectField';
@@ -43,9 +42,9 @@ const AnnouncementPage = () => {
   }, [users, notificator, message, navigate]);
 
   return (
-    <PageLayout menu={<SettingsMenu />} breadcrumbs={['serverAnnouncement']}>
-      <Container maxWidth="xs" className={classes.container}>
-        <Accordion defaultExpanded>
+    <SettingsLayout breadcrumbs={['serverAnnouncement']}>
+      <Container maxWidth="md" className={classes.container}>
+        <Accordion defaultExpanded className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="subtitle1">
               {t('sharedRequired')}
@@ -79,12 +78,26 @@ const AnnouncementPage = () => {
             />
           </AccordionDetails>
         </Accordion>
-        <div className={classes.buttons}>
+        <div className="shrink-0 flex items-center justify-center gap-3 py-4 border-t border-gray-100 dark:border-[#333] w-full">
           <Button
             type="button"
             color="primary"
             variant="outlined"
             onClick={() => navigate(-1)}
+            className="
+              inline-flex items-center justify-center
+              px-6 py-2.5 rounded-md
+              text-sm font-semibold
+              border border-gray-300! dark:border-[#444]!
+              text-gray-700! dark:text-gray-200!
+              bg-white dark:bg-[#2a2a2e]!
+              hover:bg-gray-50! dark:hover:bg-[#333]!
+              active:scale-[0.97]
+              transition-all duration-150 ease-in-out
+              disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
+              shadow-sm cursor-pointer
+              w-1/6
+            "
           >
             {t('sharedCancel')}
           </Button>
@@ -94,12 +107,24 @@ const AnnouncementPage = () => {
             variant="contained"
             onClick={handleSend}
             disabled={!notificator || !message.subject || !message.body}
+            className="
+              inline-flex items-center justify-center
+              px-6 py-2.5 rounded-md
+              text-sm font-bold
+              bg-[#D9E821]! text-black!
+              hover:bg-[#d4f500]!
+              active:scale-[0.97]
+              transition-all duration-150 ease-in-out
+              disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
+              shadow-md shadow-[#D9E821]/20 cursor-pointer
+              w-1/6
+            "
           >
             {t('commandSend')}
           </Button>
         </div>
       </Container>
-    </PageLayout>
+    </SettingsLayout>
   );
 };
 

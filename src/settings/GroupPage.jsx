@@ -45,12 +45,11 @@ const GroupPage = () => {
       setItem={setItem}
       validate={validate}
       onItemSaved={onItemSaved}
-      menu={<SettingsMenu />}
       breadcrumbs={['settingsTitle', 'groupDialog']}
     >
       {item && (
         <>
-          <Accordion defaultExpanded>
+          <Accordion defaultExpanded className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedRequired')}
@@ -64,7 +63,7 @@ const GroupPage = () => {
               />
             </AccordionDetails>
           </Accordion>
-          <Accordion>
+          <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedExtra')}

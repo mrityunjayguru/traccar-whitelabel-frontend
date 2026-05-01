@@ -17,11 +17,15 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from './LocalizationProvider';
+import Back from '../../icons/back';
 
 const useStyles = makeStyles((theme) => ({
   desktopRoot: {
     height: '100%',
     display: 'flex',
+    position: 'relative',
+    flexDirection: 'row',
+    overflow: 'hidden',
   },
   mobileRoot: {
     height: '100%',
@@ -71,7 +75,9 @@ const PageTitle = ({ breadcrumbs }) => {
   );
 };
 
-const PageLayout = ({ menu, breadcrumbs, children }) => {
+const PageLayout = ({
+  menu, breadcrumbs, children, hideToolbar = false,
+}) => {
   const [miniVariant, setMiniVariant] = useState(false);
   const classes = useStyles({ miniVariant });
   const theme = useTheme();
@@ -85,44 +91,65 @@ const PageLayout = ({ menu, breadcrumbs, children }) => {
 
   return desktop ? (
     <div className={classes.desktopRoot}>
-      <Drawer
-        variant="permanent"
-        className={classes.desktopDrawer}
-        classes={{ paper: classes.desktopDrawer }}
-      >
-        <Toolbar>
-          {!miniVariant && (
-            <>
-              <IconButton color="inherit" edge="start" sx={{ mr: 2 }} onClick={() => navigate('/')}>
-                <ArrowBackIcon />
-              </IconButton>
-              <PageTitle breadcrumbs={breadcrumbs} />
-            </>
-          )}
-          <IconButton color="inherit" edge="start" sx={{ ml: miniVariant ? -2 : 'auto' }} onClick={toggleDrawer}>
-            {miniVariant ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
-        </Toolbar>
-        <Divider />
-        {menu}
-      </Drawer>
-      <div className={classes.content}>{children}</div>
+      {menu && (
+        <Drawer
+          variant="permanent"
+          className={classes.desktopDrawer}
+          classes={{ paper: classes.desktopDrawer }}
+        >
+          <Toolbar>
+            {!miniVariant && (
+              <>
+                <IconButton color="inherit" edge="start" sx={{ mr: 2 }} onClick={() => navigate('/')} aria-label="back" fontSize="large">
+                  <ArrowBackIcon />
+                </IconButton>
+                <PageTitle breadcrumbs={breadcrumbs} />
+              </>
+            )}
+            <IconButton color="inherit" edge="start" sx={{ ml: miniVariant ? -2 : 'auto' }} onClick={toggleDrawer} aria-label="toggle drawer">
+              {miniVariant ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            </IconButton>
+          </Toolbar>
+          <Divider />
+          {menu}
+        </Drawer>
+      )}
+      <div className={classes.content + " md:pl-20"}>
+        {!menu && !hideToolbar && (
+          <Toolbar className="bg-white border-b border-gray-200">
+            <IconButton color="inherit" edge="start" sx={{ mr: 2 }} onClick={() => navigate('/')} aria-label="back" fontSize="large">
+              <ArrowBackIcon />
+            </IconButton>
+            <PageTitle breadcrumbs={breadcrumbs} />
+          </Toolbar>
+        )}
+        {children}
+      </div>
     </div>
   ) : (
     <div className={classes.mobileRoot}>
-      <Drawer
-        variant="temporary"
-        open={openDrawer}
-        onClose={() => setOpenDrawer(false)}
-        classes={{ paper: classes.mobileDrawer }}
-      >
-        {menu}
-      </Drawer>
+      {menu && (
+        <Drawer
+          variant="temporary"
+          open={openDrawer}
+          onClose={() => setOpenDrawer(false)}
+          classes={{ paper: classes.mobileDrawer }}
+        >
+          {menu}
+        </Drawer>
+      )}
       <AppBar className={classes.mobileToolbar} position="static" color="inherit">
         <Toolbar>
-          <IconButton color="inherit" edge="start" sx={{ mr: 2 }} onClick={() => setOpenDrawer(true)}>
-            <MenuIcon />
-          </IconButton>
+          {menu && (
+            <IconButton color="inherit" edge="start" sx={{ mr: 2 }} onClick={() => setOpenDrawer(true)} aria-label="toggle drawer" fontSize="large">
+              <MenuIcon />
+            </IconButton>
+          )}
+          {!menu && (
+            <IconButton color="inherit" edge="start" sx={{ mr: 2 }} onClick={() => navigate('/')} aria-label="back" fontSize="large">
+              <ArrowBackIcon />
+            </IconButton>
+          )}
           <PageTitle breadcrumbs={breadcrumbs} />
         </Toolbar>
       </AppBar>

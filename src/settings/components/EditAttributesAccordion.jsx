@@ -148,7 +148,7 @@ const EditAttributesAccordion = ({ attribute, attributes, setAttributes, definit
   };
 
   return features.disableAttributes ? '' : (
-    <Accordion defaultExpanded={!!attribute}>
+    <Accordion defaultExpanded={!!attribute} className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="subtitle1">
           {t('sharedAttributes')}

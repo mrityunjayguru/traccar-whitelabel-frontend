@@ -16,7 +16,7 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleF
 
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
-  const iconScale = useAttributePreference('iconScale', desktop ? 0.45 : 1);
+  const iconScale = useAttributePreference('iconScale', desktop ? 0.45 : 0.5);
 
   const devices = useSelector((state) => state.devices.items);
   const selectedDeviceId = useSelector((state) => state.devices.selectedId);
@@ -38,22 +38,22 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleF
         showDirection = selectedPositionId === position.id && position.course > 0;
         break;
     }
-  return {
-  id: position.id,
-  deviceId: position.deviceId,
-  name: device.name,
-  fixTime: formatTime(position.fixTime, 'seconds'),
-  speed: Number(position.speed?.toFixed(2)),
-  label: `${device.name}
+    return {
+      id: position.id,
+      deviceId: position.deviceId,
+      name: device.name,
+      fixTime: formatTime(position.fixTime, 'seconds'),
+      speed: Number(position.speed?.toFixed(2)),
+      label: `${device.name}
 Time: ${formatTime(position.fixTime, 'seconds')}
 Speed: ${Number(position.speed?.toFixed(2))}
 Distance : ${Number(position.attributes.distance?.toFixed(2))}
 `,
- category: mapIconKey(device.category),
+      category: mapIconKey(device.category),
       color: showStatus ? position.attributes.color || getStatusColor(device.status) : 'neutral',
       rotation: position.course,
       direction: showDirection,
-};
+    };
   };
 
   const onMouseEnter = () => map.getCanvas().style.cursor = 'pointer';
@@ -111,17 +111,17 @@ Distance : ${Number(position.attributes.distance?.toFixed(2))}
         source,
         filter: ['!has', 'point_count'],
         layout: {
-  'icon-image': '{category}-{color}',
-  'icon-size': iconScale,
-  'icon-allow-overlap': true,
-  'text-field': '{label}',
-  'text-allow-overlap': true,
-  'text-anchor': 'bottom',
-  'text-offset': [0, -2 * iconScale],
-  'text-font': findFonts(map),
-  'text-size': 12,
-}
-,
+          'icon-image': '{category}-{color}',
+          'icon-size': iconScale,
+          'icon-allow-overlap': true,
+          'text-field': '{label}',
+          'text-allow-overlap': true,
+          'text-anchor': 'bottom',
+          'text-offset': [0, -2 * iconScale],
+          'text-font': findFonts(map),
+          'text-size': 12,
+        }
+        ,
         paint: {
           'text-halo-color': 'white',
           'text-halo-width': 1,

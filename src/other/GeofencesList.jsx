@@ -9,10 +9,26 @@ import { geofencesActions } from '../store';
 import CollectionActions from '../settings/components/CollectionActions';
 import { useCatchCallback } from '../reactHelper';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   list: {
     flexGrow: 1,
     overflow: 'auto',
+    padding: theme.spacing(1),
+  },
+  listItem: {
+    borderRadius: '12px!important',
+    marginBottom: '8px!important',
+    padding: '12px 16px!important',
+    '&:hover': {
+      backgroundColor: '#f1f5f9!important',
+    },
+  },
+  listItemText: {
+    '& .MuiTypography-root': {
+      fontSize: '14px',
+      fontWeight: 500,
+      color: '#334155',
+    },
   },
   icon: {
     width: '25px',
@@ -38,13 +54,19 @@ const GeofencesList = ({ onGeofenceSelected }) => {
 
   return (
     <List className={classes.list}>
-      {Object.values(items).map((item, index, list) => (
+      {Object.values(items).map((item) => (
         <Fragment key={item.id}>
-          <ListItemButton key={item.id} onClick={() => onGeofenceSelected(item.id)}>
-            <ListItemText primary={item.name} />
+          <ListItemButton
+            key={item.id}
+            onClick={() => onGeofenceSelected(item.id)}
+            className={classes.listItem}
+          >
+            <ListItemText
+              primary={item.name}
+              className={classes.listItemText}
+            />
             <CollectionActions itemId={item.id} editPath="/settings/geofence" endpoint="geofences" setTimestamp={refreshGeofences} />
           </ListItemButton>
-          {index < list.length - 1 ? <Divider /> : null}
         </Fragment>
       ))}
     </List>

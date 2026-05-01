@@ -10,7 +10,7 @@ const MapMarkers = ({ markers, showTitles }) => {
 
   const theme = useTheme();
   const desktop = useMediaQuery(theme.breakpoints.up('md'));
-  const iconScale = useAttributePreference('iconScale', desktop ? 0.75 : 1);
+  const iconScale = useAttributePreference('iconScale', desktop ? 0.15 : 0.5);
 
   useEffect(() => {
     map.addSource(id, {

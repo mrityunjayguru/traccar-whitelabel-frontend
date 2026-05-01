@@ -11,16 +11,12 @@ import PageLayout from '../common/components/PageLayout';
 import ReportsMenu from './components/ReportsMenu';
 import TableShimmer from '../common/components/TableShimmer';
 import RemoveDialog from '../common/components/RemoveDialog';
+import useReportStyles from './common/useReportStyles';
 
-const useStyles = makeStyles((theme) => ({
-  columnAction: {
-    width: '1%',
-    paddingRight: theme.spacing(1),
-  },
-}));
+import ReportLayout from './components/ReportLayout';
 
 const ScheduledPage = () => {
-  const classes = useStyles();
+  const classes = useReportStyles();
   const t = useTranslation();
 
   const calendars = useSelector((state) => state.calendars.items);
@@ -62,31 +58,33 @@ const ScheduledPage = () => {
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['settingsTitle', 'reportScheduled']}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>{t('sharedType')}</TableCell>
-            <TableCell>{t('sharedDescription')}</TableCell>
-            <TableCell>{t('sharedCalendar')}</TableCell>
-            <TableCell className={classes.columnAction} />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {!loading ? items.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{formatType(item.type)}</TableCell>
-              <TableCell>{item.description}</TableCell>
-              <TableCell>{calendars[item.calendarId].name}</TableCell>
-              <TableCell className={classes.columnAction} padding="none">
-                <IconButton size="small" onClick={() => setRemovingId(item.id)}>
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </TableCell>
+    <ReportLayout breadcrumbs={['settingsTitle', 'reportScheduled']} fullWidth>
+      <div className={classes.containerMain}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('sharedType')}</TableCell>
+              <TableCell>{t('sharedDescription')}</TableCell>
+              <TableCell>{t('sharedCalendar')}</TableCell>
+              <TableCell className={classes.columnAction} />
             </TableRow>
-          )) : (<TableShimmer columns={4} endAction />)}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {!loading ? items.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{formatType(item.type)}</TableCell>
+                <TableCell>{item.description}</TableCell>
+                <TableCell>{calendars[item.calendarId].name}</TableCell>
+                <TableCell className={classes.columnAction} padding="none">
+                  <IconButton size="small" onClick={() => setRemovingId(item.id)}>
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            )) : (<TableShimmer columns={4} endAction />)}
+          </TableBody>
+        </Table>
+      </div>
       <RemoveDialog
         style={{ transform: 'none' }}
         open={!!removingId}
@@ -99,7 +97,7 @@ const ScheduledPage = () => {
           }
         }}
       />
-    </PageLayout>
+    </ReportLayout>
   );
 };
 

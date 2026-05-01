@@ -2,7 +2,7 @@ import React, {
   useState, useEffect, useRef, useCallback,
 } from 'react';
 import {
-  IconButton, Paper, Slider, Toolbar, Typography,
+  IconButton, Paper, Slider, Toolbar, Typography, Button,
 } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -76,6 +76,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+import ReportLayout from '../reports/components/ReportLayout';
+
 const ReplayPage = () => {
   const t = useTranslation();
   const classes = useStyles();
@@ -90,7 +92,6 @@ const ReplayPage = () => {
   const [showCard, setShowCard] = useState(false);
   const [from, setFrom] = useState();
   const [to, setTo] = useState();
-  const [expanded, setExpanded] = useState(true);
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -132,8 +133,6 @@ const ReplayPage = () => {
   }, [setShowCard]);
 
   const handleSubmit = useCatch(async ({ deviceId, from, to }) => {
-
-    
     setLoading(true);
     setSelectedDeviceId(deviceId);
     setFrom(from);
@@ -145,9 +144,7 @@ const ReplayPage = () => {
         setIndex(0);
         const positions = await response.json();
         setPositions(positions);
-        if (positions.length) {
-          setExpanded(false);
-        } else {
+        if (!positions.length) {
           throw Error(t('sharedNoData'));
         }
       } else {
@@ -164,81 +161,76 @@ const ReplayPage = () => {
   };
 
   return (
-    <div className={classes.root}>
-      <MapView>
-        <MapGeofence />
-        <MapRoutePath positions={positions} />
-        <MapRoutePoints positions={positions} onClick={onPointClick} />
-        {index < positions.length && (
-          <MapPositions positions={[positions[index]]} onClick={onMarkerClick} titleField="fixTime" />
-        )}
-
-        {index < positions.length && (
-          <MapPositions positions={[positions[index]]} onClick={onMarkerClick} titleField="speed" />
-        )}
-      </MapView>
-      <MapScale />
-      <MapCamera positions={positions} />
-      <div className={classes.sidebar}>
-        <Paper elevation={3} square>
-          <Toolbar>
-            <IconButton edge="start" sx={{ mr: 2 }} onClick={() => navigate(-1)}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6" className={classes.title}>{t('reportReplay')}</Typography>
-            {!expanded && (
-              <>
-                <IconButton onClick={handleDownload}>
-                  <DownloadIcon />
-                </IconButton>
-                <IconButton edge="end" onClick={() => setExpanded(true)}>
-                  <TuneIcon />
-                </IconButton>
-              </>
-            )}
-          </Toolbar>
-        </Paper>
-        <Paper className={classes.content} square>
-          {!expanded ? (
-            <>
-              <Typography variant="subtitle1" align="center">{deviceName}</Typography>
-              <Slider
-                className={classes.slider}
-                max={positions.length - 1}
-                step={null}
-                marks={positions.map((_, index) => ({ value: index }))}
-                value={index}
-                onChange={(_, index) => setIndex(index)}
-              />
-              <div className={classes.controls}>
-                {`${index + 1}/${positions.length}`}
-                <IconButton onClick={() => setIndex((index) => index - 1)} disabled={playing || index <= 0}>
-                  <FastRewindIcon />
-                </IconButton>
-                <IconButton onClick={() => setPlaying(!playing)} disabled={index >= positions.length - 1}>
-                  {playing ? <PauseIcon /> : <PlayArrowIcon /> }
-                </IconButton>
-                <IconButton onClick={() => setIndex((index) => index + 1)} disabled={playing || index >= positions.length - 1}>
-                  <FastForwardIcon />
-                </IconButton>
-                {formatTime(positions[index].fixTime, 'seconds')}
-              </div>
-            </>
-          ) : (
-            <ReportFilter handleSubmit={handleSubmit} fullScreen showOnly loading={loading} />
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportReplay']}
+      handleSubmit={handleSubmit}
+      loading={loading}
+      filterExtension={(
+         <div className="mt-4 space-y-4">
+           {positions.length > 0 && (
+             <div className="space-y-4">
+               <Typography variant="subtitle1" align="center" className="font-bold">{deviceName}</Typography>
+               <Slider
+                 max={positions.length - 1}
+                 step={null}
+                 marks={positions.map((_, index) => ({ value: index }))}
+                 value={index}
+                 onChange={(_, index) => setIndex(index)}
+               />
+               <div className="flex justify-between items-center text-sm">
+                 <span>{`${index + 1}/${positions.length}`}</span>
+                 <div className="flex gap-1">
+                   <IconButton size="small" onClick={() => setIndex((index) => index - 1)} disabled={playing || index <= 0}>
+                     <FastRewindIcon fontSize="small" />
+                   </IconButton>
+                   <IconButton size="small" onClick={() => setPlaying(!playing)} disabled={index >= positions.length - 1}>
+                     {playing ? <PauseIcon fontSize="small" /> : <PlayArrowIcon fontSize="small" /> }
+                   </IconButton>
+                   <IconButton size="small" onClick={() => setIndex((index) => index + 1)} disabled={playing || index >= positions.length - 1}>
+                     <FastForwardIcon fontSize="small" />
+                   </IconButton>
+                 </div>
+                 <span>{formatTime(positions[index]?.fixTime, 'seconds')}</span>
+               </div>
+             </div>
+           )}
+           <Button
+             fullWidth
+             variant="contained"
+             color="secondary"
+             disabled={!positions.length}
+             onClick={handleDownload}
+             className="!rounded-full !py-2.5 !shadow-none !normal-case !font-bold"
+           >
+             {t('sharedDownload')}
+           </Button>
+         </div>
+       )}
+    >
+      <div className={classes.root}>
+        <MapView>
+          <MapGeofence />
+          <MapRoutePath positions={positions} />
+          <MapRoutePoints positions={positions} onClick={onPointClick} />
+          {index < positions.length && (
+            <MapPositions positions={[positions[index]]} onClick={onMarkerClick} titleField="fixTime" />
           )}
-        </Paper>
+          {index < positions.length && (
+            <MapPositions positions={[positions[index]]} onClick={onMarkerClick} titleField="speed" />
+          )}
+        </MapView>
+        <MapScale />
+        <MapCamera positions={positions} />
+        {showCard && index < positions.length && (
+          <StatusCard
+            deviceId={selectedDeviceId}
+            position={positions[index]}
+            onClose={() => setShowCard(false)}
+            disableActions
+          />
+        )}
       </div>
-      {showCard && index < positions.length && (
-        
-        <StatusCard
-          deviceId={selectedDeviceId}
-          position={positions[index]}
-          onClose={() => setShowCard(false)}
-          disableActions
-        />
-      )}
-    </div>
+    </ReportLayout>
   );
 };
 
