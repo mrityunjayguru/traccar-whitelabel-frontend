@@ -19,6 +19,9 @@ import MapMarkers from '../map/MapMarkers';
 import MapRouteCoordinates from '../map/MapRouteCoordinates';
 import MapScale from '../map/MapScale';
 
+import ReportLayout from './components/ReportLayout';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
+
 const CombinedReportPage = () => {
   const classes = useReportStyles();
   const t = useTranslation();
@@ -56,7 +59,14 @@ const CombinedReportPage = () => {
   });
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportCombined']}>
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportCombined']}
+      handleSubmit={handleSubmit}
+      showOnly
+      multiDevice
+      includeGroups
+      loading={loading}
+    >
       <div className={classes.container}>
         {Boolean(items.length) && (
           <div className={classes.containerMap}>
@@ -77,9 +87,6 @@ const CombinedReportPage = () => {
           </div>
         )}
         <div className={classes.containerMain}>
-          <div className={classes.header}>
-            <ReportFilter handleSubmit={handleSubmit} showOnly multiDevice includeGroups loading={loading} />
-          </div>
           <Table>
             <TableHead>
               <TableRow>
@@ -89,18 +96,20 @@ const CombinedReportPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading ? items.flatMap((item) => item.events.map((event, index) => (
-                <TableRow key={event.id}>
-                  <TableCell>{index ? '' : devices[item.deviceId].name}</TableCell>
-                  <TableCell>{formatTime(event.eventTime, 'seconds')}</TableCell>
-                  <TableCell>{t(prefixString('event', event.type))}</TableCell>
-                </TableRow>
-              ))) : (<TableShimmer columns={3} />)}
+              {!loading ? (
+                items.length ? items.flatMap((item) => item.events.map((event, index) => (
+                  <TableRow key={event.id}>
+                    <TableCell>{index ? '' : devices[item.deviceId].name}</TableCell>
+                    <TableCell>{formatTime(event.eventTime, 'seconds')}</TableCell>
+                    <TableCell>{t(prefixString('event', event.type))}</TableCell>
+                  </TableRow>
+                ))) : <ReportTableEmptyState colSpan={3} />
+              ) : (<TableShimmer columns={3} />)}
             </TableBody>
           </Table>
         </div>
       </div>
-    </PageLayout>
+    </ReportLayout>
   );
 };
 

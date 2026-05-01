@@ -4,23 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Table, TableRow, TableCell, TableHead, TableBody, IconButton, Tooltip,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import PageLayout from '../common/components/PageLayout';
 import ReportsMenu from './components/ReportsMenu';
 import { sessionActions } from '../store';
+import useReportStyles from './common/useReportStyles';
 
-const useStyles = makeStyles((theme) => ({
-  columnAction: {
-    width: '1%',
-    paddingLeft: theme.spacing(1),
-  },
-}));
+import ReportLayout from './components/ReportLayout';
 
 const LogsPage = () => {
-  const classes = useStyles();
+  const classes = useReportStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
@@ -38,40 +33,42 @@ const LogsPage = () => {
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'sharedLogs']}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell className={classes.columnAction} />
-            <TableCell>{t('deviceIdentifier')}</TableCell>
-            <TableCell>{t('positionProtocol')}</TableCell>
-            <TableCell>{t('commandData')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {items.map((item, index) => /* eslint-disable react/no-array-index-key */ (
-            <TableRow key={index}>
-              <TableCell className={classes.columnAction} padding="none">
-                {item.deviceId ? (
-                  <IconButton color="success" size="small" disabled>
-                    <CheckCircleOutlineIcon fontSize="small" />
-                  </IconButton>
-                ) : (
-                  <Tooltip title={t('loginRegister')}>
-                    <IconButton color="error" size="small" onClick={() => registerDevice(item.uniqueId)}>
-                      <HelpOutlineIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </TableCell>
-              <TableCell>{item.uniqueId}</TableCell>
-              <TableCell>{item.protocol}</TableCell>
-              <TableCell>{item.data}</TableCell>
+    <ReportLayout breadcrumbs={['reportTitle', 'sharedLogs']} fullWidth>
+      <div className={classes.containerMain} style={{ height: '100%' }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell className={classes.columnAction} style={{ width: '48px' }} />
+              <TableCell style={{ width: '150px' }}>{t('deviceIdentifier')}</TableCell>
+              <TableCell style={{ width: '100px' }}>{t('positionProtocol')}</TableCell>
+              <TableCell>{t('commandData')}</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </PageLayout>
+          </TableHead>
+          <TableBody>
+            {items.map((item, index) => /* eslint-disable react/no-array-index-key */ (
+              <TableRow key={index}>
+                <TableCell className={classes.columnAction} style={{ width: '48px' }}>
+                  {item.deviceId ? (
+                    <IconButton color="success" size="small" disabled>
+                      <CheckCircleOutlineIcon fontSize="small" />
+                    </IconButton>
+                  ) : (
+                    <Tooltip title={t('loginRegister')}>
+                      <IconButton color="error" size="small" onClick={() => registerDevice(item.uniqueId)}>
+                        <HelpOutlineIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </TableCell>
+                <TableCell style={{ width: '150px' }}>{item.uniqueId}</TableCell>
+                <TableCell style={{ width: '100px' }}>{item.protocol}</TableCell>
+                <TableCell style={{ wordBreak: 'break-all' }}>{item.data}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </ReportLayout>
   );
 };
 

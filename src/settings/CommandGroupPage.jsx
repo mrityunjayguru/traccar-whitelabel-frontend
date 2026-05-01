@@ -18,8 +18,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import PageLayout from '../common/components/PageLayout';
-import SettingsMenu from './components/SettingsMenu';
+import SettingsLayout from './components/SettingsLayout';
 import { useCatch } from '../reactHelper';
 import useSettingsStyles from './common/useSettingsStyles';
 
@@ -50,9 +49,9 @@ const CommandDevicePage = () => {
   });
 
   return (
-    <PageLayout menu={<SettingsMenu />} breadcrumbs={['settingsTitle', 'deviceCommand']}>
-      <Container maxWidth="xs" className={classes.container}>
-        <Accordion defaultExpanded>
+    <SettingsLayout breadcrumbs={['settingsTitle', 'deviceCommand']}>
+      <Container maxWidth="md" className={classes.container}>
+        <Accordion defaultExpanded className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="subtitle1">
               {t('sharedRequired')}
@@ -98,7 +97,7 @@ const CommandDevicePage = () => {
           </Button>
         </div>
       </Container>
-    </PageLayout>
+    </SettingsLayout>
   );
 };
 

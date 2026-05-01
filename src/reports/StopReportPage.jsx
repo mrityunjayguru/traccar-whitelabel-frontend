@@ -28,6 +28,9 @@ import scheduleReport from './common/scheduleReport';
 import MapScale from '../map/MapScale';
 import CustomAddressValue from './CustomAddressValue';
 
+import ReportLayout from './components/ReportLayout';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
+
 const columnsArray = [
   ['startTime', 'reportStartTime'],
   ['startOdometer', 'positionOdometer'],
@@ -103,15 +106,22 @@ const StopReportPage = () => {
       case 'spentFuel':
         return value > 0 ? formatVolume(value, volumeUnit, t) : null;
       case 'address':
-       // return (<AddressValue latitude={item.latitude} longitude={item.longitude} originalAddress={value} />);
         return (<CustomAddressValue latitude={item.latitude} longitude={item.longitude} originalAddress={value} />);
-        default:
+      default:
         return value;
     }
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportStops']}>
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportStops']}
+      handleSubmit={handleSubmit}
+      handleSchedule={handleSchedule}
+      loading={loading}
+      filterExtension={(
+        <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
+      )}
+    >
       <div className={classes.container}>
         {selectedItem && (
           <div className={classes.containerMap}>
@@ -132,44 +142,42 @@ const StopReportPage = () => {
           </div>
         )}
         <div className={classes.containerMain}>
-          <div className={classes.header}>
-            <ReportFilter handleSubmit={handleSubmit} handleSchedule={handleSchedule} loading={loading}>
-              <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
-            </ReportFilter>
-          </div>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell className={classes.columnAction} />
                 {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading ? items.map((item) => (
-                <TableRow key={item.positionId}>
-                  <TableCell className={classes.columnAction} padding="none">
-                    {selectedItem === item ? (
-                      <IconButton size="small" onClick={() => setSelectedItem(null)}>
-                        <GpsFixedIcon fontSize="small" />
-                      </IconButton>
-                    ) : (
-                      <IconButton size="small" onClick={() => setSelectedItem(item)}>
-                        <LocationSearchingIcon fontSize="small" />
-                      </IconButton>
-                    )}
-                  </TableCell>
-                  {columns.map((key) => (
-                    <TableCell key={key}>
-                      {formatValue(item, key)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              )) : (<TableShimmer columns={columns.length + 1} startAction />)}
+              {!loading ? (
+                items.length ? items.map((item) => (
+                  <TableRow key={item.positionId}>
+                    {columns.map((key, index) => (
+                      <TableCell key={key}>
+                        {index === 0 ? (
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {selectedItem === item ? (
+                              <IconButton size="small" onClick={() => setSelectedItem(null)}>
+                                <GpsFixedIcon fontSize="small" />
+                              </IconButton>
+                            ) : (
+                              <IconButton size="small" onClick={() => setSelectedItem(item)}>
+                                <LocationSearchingIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                            {formatValue(item, key)}
+                          </div>
+                        ) : formatValue(item, key)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )) : <ReportTableEmptyState colSpan={columns.length} />
+              ) : (<TableShimmer columns={columns.length} startAction />)}
             </TableBody>
           </Table>
         </div>
       </div>
-    </PageLayout>
+    </ReportLayout>
   );
 };
 

@@ -1,31 +1,26 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import Draggable from 'react-draggable';
 import {
   Card,
   CardContent,
   Typography,
   CardActions,
   IconButton,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
   Menu,
   MenuItem,
   CardMedia,
-  TableFooter,
   Link,
   Tooltip,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import CloseIcon from '@mui/icons-material/Close';
 import ReplayIcon from '@mui/icons-material/Replay';
 import PublishIcon from '@mui/icons-material/Publish';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PendingIcon from '@mui/icons-material/Pending';
+import MapIcon from '@mui/icons-material/Map';
+import ShareIcon from '@mui/icons-material/Share';
 
 import { useTranslation } from './LocalizationProvider';
 import RemoveDialog from './RemoveDialog';
@@ -36,87 +31,7 @@ import { devicesActions } from '../../store';
 import { useCatch, useCatchCallback } from '../../reactHelper';
 import { useAttributePreference } from '../util/preferences';
 
-const useStyles = makeStyles((theme) => ({
-  card: {
-    pointerEvents: 'auto',
-    width: theme.dimensions.popupMaxWidth,
-  },
-  media: {
-    height: theme.dimensions.popupImageHeight,
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-start',
-  },
-  mediaButton: {
-    color: theme.palette.primary.contrastText,
-    mixBlendMode: 'difference',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: theme.spacing(1, 1, 0, 2),
-  },
-  content: {
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-    maxHeight: theme.dimensions.cardContentMaxHeight,
-    overflow: 'auto',
-  },
-  icon: {
-    width: '25px',
-    height: '25px',
-    filter: 'brightness(0) invert(1)',
-  },
-  table: {
-    '& .MuiTableCell-sizeSmall': {
-      paddingLeft: 0,
-      paddingRight: 0,
-    },
-    '& .MuiTableCell-sizeSmall:first-child': {
-      paddingRight: theme.spacing(1),
-    },
-  },
-  cell: {
-    borderBottom: 'none',
-  },
-  actions: {
-    justifyContent: 'space-between',
-  },
-  root: ({ desktopPadding }) => ({
-    pointerEvents: 'none',
-    position: 'fixed',
-    zIndex: 5,
-    left: '50%',
-    [theme.breakpoints.up('md')]: {
-      left: `calc(50% + ${desktopPadding} / 2)`,
-      bottom: theme.spacing(3),
-    },
-    [theme.breakpoints.down('md')]: {
-      left: '50%',
-      bottom: `calc(${theme.spacing(3)} + ${theme.dimensions.bottomBarHeight}px)`,
-    },
-    transform: 'translateX(-50%)',
-  }),
-}));
-
-const StatusRow = ({ name, content }) => {
-  const classes = useStyles();
-
-  return (
-    <TableRow>
-      <TableCell className={classes.cell}>
-        <Typography variant="body2">{name}</Typography>
-      </TableCell>
-      <TableCell className={classes.cell}>
-        <Typography variant="body2" color="textSecondary">{content}</Typography>
-      </TableCell>
-    </TableRow>
-  );
-};
-
 const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPadding = 0 }) => {
-  const classes = useStyles({ desktopPadding });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
@@ -179,116 +94,249 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
 
   return (
     <>
-      <div className={classes.root}>
+      <div
+        className="pointer-events-none fixed z-5 right-0"
+        style={{
+          top: '12px',
+          right: '12px',
+          bottom: '12px',
+          width: '320px',
+        }}
+      >
         {device && (
-          <Draggable
-            handle={`.${classes.media}, .${classes.header}`}
+          <Card
+            elevation={3}
+            className="pointer-events-auto flex flex-col rounded-2xl! w-full h-full"
           >
-            <Card elevation={3} className={classes.card}>
-              {deviceImage ? (
-                <CardMedia
-                  className={classes.media}
-                  image={`/api/media/${device.uniqueId}/${deviceImage}`}
+            {deviceImage ? (
+              <CardMedia
+                className="h-[180px] flex justify-end items-start"
+                image={`/api/media/${device.uniqueId}/${deviceImage}`}
+              >
+                <IconButton
+                  size="small"
+                  onClick={onClose}
+                  onTouchStart={onClose}
                 >
-                  <IconButton
-                    size="small"
-                    onClick={onClose}
-                    onTouchStart={onClose}
-                  >
-                    <CloseIcon fontSize="small" className={classes.mediaButton} />
-                  </IconButton>
-                </CardMedia>
-              ) : (
-                <div className={classes.header}>
-                  <Typography variant="body2" color="textSecondary">
-                    {device.name}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={onClose}
-                    onTouchStart={onClose}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                </div>
-              )}
-              {position && (
-                <CardContent className={classes.content}>
-                  <Table size="small" classes={{ root: classes.table }}>
-                    <TableBody>
-                      {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
-                        <StatusRow
-                          key={key}
-                          name={positionAttributes[key]?.name || key}
-                          content={(
-                            <PositionValue
-                              position={position}
-                              property={position.hasOwnProperty(key) ? key : null}
-                              attribute={position.hasOwnProperty(key) ? null : key}
-                            />
-                          )}
-                        />
-                      ))}
+                  <CloseIcon fontSize="small" className="text-white mix-blend-difference" />
+                </IconButton>
+              </CardMedia>
+            ) : (
+              <div className="flex justify-between items-center p-2 pl-4 border-b border-gray-200 dark:border-gray-800">
+                <Typography variant="body2" color="textSecondary" className="text-lg! text-black! dark:text-white! font-medium!">
+                  {device.name}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={onClose}
+                  onTouchStart={onClose}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
 
-                    </TableBody>
-                    <TableFooter>
-                      <TableRow>
-                        <TableCell colSpan={2} className={classes.cell}>
-                          <Typography variant="body2">
-                            <Link component={RouterLink} to={`/position/${position.id}`}>{t('sharedShowDetails')}</Link>
-                          </Typography>
-                        </TableCell>
-                      </TableRow>
-                    </TableFooter>
-                  </Table>
+              </div>
+
+            )}
+            {position && (
+              <div className="flex flex-col flex-1 overflow-auto">
+                <CardContent className="pt-2 pb-2 flex-1 overflow-auto">
+                  <div className="grid grid-cols-1 gap-2 p-2">
+                    {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
+                      <div key={key} className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                        <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                          {positionAttributes[key]?.name || key}
+                        </Typography>
+                        <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                          <PositionValue
+                            position={position}
+                            property={position.hasOwnProperty(key) ? key : null}
+                            attribute={position.hasOwnProperty(key) ? null : key}
+                          />
+                        </Typography>
+                      </div>
+                    ))}
+                    {/* Extra tiles */}
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Geofance
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('sharedGeofence')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        GPS
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('sharedGPS')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Network
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('network')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Vehicle BTT
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('vehicleBTT')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Trip Dist
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('tripDistance')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Daily Dist
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('dailyDistance')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Trip Time
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('tripTime')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Idle Time
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('idleTime')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Last Speed
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('lastSpeed')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Stops
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('stops')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Max Speed
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('maxSpeed')}
+                      </Typography>
+                    </div>
+                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Odometer
+                      </Typography>
+                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {t('odometer')}
+                      </Typography>
+                    </div>
+                  </div>
+                  <div className="px-4 pb-2 mt-1">
+                    <Typography variant="body2" className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium">
+                      <Link className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium" component={RouterLink} to={`/position/${position.id}`} underline="none">{t('sharedShowDetails')}</Link>
+                    </Typography>
+                  </div>
                 </CardContent>
-              )}
-              <CardActions classes={{ root: classes.actions }} disableSpacing>
-                <Tooltip title={t('sharedExtra')}>
-                  <IconButton
-                    color="secondary"
-                    onClick={(e) => setAnchorEl(e.currentTarget)}
-                    disabled={!position}
-                  >
-                    <PendingIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={t('reportReplay')}>
-                  <IconButton
-                    onClick={() => navigate('/replay')}
-                    disabled={disableActions || !position}
-                  >
-                    <ReplayIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={t('commandTitle')}>
-                  <IconButton
-                    onClick={() => navigate(`/settings/device/${deviceId}/command`)}
-                    disabled={disableActions}
-                  >
-                    <PublishIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={t('sharedEdit')}>
-                  <IconButton
-                    onClick={() => navigate(`/settings/device/${deviceId}`)}
-                    disabled={disableActions || deviceReadonly}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={t('sharedRemove')}>
-                  <IconButton
-                    color="error"
-                    onClick={() => setRemoving(true)}
-                    disabled={disableActions || deviceReadonly}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </CardActions>
-            </Card>
-          </Draggable>
+                <CardActions
+                  className="flex flex-row justify-center p-2 border-t border-gray-200 dark:border-gray-800 gap-2 flex-wrap"
+                  disableSpacing
+                >
+                  <Tooltip title={t('sharedExtra')}>
+                    <IconButton
+                      size="small"
+                      color="secondary"
+                      onClick={(e) => setAnchorEl(e.currentTarget)}
+                      disabled={!position}
+                    >
+                      <PendingIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={t('reportReplay')}>
+                    <IconButton
+                      size="small"
+                      onClick={() => navigate('/replay')}
+                      disabled={disableActions || !position}
+                    >
+                      <ReplayIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={t('commandTitle')}>
+                    <IconButton
+                      size="small"
+                      onClick={() => navigate(`/settings/device/${deviceId}/command`)}
+                      disabled={disableActions}
+                    >
+                      <PublishIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={t('linkGoogleMaps')}>
+                    <IconButton
+                      size="small"
+                      component="a"
+                      target="_blank"
+                      href={`https://www.google.com/maps/search/?api=1&query=${position?.latitude}%2C${position?.longitude}`}
+                      disabled={!position}
+                    >
+                      <MapIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  {!shareDisabled && !user.temporary && (
+                    <Tooltip title={t('deviceShare')}>
+                      <IconButton
+                        size="small"
+                        color="secondary"
+                        onClick={() => navigate(`/settings/device/${deviceId}/share`)}
+                      >
+                        <ShareIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  <Tooltip title={t('sharedEdit')}>
+                    <IconButton
+                      size="small"
+                      onClick={() => navigate(`/settings/device/${deviceId}`)}
+                      disabled={disableActions || deviceReadonly}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={t('sharedRemove')}>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => setRemoving(true)}
+                      disabled={disableActions || deviceReadonly}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </CardActions>
+              </div>
+            )}
+
+          </Card>
         )}
       </div>
       {position && (

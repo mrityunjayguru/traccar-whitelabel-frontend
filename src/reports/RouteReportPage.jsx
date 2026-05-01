@@ -29,6 +29,9 @@ import MapScale from '../map/MapScale';
 import { useRestriction } from '../common/util/permissions';
 import CollectionActions from '../settings/components/CollectionActions';
 
+import ReportLayout from './components/ReportLayout';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
+
 const RouteReportPage = () => {
   const navigate = useNavigate();
   const classes = useReportStyles();
@@ -110,7 +113,22 @@ const RouteReportPage = () => {
   });
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportRoute']}>
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportRoute']}
+      handleSubmit={handleSubmit}
+      handleSchedule={handleSchedule}
+      loading={loading}
+      multiDevice
+      filterExtension={(
+        <ColumnSelect
+          columns={columns}
+          setColumns={setColumns}
+          columnsArray={available}
+          rawValues
+          disabled={!items.length}
+        />
+      )}
+    >
       <div className={classes.container}>
         {selectedItem && (
           <div className={classes.containerMap}>
@@ -132,68 +150,60 @@ const RouteReportPage = () => {
           </div>
         )}
         <div className={classes.containerMain}>
-          <div className={classes.header}>
-            <ReportFilter handleSubmit={handleSubmit} handleSchedule={handleSchedule} multiDevice loading={loading}>
-              <ColumnSelect
-                columns={columns}
-                setColumns={setColumns}
-                columnsArray={available}
-                rawValues
-                disabled={!items.length}
-              />
-            </ReportFilter>
-          </div>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell className={classes.columnAction} />
                 <TableCell>{t('sharedDevice')}</TableCell>
                 {columns.map((key) => (<TableCell key={key}>{positionAttributes[key]?.name || key}</TableCell>))}
-                <TableCell className={classes.columnAction} />
+                <TableCell className={classes.columnAction} style={{ width: '100px' }}>{t('sharedActions')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading ? items.slice(0, 4000).map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className={classes.columnAction} padding="none">
-                    {selectedItem === item ? (
-                      <IconButton size="small" onClick={() => setSelectedItem(null)} ref={selectedIcon}>
-                        <GpsFixedIcon fontSize="small" />
-                      </IconButton>
-                    ) : (
-                      <IconButton size="small" onClick={() => setSelectedItem(item)}>
-                        <LocationSearchingIcon fontSize="small" />
-                      </IconButton>
-                    )}
-                  </TableCell>
-                  <TableCell>{devices[item.deviceId].name}</TableCell>
-                  {columns.map((key) => (
-                    <TableCell key={key}>
-                      <PositionValue
-                        position={item}
-                        property={item.hasOwnProperty(key) ? key : null}
-                        attribute={item.hasOwnProperty(key) ? null : key}
+              {!loading ? (
+                items.length ? items.slice(0, 4000).map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {selectedItem === item ? (
+                          <IconButton size="small" onClick={() => setSelectedItem(null)} ref={selectedIcon}>
+                            <GpsFixedIcon fontSize="small" />
+                          </IconButton>
+                        ) : (
+                          <IconButton size="small" onClick={() => setSelectedItem(item)}>
+                            <LocationSearchingIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                        {devices[item.deviceId].name}
+                      </div>
+                    </TableCell>
+                    {columns.map((key) => (
+                      <TableCell key={key}>
+                        <PositionValue
+                          position={item}
+                          property={item.hasOwnProperty(key) ? key : null}
+                          attribute={item.hasOwnProperty(key) ? null : key}
+                        />
+                      </TableCell>
+                    ))}
+                    <TableCell className={classes.columnAction} style={{ width: '100px' }}>
+                      <CollectionActions
+                        itemId={item.id}
+                        endpoint="positions"
+                        readonly={readonly}
+                        setTimestamp={() => {
+                          // NOTE: Gets called when an item was removed
+                          setItems(items.filter((position) => position.id !== item.id));
+                        }}
                       />
                     </TableCell>
-                  ))}
-                  <TableCell className={classes.actionCellPadding}>
-                    <CollectionActions
-                      itemId={item.id}
-                      endpoint="positions"
-                      readonly={readonly}
-                      setTimestamp={() => {
-                        // NOTE: Gets called when an item was removed
-                        setItems(items.filter((position) => position.id !== item.id));
-                      }}
-                    />
-                  </TableCell>
-                </TableRow>
-              )) : (<TableShimmer columns={columns.length + 2} startAction />)}
+                  </TableRow>
+                )) : <ReportTableEmptyState colSpan={columns.length + 2} />
+              ) : (<TableShimmer columns={columns.length + 2} startAction endAction />)}
             </TableBody>
           </Table>
         </div>
       </div>
-    </PageLayout>
+    </ReportLayout>
   );
 };
 

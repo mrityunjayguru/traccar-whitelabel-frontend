@@ -1,29 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import makeStyles from '@mui/styles/makeStyles';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { devicesActions } from '../store';
 import { useEffectAsync } from '../reactHelper';
 import DeviceRow from './DeviceRow';
 
-const useStyles = makeStyles((theme) => ({
-  list: {
-    maxHeight: '100%',
-  },
-  listInner: {
-    position: 'relative',
-    margin: theme.spacing(1.5, 0),
-  },
-}));
-
 const DeviceList = ({ devices }) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const listInnerEl = useRef(null);
 
   if (listInnerEl.current) {
-    listInnerEl.current.className = classes.listInner;
+    listInnerEl.current.className = 'relative';
   }
 
   const [, setTime] = useState(Date.now());
@@ -45,14 +33,14 @@ const DeviceList = ({ devices }) => {
   }, []);
 
   return (
-    <AutoSizer className={classes.list}>
+    <AutoSizer className="max-h-full">
       {({ height, width }) => (
         <FixedSizeList
           width={width}
           height={height}
           itemCount={devices.length}
           itemData={devices}
-          itemSize={72}
+          itemSize={64}
           overscanCount={10}
           innerRef={listInnerEl}
         >

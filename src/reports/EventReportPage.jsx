@@ -10,8 +10,7 @@ import { formatSpeed, formatTime } from '../common/util/formatter';
 import ReportFilter from './components/ReportFilter';
 import { prefixString, unprefixString } from '../common/util/stringUtils';
 import { useTranslation, useTranslationKeys } from '../common/components/LocalizationProvider';
-import PageLayout from '../common/components/PageLayout';
-import ReportsMenu from './components/ReportsMenu';
+import ReportLayout from './components/ReportLayout';
 import usePersistedState from '../common/util/usePersistedState';
 import ColumnSelect from './components/ColumnSelect';
 import { useCatch, useEffectAsync } from '../reactHelper';
@@ -25,6 +24,7 @@ import MapCamera from '../map/MapCamera';
 import scheduleReport from './common/scheduleReport';
 import MapScale from '../map/MapScale';
 import SelectField from '../common/components/SelectField';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
 
 const columnsArray = [
   ['eventTime', 'positionFixTime'],
@@ -165,7 +165,50 @@ const EventReportPage = () => {
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportEvents']}>
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportEvents']}
+      handleSubmit={handleSubmit}
+      handleSchedule={handleSchedule}
+      loading={loading}
+      filterExtension={(
+        <>
+          <div className="flex flex-col gap-4 mb-4">
+            <FormControl fullWidth size="small">
+              <InputLabel>{t('reportEventTypes')}</InputLabel>
+              <Select
+                label={t('reportEventTypes')}
+                value={eventTypes}
+                onChange={(e, child) => {
+                  let values = e.target.value;
+                  const clicked = child.props.value;
+                  if (values.includes('allEvents') && values.length > 1) {
+                    values = [clicked];
+                  }
+                  setEventTypes(values);
+                }}
+                multiple
+              >
+                {allEventTypes.map(([key, string]) => (
+                  <MenuItem key={key} value={key}>{t(string)}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {eventTypes[0] !== 'allEvents' && eventTypes.includes('alarm') && (
+              <SelectField
+                multiple
+                value={alarmTypes}
+                onChange={(e) => setAlarmTypes(e.target.value)}
+                data={alarms}
+                label={t('reportAlarmTypes')}
+                fullWidth
+                size="small"
+              />
+            )}
+          </div>
+          <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
+        </>
+      )}
+    >
       <div className={classes.container}>
         {selectedItem && (
           <div className={classes.containerMap}>
@@ -178,79 +221,42 @@ const EventReportPage = () => {
           </div>
         )}
         <div className={classes.containerMain}>
-          <div className={classes.header}>
-            <ReportFilter handleSubmit={handleSubmit} handleSchedule={handleSchedule} loading={loading}>
-              <div className={classes.filterItem}>
-                <FormControl fullWidth>
-                  <InputLabel>{t('reportEventTypes')}</InputLabel>
-                  <Select
-                    label={t('reportEventTypes')}
-                    value={eventTypes}
-                    onChange={(e, child) => {
-                      let values = e.target.value;
-                      const clicked = child.props.value;
-                      if (values.includes('allEvents') && values.length > 1) {
-                        values = [clicked];
-                      }
-                      setEventTypes(values);
-                    }}
-                    multiple
-                  >
-                    {allEventTypes.map(([key, string]) => (
-                      <MenuItem key={key} value={key}>{t(string)}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-              {eventTypes[0] !== 'allEvents' && eventTypes.includes('alarm') && (
-                <div className={classes.filterItem}>
-                  <SelectField
-                    multiple
-                    value={alarmTypes}
-                    onChange={(e) => setAlarmTypes(e.target.value)}
-                    data={alarms}
-                    keyGetter={(it) => it.key}
-                    label={t('sharedAlarms')}
-                    fullWidth
-                  />
-                </div>
-              )}
-              <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
-            </ReportFilter>
-          </div>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell className={classes.columnAction} />
                 {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {!loading ? items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className={classes.columnAction} padding="none">
-                    {(item.positionId && (selectedItem === item ? (
-                      <IconButton size="small" onClick={() => setSelectedItem(null)}>
-                        <GpsFixedIcon fontSize="small" />
-                      </IconButton>
-                    ) : (
-                      <IconButton size="small" onClick={() => setSelectedItem(item)}>
-                        <LocationSearchingIcon fontSize="small" />
-                      </IconButton>
-                    ))) || ''}
-                  </TableCell>
-                  {columns.map((key) => (
-                    <TableCell key={key}>
-                      {formatValue(item, key)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              )) : (<TableShimmer columns={columns.length + 1} />)}
+              {!loading ? (
+                items.length ? items.map((item) => (
+                  <TableRow key={item.id}>
+                    {columns.map((key, index) => (
+                      <TableCell key={key}>
+                        {index === 0 ? (
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {item.positionId && (selectedItem === item ? (
+                              <IconButton size="small" onClick={() => setSelectedItem(null)}>
+                                <GpsFixedIcon fontSize="small" />
+                              </IconButton>
+                            ) : (
+                              <IconButton size="small" onClick={() => setSelectedItem(item)}>
+                                <LocationSearchingIcon fontSize="small" />
+                              </IconButton>
+                            ))}
+                            {formatValue(item, key)}
+                          </div>
+                        ) : formatValue(item, key)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )) : <ReportTableEmptyState colSpan={columns.length} />
+              ) : (<TableShimmer columns={columns.length} startAction />)}
             </TableBody>
           </Table>
         </div>
       </div>
-    </PageLayout>
+    </ReportLayout>
   );
 };
 

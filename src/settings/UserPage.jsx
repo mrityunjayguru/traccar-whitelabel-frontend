@@ -137,12 +137,11 @@ const [passwordError, setPasswordError] = useState('');
       defaultItem={admin ? { deviceLimit: -1 } : {}}
       validate={validate}
       onItemSaved={onItemSaved}
-      menu={<SettingsMenu />}
       breadcrumbs={['settingsTitle', 'settingsUser']}
     >
       {item && (
         <>
-          <Accordion defaultExpanded={!attribute}>
+          <Accordion defaultExpanded={!attribute} className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedRequired')}
@@ -236,7 +235,7 @@ const [passwordError, setPasswordError] = useState('');
               )}
             </AccordionDetails>
           </Accordion>
-          <Accordion>
+          <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedPreferences')}
@@ -336,7 +335,7 @@ const [passwordError, setPasswordError] = useState('');
               />
             </AccordionDetails>
           </Accordion>
-          <Accordion>
+          <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedLocation')}
@@ -378,7 +377,7 @@ const [passwordError, setPasswordError] = useState('');
               </Button>
             </AccordionDetails>
           </Accordion>
-          <Accordion>
+          <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedPermissions')}
@@ -457,7 +456,7 @@ const [passwordError, setPasswordError] = useState('');
             focusAttribute={attribute}
           />
           {registrationEnabled && item.id === currentUser.id && !manager && (
-            <Accordion>
+            <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle1" color="error">
                   {t('userDeleteAccount')}

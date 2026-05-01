@@ -19,6 +19,8 @@ import {
 } from '../common/util/converter';
 import useReportStyles from './common/useReportStyles';
 
+import ReportLayout from './components/ReportLayout';
+
 const ChartReportPage = () => {
   const classes = useReportStyles();
   const theme = useTheme();
@@ -109,10 +111,13 @@ const ChartReportPage = () => {
   ];
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportChart']}>
-      <ReportFilter handleSubmit={handleSubmit} showOnly>
-        <div className={classes.filterItem}>
-          <FormControl fullWidth>
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportChart']}
+      handleSubmit={handleSubmit}
+      showOnly
+      filterExtension={(
+        <div className="flex flex-col gap-4">
+          <FormControl fullWidth size="small">
             <InputLabel>{t('reportChartType')}</InputLabel>
             <Select
               label={t('reportChartType')}
@@ -126,9 +131,7 @@ const ChartReportPage = () => {
               ))}
             </Select>
           </FormControl>
-        </div>
-        <div className={classes.filterItem}>
-          <FormControl fullWidth>
+          <FormControl fullWidth size="small">
             <InputLabel>{t('reportTimeType')}</InputLabel>
             <Select
               label={t('reportTimeType')}
@@ -142,7 +145,8 @@ const ChartReportPage = () => {
             </Select>
           </FormControl>
         </div>
-      </ReportFilter>
+      )}
+    >
       {items.length > 0 && (
         <div className={classes.chart}>
           <ResponsiveContainer>
@@ -192,7 +196,7 @@ const ChartReportPage = () => {
           </ResponsiveContainer>
         </div>
       )}
-    </PageLayout>
+    </ReportLayout>
   );
 };
 

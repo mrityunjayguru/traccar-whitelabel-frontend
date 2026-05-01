@@ -24,8 +24,7 @@ import { sessionActions } from '../store';
 import EditAttributesAccordion from './components/EditAttributesAccordion';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import SelectField from '../common/components/SelectField';
-import PageLayout from '../common/components/PageLayout';
-import SettingsMenu from './components/SettingsMenu';
+import SettingsLayout from './components/SettingsLayout';
 import useCommonDeviceAttributes from '../common/attributes/useCommonDeviceAttributes';
 import useCommonUserAttributes from '../common/attributes/useCommonUserAttributes';
 import { useCatch } from '../reactHelper';
@@ -85,11 +84,11 @@ const ServerPage = () => {
   });
 
   return (
-    <PageLayout menu={<SettingsMenu />} breadcrumbs={['settingsTitle', 'settingsServer']}>
-      <Container maxWidth="xs" className={classes.container}>
+    <SettingsLayout breadcrumbs={['settingsTitle', 'settingsServer']}>
+      <Container maxWidth="md" className={classes.container}>
         {item && (
           <>
-            <Accordion defaultExpanded>
+            <Accordion defaultExpanded className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle1">
                   {t('sharedPreferences')}
@@ -223,7 +222,7 @@ const ServerPage = () => {
                 </FormGroup>
               </AccordionDetails>
             </Accordion>
-            <Accordion>
+            <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle1">
                   {t('sharedLocation')}
@@ -265,7 +264,7 @@ const ServerPage = () => {
                 </Button>
               </AccordionDetails>
             </Accordion>
-            <Accordion>
+            <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle1">
                   {t('sharedPermissions')}
@@ -300,7 +299,7 @@ const ServerPage = () => {
                 </FormGroup>
               </AccordionDetails>
             </Accordion>
-            <Accordion>
+            <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography variant="subtitle1">
                   {t('sharedFile')}
@@ -323,15 +322,39 @@ const ServerPage = () => {
           </>
         )}
         <div className={classes.buttons}>
-          <Button type="button" color="primary" variant="outlined" onClick={() => navigate(-1)}>
+          <Button type="button" color="primary" variant="outlined" onClick={() => navigate(-1)} className="
+              inline-flex items-center justify-center
+              px-6 py-2.5 rounded-md
+              text-sm font-semibold
+              border border-gray-300! dark:border-[#444]!
+              text-gray-700! dark:text-gray-200!
+              bg-white dark:bg-[#2a2a2e]!
+              hover:bg-gray-50! dark:hover:bg-[#333]!
+              active:scale-[0.97]
+              transition-all duration-150 ease-in-out
+              disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
+              shadow-sm cursor-pointer
+              w-1/2 md:w-1/6
+            ">
             {t('sharedCancel')}
           </Button>
-          <Button type="button" color="primary" variant="contained" onClick={handleSave}>
+          <Button type="button" color="primary" variant="contained" onClick={handleSave} className="
+              inline-flex items-center justify-center
+              px-6 py-2.5 rounded-md
+              text-sm font-bold
+              bg-[#D9E821]! text-black!
+              hover:bg-[#d4f500]!
+              active:scale-[0.97]
+              transition-all duration-150 ease-in-out
+              disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
+              shadow-md shadow-[#D9E821]/20 cursor-pointer
+              w-1/2 md:w-1/6
+            ">
             {t('sharedSave')}
           </Button>
         </div>
       </Container>
-    </PageLayout>
+    </SettingsLayout>
   );
 };
 

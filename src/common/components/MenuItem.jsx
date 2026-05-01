@@ -1,21 +1,22 @@
-import makeStyles from '@mui/styles/makeStyles';
-import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { Link } from 'react-router-dom';
 import React from 'react';
 
-const useStyles = makeStyles(() => ({
-  menuItemText: {
-    whiteSpace: 'nowrap',
-  },
-}));
-
-const MenuItem = ({ title, link, icon, selected }) => {
-  const classes = useStyles();
+const MenuItem = ({ title, link, icon, selected, className, iconClassName, textClassName }) => {
   return (
-    <ListItemButton key={link} component={Link} to={link} selected={selected}>
-      <ListItemIcon>{icon}</ListItemIcon>
-      <ListItemText primary={title} className={classes.menuItemText} />
-    </ListItemButton>
+    <Link
+      key={link}
+      to={link}
+      className={`flex items-center justify-center px-2 md:px-3 py-1.5 md:py-2 transition-all cursor-pointer no-underline shrink-0 ${className}`}
+    >
+      {icon && (
+        <div className={`flex items-center justify-center mr-1 md:mr-2 ${iconClassName}`}>
+          {React.cloneElement(icon, { sx: { fontSize: { xs: '18px', md: '20px' } }, className: iconClassName })}
+        </div>
+      )}
+      <span className={`whitespace-nowrap text-[12px] md:text-[14px]! font-medium! ${textClassName}`}>
+        {title}
+      </span>
+    </Link>
   );
 };
 

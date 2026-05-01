@@ -13,6 +13,9 @@ import { useCatch } from '../reactHelper';
 import useReportStyles from './common/useReportStyles';
 import TableShimmer from '../common/components/TableShimmer';
 
+import ReportLayout from './components/ReportLayout';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
+
 const columnsArray = [
   ['captureTime', 'statisticsCaptureTime'],
   ['activeUsers', 'statisticsActiveUsers'],
@@ -51,31 +54,39 @@ const StatisticsPage = () => {
   });
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'statisticsTitle']}>
-      <div className={classes.header}>
-        <ReportFilter handleSubmit={handleSubmit} showOnly ignoreDevice loading={loading}>
-          <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
-        </ReportFilter>
-      </div>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {!loading ? items.map((item) => (
-            <TableRow key={item.id}>
-              {columns.map((key) => (
-                <TableCell key={key}>
-                  {key === 'captureTime' ? formatTime(item[key], 'date') : item[key]}
-                </TableCell>
-              ))}
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'statisticsTitle']}
+      handleSubmit={handleSubmit}
+      showOnly
+      ignoreDevice
+      loading={loading}
+      filterExtension={(
+        <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
+      )}
+    >
+      <div className={classes.containerMain}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {columns.map((key) => (<TableCell key={key}>{t(columnsMap.get(key))}</TableCell>))}
             </TableRow>
-          )) : (<TableShimmer columns={columns.length} />)}
-        </TableBody>
-      </Table>
-    </PageLayout>
+          </TableHead>
+          <TableBody>
+            {!loading ? (
+              items.length ? items.map((item) => (
+                <TableRow key={item.id}>
+                  {columns.map((key) => (
+                    <TableCell key={key}>
+                      {key === 'captureTime' ? formatTime(item[key], 'date') : item[key]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              )) : <ReportTableEmptyState colSpan={columns.length} />
+            ) : (<TableShimmer columns={columns.length} />)}
+          </TableBody>
+        </Table>
+      </div>
+    </ReportLayout>
   );
 };
 

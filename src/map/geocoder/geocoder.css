@@ -20,6 +20,10 @@
   transition: width 0.25s, min-width 0.25s;
 }
 
+.dark .maplibregl-ctrl-geocoder {
+  background-color: #1A1C1E;
+}
+
 .maplibregl-ctrl-geocoder--input {
   font: inherit;
   width: 100%;
@@ -35,12 +39,20 @@
   overflow: hidden;
 }
 
+.dark .maplibregl-ctrl-geocoder--input {
+  color: #fff;
+}
+
 .maplibregl-ctrl-geocoder--input:focus {
   color: #404040; /* fallback */
   color: rgba(0, 0, 0, 0.75);
   outline: 0;
   box-shadow: none;
   outline: thin dotted;
+}
+
+.dark .maplibregl-ctrl-geocoder--input:focus {
+  color: #fff;
 }
 
 .maplibregl-ctrl-geocoder .maplibregl-ctrl-geocoder--pin-right > * {
@@ -54,6 +66,11 @@
 .maplibregl-ctrl-geocoder,
 .maplibregl-ctrl-geocoder .suggestions {
   box-shadow: 0 0 0 2px rgb(0 0 0 / 10%);
+}
+
+.dark .maplibregl-ctrl-geocoder,
+.dark .maplibregl-ctrl-geocoder .suggestions {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 10%);
 }
 
 /* Collapsed */
@@ -80,6 +97,10 @@
   font-size: 13px;
 }
 
+.dark .maplibregl-ctrl-geocoder .suggestions {
+  background-color: #1A1C1E;
+}
+
 .maplibregl-ctrl-bottom-left .suggestions,
 .maplibregl-ctrl-bottom-right .suggestions {
   top: auto;
@@ -93,12 +114,22 @@
   color: #404040;
 }
 
+.dark .maplibregl-ctrl-geocoder .suggestions > li > a {
+  color: #e2e8f0;
+}
+
 .maplibregl-ctrl-geocoder .suggestions > .active > a,
 .maplibregl-ctrl-geocoder .suggestions > li > a:hover {
   color: #404040;
   background-color: #f3f3f3;
   text-decoration: none;
   cursor: pointer;
+}
+
+.dark .maplibregl-ctrl-geocoder .suggestions > .active > a,
+.dark .maplibregl-ctrl-geocoder .suggestions > li > a:hover {
+  color: #fff;
+  background-color: #2D2F31;
 }
 
 .maplibregl-ctrl-geocoder--suggestion {

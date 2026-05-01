@@ -23,31 +23,49 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
+    backgroundColor: '#f8f9fa',
+    [theme.breakpoints.up('md')]: {
+      paddingLeft: '60px',
+    },
   },
   content: {
     flexGrow: 1,
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'row',
+    gap: theme.spacing(2),
+    padding: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'column-reverse',
+      padding: theme.spacing(1),
     },
   },
   drawer: {
     display: 'flex',
     flexDirection: 'column',
+    borderRadius: '16px!important',
+    overflow: 'hidden',
+    boxShadow: '0 4px 20px 0 rgba(0,0,0,0.05)!important',
+    border: '1px solid #eee',
     [theme.breakpoints.up('sm')]: {
       width: theme.dimensions.drawerWidthDesktop,
     },
     [theme.breakpoints.down('sm')]: {
       height: theme.dimensions.drawerHeightPhone,
+      width: '100%',
     },
   },
   mapContainer: {
     flexGrow: 1,
+    borderRadius: '16px',
+    overflow: 'hidden',
+    boxShadow: '0 4px 20px 0 rgba(0,0,0,0.05)',
+    border: '1px solid #eee',
+    position: 'relative',
   },
   title: {
     flexGrow: 1,
+    fontWeight: '700!important',
   },
   fileInput: {
     display: 'none',
@@ -97,24 +115,23 @@ const GeofencesPage = () => {
   };
 
   return (
-    <div className={classes.root}>
+    <div className={`${classes.root} md:pl-20`}>
       <div className={classes.content}>
-        <Paper square className={classes.drawer}>
-          <Toolbar>
-            <IconButton edge="start" sx={{ mr: 2 }} onClick={() => navigate(-1)}>
+        <Paper className={classes.drawer}>
+          <Toolbar className="bg-white border-b border-gray-100">
+            <IconButton edge="start" sx={{ mr: 1, color: 'text.secondary' }} onClick={() => navigate(-1)}>
               <ArrowBackIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>{t('sharedGeofences')}</Typography>
             <label htmlFor="upload-gpx">
               <input accept=".gpx" id="upload-gpx" type="file" className={classes.fileInput} onChange={handleFile} />
-              <IconButton edge="end" component="span" onClick={() => {}}>
+              <IconButton edge="end" component="span" sx={{ color: 'text.secondary' }}>
                 <Tooltip title={t('sharedUpload')}>
                   <UploadFileIcon />
                 </Tooltip>
               </IconButton>
             </label>
           </Toolbar>
-          <Divider />
           <GeofencesList onGeofenceSelected={setSelectedGeofenceId} />
         </Paper>
         <div className={classes.mapContainer}>

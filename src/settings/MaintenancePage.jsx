@@ -124,12 +124,11 @@ const MaintenancePage = () => {
       item={item}
       setItem={setItem}
       validate={validate}
-      menu={<SettingsMenu />}
       breadcrumbs={['settingsTitle', 'sharedMaintenance']}
     >
       {item && (
         <>
-          <Accordion defaultExpanded>
+          <Accordion defaultExpanded className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedRequired')}

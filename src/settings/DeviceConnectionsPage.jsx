@@ -10,9 +10,8 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LinkField from '../common/components/LinkField';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import SettingsMenu from './components/SettingsMenu';
 import { formatNotificationTitle } from '../common/util/formatter';
-import PageLayout from '../common/components/PageLayout';
+import SettingsLayout from './components/SettingsLayout';
 import useFeatures from '../common/util/useFeatures';
 import useSettingsStyles from './common/useSettingsStyles';
 
@@ -25,12 +24,11 @@ const DeviceConnectionsPage = () => {
   const features = useFeatures();
 
   return (
-    <PageLayout
-      menu={<SettingsMenu />}
+    <SettingsLayout
       breadcrumbs={['settingsTitle', 'sharedDevice', 'sharedConnections']}
     >
-      <Container maxWidth="xs" className={classes.container}>
-        <Accordion defaultExpanded>
+      <Container maxWidth="md" className={classes.container}>
+        <Accordion defaultExpanded className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="subtitle1">
               {t('sharedConnections')}
@@ -100,7 +98,7 @@ const DeviceConnectionsPage = () => {
           </AccordionDetails>
         </Accordion>
       </Container>
-    </PageLayout>
+    </SettingsLayout>
   );
 };
 

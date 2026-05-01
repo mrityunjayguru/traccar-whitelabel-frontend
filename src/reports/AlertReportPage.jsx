@@ -32,6 +32,8 @@ import { useCatch } from '../reactHelper';
 import useReportStyles from './common/useReportStyles';
 import TableShimmer from '../common/components/TableShimmer';
 import scheduleReport from './common/scheduleReport';
+import ReportLayout from './components/ReportLayout';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
 
 // ✅ Manual column definitions
 const allColumns = [
@@ -138,17 +140,17 @@ const AlertReportPage = () => {
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportSummary']}>
-      <div className={classes.header}>
-        <ReportFilter
-          handleSubmit={handleSubmit}
-          handleSchedule={handleSchedule}
-          multiDevice
-          includeGroups
-          loading={loading}
-        >
-          <div className={classes.filterItem}>
-            <FormControl fullWidth>
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportSummary']}
+      handleSubmit={handleSubmit}
+      handleSchedule={handleSchedule}
+      multiDevice
+      includeGroups
+      loading={loading}
+      filterExtension={(
+        <>
+          <div className="flex flex-col gap-4">
+            <FormControl fullWidth size="small">
               <InputLabel>{t('sharedType')}</InputLabel>
               <Select
                 label={t('sharedType')}
@@ -159,64 +161,60 @@ const AlertReportPage = () => {
                 <MenuItem value>{t('reportDaily')}</MenuItem>
               </Select>
             </FormControl>
-          </div>
 
-          {/* ✅ Manual column selector (replaces ColumnSelect) */}
-          {/* ✅ Manual column selector (multi-select list box) */}
-<div className={classes.filterItem}>
-  <FormControl fullWidth>
-    <InputLabel id="columns-select-label">Select Columns</InputLabel>
-    <Select
-      labelId="columns-select-label"
-      multiple
-      value={selectedColumns}
-      onChange={(e) => setSelectedColumns(e.target.value)}
-      renderValue={(selected) =>
-        selected
-          .map((key) => allColumns.find((c) => c.key === key)?.label || key)
-          .join(', ')
-      }
-    >
-      {allColumns.map((col) => (
-        <MenuItem key={col.key} value={col.key}>
-          <Checkbox checked={selectedColumns.includes(col.key)} />
-          <span>{col.label}</span>
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
-</div>
-
-        </ReportFilter>
-      </div>
-
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>{t('sharedDevice')}</TableCell>
-            {selectedColumns.map((key) => {
-              const col = allColumns.find((c) => c.key === key);
-              return <TableCell key={key}>{col ? col.label : key}</TableCell>;
-            })}
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {!loading ? (
-            items.map((item) => (
-              <TableRow key={`${item.deviceId}_${Date.parse(item.startTime)}`}>
-                <TableCell>{devices[item.deviceId]?.name || ''}</TableCell>
-                {selectedColumns.map((key) => (
-                  <TableCell key={key}>{formatValue(item, key)}</TableCell>
+            <FormControl fullWidth size="small">
+              <InputLabel id="columns-select-label">Select Columns</InputLabel>
+              <Select
+                labelId="columns-select-label"
+                multiple
+                value={selectedColumns}
+                onChange={(e) => setSelectedColumns(e.target.value)}
+                renderValue={(selected) =>
+                  selected
+                    .map((key) => allColumns.find((c) => c.key === key)?.label || key)
+                    .join(', ')
+                }
+              >
+                {allColumns.map((col) => (
+                  <MenuItem key={col.key} value={col.key}>
+                    <Checkbox checked={selectedColumns.includes(col.key)} />
+                    <span>{col.label}</span>
+                  </MenuItem>
                 ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableShimmer columns={selectedColumns.length + 1} />
-          )}
-        </TableBody>
-      </Table>
-    </PageLayout>
+              </Select>
+            </FormControl>
+          </div>
+        </>
+      )}
+    >
+      <div className={classes.containerMain}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{t('sharedDevice')}</TableCell>
+              {selectedColumns.map((key) => {
+                const col = allColumns.find((c) => c.key === key);
+                return <TableCell key={key}>{col ? col.label : key}</TableCell>;
+              })}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {!loading ? (
+              items.length ? items.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{devices[item.deviceId]?.name || item.deviceName || ''}</TableCell>
+                  {selectedColumns.map((key) => (
+                    <TableCell key={key}>{formatValue(item, key)}</TableCell>
+                  ))}
+                </TableRow>
+              )) : <ReportTableEmptyState colSpan={selectedColumns.length + 1} />
+            ) : (
+              <TableShimmer columns={selectedColumns.length + 1} />
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </ReportLayout>
   );
 };
 

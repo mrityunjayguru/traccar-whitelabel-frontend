@@ -69,12 +69,11 @@ const ComputedAttributePage = () => {
       item={item}
       setItem={setItem}
       validate={validate}
-      menu={<SettingsMenu />}
       breadcrumbs={['settingsTitle', 'sharedComputedAttribute']}
     >
       {item && (
         <>
-          <Accordion defaultExpanded>
+          <Accordion defaultExpanded className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedRequired')}
@@ -139,7 +138,7 @@ const ComputedAttributePage = () => {
               </FormControl>
             </AccordionDetails>
           </Accordion>
-          <Accordion>
+          <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedExtra')}
@@ -154,7 +153,7 @@ const ComputedAttributePage = () => {
               />
             </AccordionDetails>
           </Accordion>
-          <Accordion>
+          <Accordion className="mb-4! border border-gray-200 dark:border-gray-700 rounded-md! shadow-none! before:hidden">
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">
                 {t('sharedTest')}
