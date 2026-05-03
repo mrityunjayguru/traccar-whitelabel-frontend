@@ -83,12 +83,18 @@ const TripReportPage = () => {
         from: selectedItem.startTime,
         to: selectedItem.endTime,
       });
+
+
+
+
+
       const response = await fetch(`/api/reports/route?${query.toString()}`, {
         headers: {
           Accept: 'application/json',
         },
       });
       if (response.ok) {
+
         setRoute(await response.json());
       } else {
         throw Error(await response.text());
@@ -110,6 +116,12 @@ const TripReportPage = () => {
     } else {
       setLoading(true);
       try {
+
+
+      //  console.log(`/api/reports/trips?${query.toString()}`);
+
+
+
         const response = await fetch(`/api/reports/trips?${query.toString()}`, {
           headers: { Accept: 'application/json' },
         });

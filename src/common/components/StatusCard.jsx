@@ -28,13 +28,40 @@ import PositionValue from './PositionValue';
 import { useDeviceReadonly } from '../util/permissions';
 import usePositionAttributes from '../attributes/usePositionAttributes';
 import { devicesActions } from '../../store';
-import { useCatch, useCatchCallback } from '../../reactHelper';
+import { useCatch, useCatchCallback,useEffectAsync } from '../../reactHelper';
 import { useAttributePreference } from '../util/preferences';
+
 
 const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPadding = 0 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const t = useTranslation();
+
+const [trip, setTrip] = useState(null);
+
+let sat = 0;
+let speed =0;
+let maxSpeed = 0;
+let distance =0;
+
+let startTime =0;
+let endTime = 0;
+let tripTime =0;
+let endOdometer = 0;
+
+
+
+
+
+if (position != undefined) {
+  sat = Number(position?.attributes?.sat || 0);
+  speed = Number(position?.speed || 0);
+
+  console.log("position?.speed "+position?.speed)
+}
+
+const isConnected = sat > 0;
+
 
   const deviceReadonly = useDeviceReadonly();
 
@@ -46,6 +73,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
 
   const positionAttributes = usePositionAttributes(t);
   const positionItems = useAttributePreference('positionItems', 'fixTime,address,speed,totalDistance');
+
 
   const navigationAppLink = useAttributePreference('navigationAppLink');
   const navigationAppTitle = useAttributePreference('navigationAppTitle');
@@ -66,6 +94,96 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
     setRemoving(false);
   });
 
+
+
+
+
+// Start of today in UTC
+const now = new Date();
+
+const from = new Date(Date.UTC(
+  now.getUTCFullYear(),
+  now.getUTCMonth(),
+  now.getUTCDate(),
+  0, 0, 0, 0
+)).toISOString();
+
+// End of today in UTC
+const to = new Date(Date.UTC(
+  now.getUTCFullYear(),
+  now.getUTCMonth(),
+  now.getUTCDate(),
+  23, 59, 59, 999
+)).toISOString();
+
+console.log("From:", from);
+console.log("To:", to);
+
+
+
+ useEffectAsync(async () => {
+  const query = new URLSearchParams({
+    deviceId,
+    from,
+    to,
+  });
+
+  const response = await fetch(`/api/reports/trips?${query.toString()}`, {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (response.ok) {
+
+      const data = await response.json(); // ✅ FIX
+      console.log("Full Trip Array:", data);
+     
+      setTrip(data.length > 0 ? data[0] : null);
+
+  } else {
+    throw Error(await response.text());
+  }
+}, [deviceId, from, to]); // 👈 REQUIRED 
+
+
+
+
+console.log("==============Trip Data ============");
+console.log("==============Trip Data ============");
+console.log(trip);
+console.log("==============Trip Data ============");
+console.log("==============Trip Data ============");
+
+  maxSpeed = trip ? Number(trip.maxSpeed || 0) : 0;
+  distance = trip ? Number(trip.distance || 0) : 0; 
+
+  endOdometer = trip ? Number(trip.endOdometer || 0) : 0;
+
+  
+    startTime = trip?.startTime ? new Date(trip.startTime).getTime() : 0;
+ endTime = trip?.endTime ? new Date(trip.endTime).getTime() : 0;
+
+ tripTime = endTime - startTime; // ✅ correct order 
+
+
+const formatDuration = (ms) => {
+  const totalSeconds = Math.floor(ms / 1000);
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${hours.toString().padStart(2, '0')}:` +
+         `${minutes.toString().padStart(2, '0')}:` +
+         `${seconds.toString().padStart(2, '0')}`;
+};
+
+tripTime = formatDuration(tripTime);
+
+
+
+
   const handleGeofence = useCatchCallback(async () => {
     const newItem = {
       name: t('sharedGeofence'),
@@ -84,6 +202,9 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
         body: JSON.stringify({ deviceId: position.deviceId, geofenceId: item.id }),
       });
       if (!permissionResponse.ok) {
+
+
+
         throw Error(await permissionResponse.text());
       }
       navigate(`/settings/geofence/${item.id}`);
@@ -166,7 +287,20 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        GPS
+                        GPS 
+
+<Typography
+  style={{
+    color: !position ? 'gray' : isConnected ? 'green' : 'red',
+    fontWeight: 'bold',
+  }}
+>
+  {!position
+    ? 'No Data'
+    : isConnected
+    ? 'Connected'
+    : 'Disconnected'}
+</Typography>
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('sharedGPS')}
@@ -174,7 +308,8 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Network
+                        Network      <Typography className="text-[8px] text-green-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      {device?.status} </Typography>
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('network')}
@@ -182,7 +317,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Vehicle BTT
+                        Vehicle BTT 
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('vehicleBTT')}
@@ -190,7 +325,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Trip Dist
+                        Trip Dist   : {distance}
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('tripDistance')}
@@ -206,7 +341,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Trip Time
+                        Trip Time  : {tripTime}
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('tripTime')}
@@ -214,7 +349,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Idle Time
+                        Idle Time 
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('idleTime')}
@@ -222,7 +357,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Last Speed
+                        Last Speed : {speed}
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('lastSpeed')}
@@ -238,7 +373,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Max Speed
+                        Max Speed : {maxSpeed}
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('maxSpeed')}
@@ -246,7 +381,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Odometer
+                        Odometer : {endOdometer}
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('odometer')}
