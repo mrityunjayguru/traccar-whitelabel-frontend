@@ -38,6 +38,10 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   const t = useTranslation();
 
 const [trip, setTrip] = useState(null);
+const [stops, setStops] = useState(null);
+const [stopsall, setStopsall] = useState(null);
+
+
 
 let sat = 0;
 let speed =0;
@@ -48,6 +52,10 @@ let startTime =0;
 let endTime = 0;
 let tripTime =0;
 let endOdometer = 0;
+let engineHours = 0;
+let numberstops=0;
+let duration = null;
+
 
 
 
@@ -119,6 +127,7 @@ const to = new Date(Date.UTC(
 
 
 
+
  useEffectAsync(async () => {
   const query = new URLSearchParams({
     deviceId,
@@ -145,6 +154,41 @@ const to = new Date(Date.UTC(
 }, [deviceId, from, to]); // 👈 REQUIRED 
 
 
+
+
+useEffectAsync(async () => {
+  const query = new URLSearchParams({
+    deviceId,
+    from,
+    to,
+  });
+
+  const response = await fetch(`/api/reports/stops?${query.toString()}`, {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+
+
+
+  if (response.ok) {
+
+      const datastop = await response.json(); // ✅ FIX
+
+    setStopsall(datastop.length > 0 ? datastop : null);
+    setStops(datastop.length > 0 ? datastop[0] : null);
+
+  } else {
+    throw Error(await response.text());
+  }
+}, [deviceId, from, to]); // 👈 REQUIRED 
+
+
+engineHours = stops ? Number(stops.engineHours || 0) : 0;
+duration = stops ? Number(stops.duration || 0) : 0;
+
+numberstops = stopsall ? Number(stopsall.length || 0) : 0
 
 
 
@@ -339,7 +383,7 @@ tripTime = formatDuration(tripTime);
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Idle Time 
+                        Idle Time  : {duration ? formatDuration(duration) : '00:00:00'}
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('idleTime')}
@@ -355,7 +399,7 @@ tripTime = formatDuration(tripTime);
                     </div>
                     <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Stops
+                        Stops : {numberstops}
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('stops')}
