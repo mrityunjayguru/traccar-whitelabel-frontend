@@ -50,7 +50,7 @@ const DeviceRow = ({ data, index, style }) => {
     return (
       <div className="flex flex-col">
         {deviceSecondary && item[deviceSecondary] && (
-          <span className="text-gray-500 dark:text-gray-400 text-xs">{item[deviceSecondary]}</span>
+          <span className="text-gray-500 dark:text-gray-400 text-sm">{item[deviceSecondary]}</span>
         )}
         <span className={`text-xs font-medium ${getStatusTextColor(item.status)}`}>
           {status}
@@ -60,15 +60,15 @@ const DeviceRow = ({ data, index, style }) => {
   };
 
   return (
-    <div style={style} className="px-2 mt-4">
+    <div style={style} className="mt-1">
       <div
         className={`flex items-center p-2 transition-all cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg ${item.disabled && !admin ? 'opacity-50 pointer-events-none' : ''}`}
         onClick={() => dispatch(devicesActions.selectId(item.id))}
       >
         <div className="relative mr-3">
-          <div className="w-10 h-10  flex items-center justify-cente">
+          <div className="w-8 h-8  flex items-center justify-cente">
             <img
-              className="h-10 w-10 object-contain"
+              className="h-8 w-8 object-contain"
               src={ICONLIST}
               alt=""
             />
@@ -76,10 +76,12 @@ const DeviceRow = ({ data, index, style }) => {
         </div>
 
         <div className="flex-1 min-w-0 ml-1">
-          <div className="text-md font-normal text-gray-900 truncate dark:text-white">
+          <div className="text-sm font-normal text-gray-900 truncate dark:text-white">
             {item[devicePrimary]}
           </div>
+          <span className='text-xs'>
           {secondaryText()}
+          </span>
         </div>
 
         <div className="flex items-center">

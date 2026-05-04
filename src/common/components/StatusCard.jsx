@@ -28,7 +28,7 @@ import PositionValue from './PositionValue';
 import { useDeviceReadonly } from '../util/permissions';
 import usePositionAttributes from '../attributes/usePositionAttributes';
 import { devicesActions } from '../../store';
-import { useCatch, useCatchCallback,useEffectAsync } from '../../reactHelper';
+import { useCatch, useCatchCallback, useEffectAsync } from '../../reactHelper';
 import { useAttributePreference } from '../util/preferences';
 
 
@@ -37,40 +37,30 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   const dispatch = useDispatch();
   const t = useTranslation();
 
-const [trip, setTrip] = useState(null);
-const [stops, setStops] = useState(null);
-const [stopsall, setStopsall] = useState(null);
+  const [trip, setTrip] = useState(null);
+  const [stops, setStops] = useState(null);
+  const [stopsall, setStopsall] = useState(null);
 
 
 
-let sat = 0;
-let speed =0;
-let maxSpeed = 0;
-let distance =0;
+  let sat = 0;
+  let speed = 0;
+  let maxSpeed = 0;
+  let distance = 0;
 
-let startTime =0;
-let endTime = 0;
-let tripTime =0;
-let endOdometer = 0;
-let engineHours = 0;
-let numberstops=0;
-let duration = null;
+  let startTime = 0;
+  let endTime = 0;
+  let tripTime = 0;
+  let endOdometer = 0;
+  let engineHours = 0;
+  let numberstops = 0;
+  let duration = null;
 
-
-
-
-
-
-if (position != undefined) {
-  sat = Number(position?.attributes?.sat || 0);
-  speed = Number(position?.speed || 0);
-
-  
-}
-
-const isConnected = sat > 0;
-
-
+  if (position != undefined) {
+    sat = Number(position?.attributes?.sat || 0);
+    speed = Number(position?.speed || 0);
+  }
+  const isConnected = sat > 0;
   const deviceReadonly = useDeviceReadonly();
 
   const shareDisabled = useSelector((state) => state.session.server.attributes.disableShare);
@@ -101,122 +91,110 @@ const isConnected = sat > 0;
     }
     setRemoving(false);
   });
+  // Start of today in UTC
+  const now = new Date();
 
+  const from = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    0, 0, 0, 0
+  )).toISOString();
 
+  // End of today in UTC
+  const to = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    23, 59, 59, 999
+  )).toISOString();
 
+  useEffectAsync(async () => {
+    const query = new URLSearchParams({
+      deviceId,
+      from,
+      to,
+    });
 
+    const response = await fetch(`/api/reports/trips?${query.toString()}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
 
-// Start of today in UTC
-const now = new Date();
-
-const from = new Date(Date.UTC(
-  now.getUTCFullYear(),
-  now.getUTCMonth(),
-  now.getUTCDate(),
-  0, 0, 0, 0
-)).toISOString();
-
-// End of today in UTC
-const to = new Date(Date.UTC(
-  now.getUTCFullYear(),
-  now.getUTCMonth(),
-  now.getUTCDate(),
-  23, 59, 59, 999
-)).toISOString();
-
-
-
-
-
- useEffectAsync(async () => {
-  const query = new URLSearchParams({
-    deviceId,
-    from,
-    to,
-  });
-
-  const response = await fetch(`/api/reports/trips?${query.toString()}`, {
-    headers: {
-      Accept: 'application/json',
-    },
-  });
-
-  if (response.ok) {
+    if (response.ok) {
 
       const data = await response.json(); // ✅ FIX
-      
-     
+
+
       setTrip(data.length > 0 ? data[0] : null);
 
-  } else {
-    throw Error(await response.text());
-  }
-}, [deviceId, from, to]); // 👈 REQUIRED 
+    } else {
+      throw Error(await response.text());
+    }
+  }, [deviceId, from, to]); // 👈 REQUIRED 
+
+  useEffectAsync(async () => {
+    const query = new URLSearchParams({
+      deviceId,
+      from,
+      to,
+    });
+
+    const response = await fetch(`/api/reports/stops?${query.toString()}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
 
 
 
 
-useEffectAsync(async () => {
-  const query = new URLSearchParams({
-    deviceId,
-    from,
-    to,
-  });
-
-  const response = await fetch(`/api/reports/stops?${query.toString()}`, {
-    headers: {
-      Accept: 'application/json',
-    },
-  });
-
-
-
-
-  if (response.ok) {
+    if (response.ok) {
 
       const datastop = await response.json(); // ✅ FIX
 
-    setStopsall(datastop.length > 0 ? datastop : null);
-    setStops(datastop.length > 0 ? datastop[0] : null);
+      setStopsall(datastop.length > 0 ? datastop : null);
+      setStops(datastop.length > 0 ? datastop[0] : null);
 
-  } else {
-    throw Error(await response.text());
-  }
-}, [deviceId, from, to]); // 👈 REQUIRED 
+    } else {
+      throw Error(await response.text());
+    }
+  }, [deviceId, from, to]); // 👈 REQUIRED 
 
 
-engineHours = stops ? Number(stops.engineHours || 0) : 0;
-duration = stops ? Number(stops.duration || 0) : 0;
+  engineHours = stops ? Number(stops.engineHours || 0) : 0;
+  duration = stops ? Number(stops.duration || 0) : 0;
 
-numberstops = stopsall ? Number(stopsall.length || 0) : 0
+  numberstops = stopsall ? Number(stopsall.length || 0) : 0
 
 
 
   maxSpeed = trip ? Number(trip.maxSpeed || 0) : 0;
-  distance = trip ? Number(trip.distance || 0) : 0; 
+  distance = trip ? Number(trip.distance || 0) : 0;
 
   endOdometer = trip ? Number(trip.endOdometer || 0) : 0;
 
-  
-    startTime = trip?.startTime ? new Date(trip.startTime).getTime() : 0;
- endTime = trip?.endTime ? new Date(trip.endTime).getTime() : 0;
 
- tripTime = endTime - startTime; // ✅ correct order 
+  startTime = trip?.startTime ? new Date(trip.startTime).getTime() : 0;
+  endTime = trip?.endTime ? new Date(trip.endTime).getTime() : 0;
+
+  tripTime = endTime - startTime; // ✅ correct order 
 
 
-const formatDuration = (ms) => {
-  const totalSeconds = Math.floor(ms / 1000);
+  const formatDuration = (ms) => {
+    const totalSeconds = Math.floor(ms / 1000);
 
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
-  return `${hours.toString().padStart(2, '0')}:` +
-         `${minutes.toString().padStart(2, '0')}:` +
-         `${seconds.toString().padStart(2, '0')}`;
-};
+    return `${hours.toString().padStart(2, '0')}:` +
+      `${minutes.toString().padStart(2, '0')}:` +
+      `${seconds.toString().padStart(2, '0')}`;
+  };
 
-tripTime = formatDuration(tripTime);
+  tripTime = formatDuration(tripTime);
 
   const handleGeofence = useCatchCallback(async () => {
     const newItem = {
@@ -278,7 +256,7 @@ tripTime = formatDuration(tripTime);
               </CardMedia>
             ) : (
               <div className="flex justify-between items-center p-2 pl-4 border-b border-gray-200 dark:border-gray-800">
-                <Typography variant="body2" color="textSecondary" className="text-lg! text-black! dark:text-white! font-medium!">
+                <Typography variant="body2" color="textSecondary" className="text-md! text-black! dark:text-white! font-medium!">
                   {device.name} : {device.uniqueId}
                 </Typography>
                 <IconButton
@@ -297,8 +275,8 @@ tripTime = formatDuration(tripTime);
                 <CardContent className="pt-2 pb-2 flex-1 overflow-auto">
                   <div className="grid grid-cols-1 gap-2 p-2">
                     {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
-                      <div key={key} className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                        <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <div key={key} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                        <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                           {positionAttributes[key]?.name || key}
                         </Typography>
                         <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
@@ -311,114 +289,100 @@ tripTime = formatDuration(tripTime);
                       </div>
                     ))}
                     {/* Extra tiles */}
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Geofance
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Geofence
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('sharedGeofence')}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        GPS 
-
-<Typography
-  style={{
-    color: !position ? 'gray' : isConnected ? 'green' : 'red',
-    fontWeight: 'bold',
-  }}
->
-  {!position
-    ? 'No Data'
-    : isConnected
-    ? 'Connected'
-    : 'Disconnected'}
-</Typography>
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        GPS
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('sharedGPS')}
+                        {!position ? 'No Data' : isConnected ? 'Connected' : 'Disconnected'}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Network      <Typography className="text-[8px] text-green-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                      {device?.status} </Typography>
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Network
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('network')}
+                        {device?.status}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Vehicle BTT 
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Vehicle BTT
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('vehicleBTT')}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Trip Dist   : {distance}
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Trip Dist
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('tripDistance')}
+                        {distance}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Daily Dist
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('dailyDistance')}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Trip Time  : {tripTime}
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Trip Time
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('tripTime')}
+                        {tripTime}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Idle Time  : {duration ? formatDuration(duration) : '00:00:00'}
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Idle Time
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('idleTime')}
+                        {duration ? formatDuration(duration) : '00:00:00'}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Last Speed : {speed}
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Last Speed
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('lastSpeed')}
+                        {speed}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Stops : {numberstops}
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Stops
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('stops')}
+                        {numberstops}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Max Speed : {maxSpeed}
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Max Speed
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('maxSpeed')}
+                        {maxSpeed}
                       </Typography>
                     </div>
-                    <div className="p-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[8px] text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Odometer : {endOdometer}
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Odometer
                       </Typography>
                       <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('odometer')}
+                        {endOdometer}
                       </Typography>
                     </div>
                   </div>

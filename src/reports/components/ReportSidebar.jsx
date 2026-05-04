@@ -20,8 +20,8 @@ const ReportSidebar = ({ handleSubmit, handleSchedule, loading, multiDevice, inc
   };
 
   return (
-    <div className={`flex flex-col bg-white dark:bg-[#222427] rounded-2xl w-80 overflow-hidden border border-gray-100 dark:border-[#333333] ${className}`}>
-      <div className="flex items-center gap-2 p-6 pb-2">
+    <div className={`flex flex-col bg-white dark:bg-[#222427] rounded-2xl w-80 overflow-hidden border border-gray-100 dark:border-[#333333] h-full pb-10 ${className}`}>
+      <div className="flex items-center gap-2 p-6 pb-2 shrink-0">
         <span className="font-medium! text-xl text-gray-800 dark:text-white flex-1">
           {t('reportTitle')}
         </span>
@@ -34,10 +34,10 @@ const ReportSidebar = ({ handleSubmit, handleSchedule, loading, multiDevice, inc
           Clear
         </Button>
       </div>
-      <div className="px-6">
+      <div className="px-6 shrink-0">
         <div className="h-px w-full bg-gray-300 rounded-full mb-4" />
       </div>
-      <div className="flex-1 overflow-y-auto px-6 pb-6 no-scrollbar">
+      <div className="flex-1 overflow-y-auto px-6 no-scrollbar min-h-0">
         <ReportFilter
           handleSubmit={handleSubmit}
           handleSchedule={handleSchedule}

@@ -1,7 +1,7 @@
 .maplibregl-ctrl-top-right {
     top: auto !important;
     bottom: 40px !important;
-    left: 450px !important;
+    left: 420px !important;
     right: auto !important;
     display: flex !important;
     align-items: center !important;
@@ -71,9 +71,9 @@
 }
 
 .maplibregl-ctrl-icon {
-    background-size: 24px 24px !important;
-    width: 22px !important;
-    height: 22px !important;
+    background-size: 20px 20px !important;
+    width: 20px !important;
+    height: 20px !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     opacity: 0.9 !important;

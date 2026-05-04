@@ -1,17 +1,14 @@
 import React, {
-  Fragment, useCallback, useEffect, useRef, useState,
+  Fragment, useCallback, useState,
 } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   IconButton, Table, TableBody, TableCell, TableHead, TableRow,
 } from '@mui/material';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
-import ReportFilter from './components/ReportFilter';
 import { useTranslation } from '../common/components/LocalizationProvider';
-import PageLayout from '../common/components/PageLayout';
-import ReportsMenu from './components/ReportsMenu';
+import ReportLayout from './components/ReportLayout';
 import ColumnSelect from './components/ColumnSelect';
 import usePositionAttributes from '../common/attributes/usePositionAttributes';
 import { useCatch } from '../reactHelper';
@@ -21,6 +18,7 @@ import MapRoutePoints from '../map/MapRoutePoints';
 import MapPositions from '../map/MapPositions';
 import useReportStyles from './common/useReportStyles';
 import TableShimmer from '../common/components/TableShimmer';
+import ReportTableEmptyState from './components/ReportTableEmptyState';
 import MapCamera from '../map/MapCamera';
 import MapGeofence from '../map/MapGeofence';
 import scheduleReport from './common/scheduleReport';
@@ -36,7 +34,7 @@ const SummaryPosition = () => {
   const t = useTranslation();
   const speedUnit = useAttributePreference('speedUnit');
   const distanceUnit = useAttributePreference('distanceUnit');
-  const positionAttributes = usePositionAttributes(t);
+  usePositionAttributes(t);
   const devices = useSelector((state) => state.devices.items);
   const readonly = useRestriction('readonly');
 
@@ -95,14 +93,6 @@ const SummaryPosition = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-
-  const selectedIcon = useRef();
-
-  useEffect(() => {
-    if (selectedIcon.current) {
-      selectedIcon.current.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }
-  }, [selectedItem]);
 
   const onMapPointClick = useCallback((id) => {
     setSelectedItem(items.find((it) => it.id === id));
@@ -184,7 +174,24 @@ const SummaryPosition = () => {
   };
 
   return (
-    <PageLayout menu={<ReportsMenu />} breadcrumbs={['reportTitle', 'reportRoute']}>
+    <ReportLayout
+      breadcrumbs={['reportTitle', 'reportRoute']}
+      handleSubmit={handleSubmit}
+      handleSchedule={handleSchedule}
+      multiDevice
+      loading={loading}
+      filterExtension={(
+        <ColumnSelect
+          columns={columns.map((c) => c.key)}
+          setColumns={(keys) => setColumns(
+            keys.map((k) => columns.find((c) => c.key === k) || { key: k, label: k }),
+          )}
+          columnsArray={available}
+          rawValues
+          disabled={!items.length}
+        />
+      )}
+    >
       <div className={classes.container}>
 
         {selectedItem && (
@@ -208,23 +215,6 @@ const SummaryPosition = () => {
         )}
 
         <div className={classes.containerMain}>
-          <div className={classes.header}>
-            <ReportFilter handleSubmit={handleSubmit} handleSchedule={handleSchedule} multiDevice loading={loading}>
-              
-              {/* ✅ ColumnSelect FIX */}
-              <ColumnSelect
-                columns={columns.map(c => c.key)}
-                setColumns={(keys) =>
-                  setColumns(keys.map(k => columns.find(c => c.key === k) || { key: k, label: k }))
-                }
-                columnsArray={available}
-                rawValues
-                disabled={!items.length}
-              />
-
-            </ReportFilter>
-          </div>
-
           <Table>
             <TableHead>
               <TableRow>
@@ -242,38 +232,40 @@ const SummaryPosition = () => {
             </TableHead>
 
             <TableBody>
-              {!loading ? items.map((item) => (
-                <TableRow key={item.id}>
+              {!loading ? (
+                items.length ? items.slice(0, 4000).map((item) => (
+                  <TableRow key={item.id}>
 
-                  <TableCell>
-                    <IconButton onClick={() => setSelectedItem(item)}>
-                      <LocationSearchingIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-
-                  <TableCell>
-                    {devices[item.deviceId]?.name || 'Unknown'}
-                  </TableCell>
-
-                  {columns.map((col) => (
-                    <TableCell key={col.key}>
-                      {formatValue(item, col.key)}
+                    <TableCell>
+                      <IconButton onClick={() => setSelectedItem(item)}>
+                        <LocationSearchingIcon fontSize="small" />
+                      </IconButton>
                     </TableCell>
-                  ))}
 
-                  <TableCell>
-                    <CollectionActions itemId={item.id} endpoint="positions" readonly={readonly} />
-                  </TableCell>
+                    <TableCell>
+                      {devices[item.deviceId]?.name || 'Unknown'}
+                    </TableCell>
 
-                </TableRow>
-              )) : (
-                <TableShimmer columns={columns.length + 2} />
+                    {columns.map((col) => (
+                      <TableCell key={col.key}>
+                        {formatValue(item, col.key)}
+                      </TableCell>
+                    ))}
+
+                    <TableCell>
+                      <CollectionActions itemId={item.id} endpoint="positions" readonly={readonly} />
+                    </TableCell>
+
+                  </TableRow>
+                )) : <ReportTableEmptyState colSpan={columns.length + 3} />
+              ) : (
+                <TableShimmer columns={columns.length + 3} />
               )}
             </TableBody>
           </Table>
         </div>
       </div>
-    </PageLayout>
+    </ReportLayout>
   );
 };
 

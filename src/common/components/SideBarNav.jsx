@@ -20,6 +20,7 @@ import REPORTS from "../../resources/images/icon/analytics.svg"
 import SETTINGS from "../../resources/images/icon/settings.svg"
 import ACCOUNT from "../../resources/images/icon/account.svg"
 import SIDELOGO from "../../resources/images/icon/sidebar-icon.svg"
+import ActivityStatus from './activityStatus';
 
 const SideBarNav = () => {
   const navigate = useNavigate();
@@ -157,6 +158,7 @@ const SideBarNav = () => {
           </div>
         </div>
       </div>
+      <ActivityStatus/>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
         <MenuItem onClick={handleAccount}>

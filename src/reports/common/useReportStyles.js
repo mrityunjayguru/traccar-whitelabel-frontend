@@ -15,6 +15,7 @@ export default makeStyles((theme) => ({
   containerMain: {
     flex: 1,
     overflowY: 'auto',
+    overflowX: "auto",
     display: 'flex',
     flexDirection: 'column',
     '& .MuiTable-root': {

@@ -20,10 +20,10 @@ const ReportLayout = ({
       hideToolbar
     >
       <div className="flex flex-col h-full bg-[#f8f9fa] dark:bg-[#222427] overflow-hidden">
-        <div className="shrink-0 mt-3">
+        <div className="shrink-0 p-4 pb-0">
           <ReportsMenu />
         </div>
-        <div className="flex flex-1 min-h-0 overflow-hidden gap-4 pt-3">
+        <div className="flex flex-1 min-h-0 overflow-hidden gap-4 p-4 pt-3">
           {!fullWidth && (
             <ReportSidebar
               handleSubmit={handleSubmit}
@@ -31,13 +31,13 @@ const ReportLayout = ({
               loading={loading}
               multiDevice={multiDevice}
               includeGroups={includeGroups}
-              className="m-0! h-[calc(100vh-120px)] shadow-lg"
+              className="m-0! shadow-lg"
             >
               {filterExtension}
             </ReportSidebar>
           )}
-          <div className="flex-1 min-h-0 pr-10">
-            <div className="bg-white dark:bg-[#222427] rounded-2xl shadow-md h-[calc(100vh-120px)] flex flex-col overflow-hidden border border-gray-100 no-scrollbar dark:border-[#333]">
+          <div className="flex-1 min-h-0">
+            <div className="bg-white dark:bg-[#222427] rounded-2xl shadow-md flex flex-col h-full overflow-hidden border border-gray-100 no-scrollbar dark:border-[#333]">
               {children}
             </div>
           </div>

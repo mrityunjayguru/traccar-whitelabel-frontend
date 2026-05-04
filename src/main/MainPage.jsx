@@ -113,28 +113,6 @@ const MainPage = () => {
 
         {desktop && (
           <>
-            <div className="bg-white shadow-md rounded-full flex justify-center items-center px-2 py-2 gap-1 mb-2">
-              <p className="px-3 py-1 bg-[#D9E821] text-[#10110f] text-xs font-medium w-fit rounded-full">Total:
-                <span>{Object.values(devices).length}</span>
-
-              </p>
-              <p className="px-3 py-1 bg-green-200 text-[#24B467] text-xs font-medium w-fit rounded-full">
-                Online:<span>
-                  3
-                </span>
-              </p>
-              <p className="px-3 py-1 bg-red-200 text-[#ef4444] text-xs font-medium w-fit rounded-full">
-                Offline:<span>
-                  1
-                </span>
-              </p>
-              <p className="px-3 py-1 bg-gray-200 text-gray-600 text-xs font-medium w-fit rounded-full">
-                Unknown:<span>
-                  0
-                </span>
-              </p>
-            </div>
-
             <div className="pointer-events-auto flex-1 overflow-y-auto z-5 bg-white dark:bg-[#1A1C1E]! dark:text-white p-2 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
               <DeviceList devices={filteredDevices} />
             </div>

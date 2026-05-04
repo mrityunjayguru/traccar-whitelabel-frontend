@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider, List, useMediaQuery, useTheme } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 import CategoryIcon from '@mui/icons-material/Category';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import NotificationsIcon from '@mui/icons-material/Notifications';
@@ -52,9 +52,9 @@ const ReportsMenu = () => {
     ...(admin ? [{ title: t('statisticsTitle'), link: '/reports/statistics', icon: <BarChartIcon /> }] : []),
   ];
 
-  if (desktop) {
-    return (
-      <div className="flex flex-row items-center bg-white dark:bg-[#222427] rounded-full  mx-1 my-1 px-2 py-1 shadow-md overflow-x-auto no-scrollbar border border-gray-100 w-fit dark:border-[#333]">
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-row items-center bg-white dark:bg-[#222427] rounded-full mx-1 px-2 py-2 shadow-md overflow-x-auto no-scrollbar border border-gray-100 w-fit dark:border-[#333]">
         {menuItems.map((item) => (
           <MenuItem
             key={item.link}
@@ -62,61 +62,30 @@ const ReportsMenu = () => {
             link={item.link}
             icon={item.icon}
             selected={location.pathname === item.link}
-            className={`w-auto rounded-full!  transition-all ${location.pathname === item.link ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100  dark:hover:bg-gray-500 dark:text-white!'}`}
-            iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
-            textClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
-          />
-        ))}
-        <div className="h-8 w-[2px] bg-[#D9E821]  mx-4 self-center rounded-full opacity-60" />
-        {secondaryItems.map((item) => (
-          <MenuItem
-            key={item.link}
-            title={item.title}
-            link={item.link}
-            icon={item.icon}
-            selected={location.pathname === item.link}
-            className={`w-auto rounded-full!  transition-all ${location.pathname === item.link ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm' : 'text-gray-800! hover:bg-gray-50!'}`}
+            className={`w-auto rounded-full! transition-all shrink-0 ${location.pathname === item.link ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100  dark:hover:bg-gray-500 dark:text-white!'}`}
             iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
             textClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
           />
         ))}
       </div>
-    );
-  }
-
-
-  return (
-    <div className="bg-white">
-      <List className="py-0!">
-        {menuItems.map((item) => (
-          <MenuItem
-            key={item.link}
-            title={item.title}
-            link={item.link}
-            icon={item.icon}
-            selected={location.pathname === item.link}
-            className={`px-6 py-3! ${location.pathname === item.link ? 'bg-[#D9E821]/10 dark:text-white text-black! border-r-4 border-[#D9E821]' : 'text-gray-800!'}`}
-            iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
-          />
-        ))}
-      </List>
-      <Divider className="my-2!" />
-      <List className="py-0!">
-        {secondaryItems.map((item) => (
-          <MenuItem
-            key={item.link}
-            title={item.title}
-            link={item.link}
-            icon={item.icon}
-            selected={location.pathname === item.link}
-            className={`px-6 py-3! ${location.pathname === item.link ? 'bg-[#D9E821]/10 dark:text-white text-black! border-r-4 border-[#D9E821]' : 'text-gray-500!'}`}
-            iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
-          />
-        ))}
-      </List>
+      {secondaryItems.length > 0 && (
+        <div className="flex flex-row items-center bg-white dark:bg-[#222427] rounded-full mx-1 px-2 py-2 shadow-md overflow-x-auto no-scrollbar border border-gray-100 w-fit dark:border-[#333]">
+          {secondaryItems.map((item) => (
+            <MenuItem
+              key={item.link}
+              title={item.title}
+              link={item.link}
+              icon={item.icon}
+              selected={location.pathname === item.link}
+              className={`w-auto rounded-full! transition-all shrink-0 ${location.pathname === item.link ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100  dark:hover:bg-gray-500 dark:text-white!'}`}
+              iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
+              textClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
 export default ReportsMenu;
-

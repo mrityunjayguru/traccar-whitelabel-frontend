@@ -126,7 +126,7 @@ const ReportFilter = ({
             placeholder="Search devices or groups"
             className="w-full my-2!"
           />
-          <span className="font-medium! text-md text-gray-400 mb-1">
+          <span className="font-medium! text-sm text-gray-400 mb-1">
             {t(multiDevice ? "deviceTitle" : "reportDevice")}
           </span>
           <div className="min-h-[200px] overflow-y-auto no-scrollbar pr-2">
