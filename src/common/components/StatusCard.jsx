@@ -57,7 +57,7 @@ if (position != undefined) {
   sat = Number(position?.attributes?.sat || 0);
   speed = Number(position?.speed || 0);
 
-  console.log("position?.speed "+position?.speed)
+  
 }
 
 const isConnected = sat > 0;
@@ -116,8 +116,6 @@ const to = new Date(Date.UTC(
   23, 59, 59, 999
 )).toISOString();
 
-console.log("From:", from);
-console.log("To:", to);
 
 
 
@@ -137,7 +135,7 @@ console.log("To:", to);
   if (response.ok) {
 
       const data = await response.json(); // ✅ FIX
-      console.log("Full Trip Array:", data);
+      
      
       setTrip(data.length > 0 ? data[0] : null);
 
@@ -149,11 +147,6 @@ console.log("To:", to);
 
 
 
-console.log("==============Trip Data ============");
-console.log("==============Trip Data ============");
-console.log(trip);
-console.log("==============Trip Data ============");
-console.log("==============Trip Data ============");
 
   maxSpeed = trip ? Number(trip.maxSpeed || 0) : 0;
   distance = trip ? Number(trip.distance || 0) : 0; 
@@ -180,9 +173,6 @@ const formatDuration = (ms) => {
 };
 
 tripTime = formatDuration(tripTime);
-
-
-
 
   const handleGeofence = useCatchCallback(async () => {
     const newItem = {
@@ -245,7 +235,7 @@ tripTime = formatDuration(tripTime);
             ) : (
               <div className="flex justify-between items-center p-2 pl-4 border-b border-gray-200 dark:border-gray-800">
                 <Typography variant="body2" color="textSecondary" className="text-lg! text-black! dark:text-white! font-medium!">
-                  {device.name}
+                  {device.name} : {device.uniqueId}
                 </Typography>
                 <IconButton
                   size="small"
