@@ -21,7 +21,7 @@ const ReportLayout = ({
       hideToolbar
     >
       <div className="flex flex-col h-full bg-[#f8f9fa] dark:bg-[#222427] overflow-hidden">
-        <div className="shrink-0 p-4 pb-0">
+        <div className="shrink-0 p-4 pb-0 ">
           <ReportsMenu />
         </div>
         <div className="flex flex-1 min-h-0 overflow-hidden gap-4 p-4 pt-3">
@@ -38,7 +38,7 @@ const ReportLayout = ({
               {filterExtension}
             </ReportSidebar>
           )}
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 pr-6">
             <div className="bg-white dark:bg-[#222427] rounded-2xl shadow-md flex flex-col h-full overflow-hidden border border-gray-100 no-scrollbar dark:border-[#333]">
               {children}
             </div>

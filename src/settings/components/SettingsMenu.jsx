@@ -75,7 +75,7 @@ const SettingsMenu = () => {
               link={item.link}
               icon={item.icon}
               selected={item.selected}
-              className={`w-auto rounded-full! transition-all ${item.selected ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100 dark:hover:bg-gray-500 dark:text-white!'}`}
+              className={`w-auto! rounded-full! transition-all ${item.selected ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100 dark:hover:bg-gray-500 dark:text-white!'}`}
               iconClassName={`${item.selected ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
               textClassName={`${item.selected ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
             />

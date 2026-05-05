@@ -53,8 +53,8 @@ const ReportsMenu = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-row items-center bg-white dark:bg-[#222427] rounded-full mx-1 px-2 py-2 shadow-md overflow-x-auto no-scrollbar border border-gray-100 w-fit dark:border-[#333]">
+    <div className="flex flex-col gap-1 ">
+      <div className="flex flex-row items-center  bg-white dark:bg-[#222427] rounded-full mx-1 px-1 py-2 shadow-md overflow-x-auto no-scrollbar border border-gray-100 w-fit dark:border-[#333]">
         {menuItems.map((item) => (
           <MenuItem
             key={item.link}
