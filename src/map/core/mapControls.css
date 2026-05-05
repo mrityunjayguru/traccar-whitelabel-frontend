@@ -1,7 +1,7 @@
 .maplibregl-ctrl-top-right {
     top: auto !important;
-    bottom: 40px !important;
-    left: 420px !important;
+    bottom: 14px !important;
+    left: 350px !important;
     right: auto !important;
     display: flex !important;
     align-items: center !important;

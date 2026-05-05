@@ -7,7 +7,7 @@ import { useTranslation } from '../../common/components/LocalizationProvider';
 import { reportsActions, devicesActions } from '../../store';
 import ReportFilter from './ReportFilter';
 
-const ReportSidebar = ({ handleSubmit, handleSchedule, loading, multiDevice, includeGroups, children, className }) => {
+const ReportSidebar = ({ handleSubmit, handleSchedule, loading, multiDevice, includeGroups, showExportButton, children, className }) => {
   const t = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -44,6 +44,7 @@ const ReportSidebar = ({ handleSubmit, handleSchedule, loading, multiDevice, inc
           loading={loading}
           multiDevice={multiDevice}
           includeGroups={includeGroups}
+          showExportButton={showExportButton}
         >
           {children}
         </ReportFilter>

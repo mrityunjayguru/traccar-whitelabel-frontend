@@ -12,14 +12,26 @@ const SplitButton = ({
 
   return (
     <>
-      <ButtonGroup fullWidth={fullWidth} variant={variant} color={color} ref={anchorRef}>
-        <Button disabled={disabled} onClick={() => onClick(selected)}>
+      <div className="flex gap-2">
+        <Button
+          fullWidth
+          variant="contained"
+          disabled={disabled}
+          onClick={() => onClick(selected)}
+          className="bg-[#1a1a1a]! text-white! dark:text-black! dark:bg-white! rounded-full! py-4! normal-case! font-bold! hover:bg-black! dark:hover:bg-gray-200! transition-transform! flex-1"
+        >
           <Typography variant="button" noWrap>{options[selected]}</Typography>
         </Button>
-        <Button fullWidth={false} size="small" onClick={() => setMenuAnchorEl(anchorRef.current)}>
+        <Button
+          variant="contained"
+          disabled={disabled}
+          ref={anchorRef}
+          onClick={() => setMenuAnchorEl(anchorRef.current)}
+          className="bg-[#1a1a1a]! text-white! dark:text-black! dark:bg-white! rounded-full! py-4! normal-case! font-bold! hover:bg-black! dark:hover:bg-gray-200! transition-transform!"
+        >
           <ArrowDropDownIcon />
         </Button>
-      </ButtonGroup>
+      </div>
       <Menu
         open={!!menuAnchorEl}
         anchorEl={menuAnchorEl}

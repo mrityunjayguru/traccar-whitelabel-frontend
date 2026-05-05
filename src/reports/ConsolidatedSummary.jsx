@@ -145,6 +145,7 @@ const ConsolidatedSummary = () => {
       handleSchedule={handleSchedule}
       multiDevice
       loading={loading}
+      showExportButton
       filterExtension={(
         <ColumnSelect
           columns={columns.map(c => c.key)}

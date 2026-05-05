@@ -230,10 +230,10 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
       <div
         className="pointer-events-none fixed z-5 right-0"
         style={{
-          top: '12px',
-          right: '12px',
-          bottom: '12px',
-          width: '320px',
+          top: '10px',
+          right: '10px',
+          bottom: '10px',
+          width: '280px',
         }}
       >
         {device && (
@@ -256,8 +256,13 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
               </CardMedia>
             ) : (
               <div className="flex justify-between items-center p-2 pl-4 border-b border-gray-200 dark:border-gray-800">
-                <Typography variant="body2" color="textSecondary" className="text-md! text-black! dark:text-white! font-medium!">
-                  {device.name} : {device.uniqueId}
+                <Typography variant="body2" color="textSecondary" className="flex flex-col text-md! text-black! dark:text-white! font-medium!">
+                  <span>
+                    {device.name} :
+                    </span>
+                  <span>
+                    {device.uniqueId}
+                    </span>
                 </Typography>
                 <IconButton
                   size="small"
@@ -276,10 +281,10 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                   <div className="grid grid-cols-1 gap-2 p-2">
                     {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
                       <div key={key} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                        <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                           {positionAttributes[key]?.name || key}
                         </Typography>
-                        <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                        <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold ">
                           <PositionValue
                             position={position}
                             property={position.hasOwnProperty(key) ? key : null}
@@ -290,98 +295,98 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                     ))}
                     {/* Extra tiles */}
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Geofence
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('sharedGeofence')}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         GPS
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {!position ? 'No Data' : isConnected ? 'Connected' : 'Disconnected'}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Network
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {device?.status}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Vehicle BTT
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('vehicleBTT')}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Trip Dist
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {distance}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Daily Dist
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('dailyDistance')}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Trip Time
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {tripTime}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Idle Time
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {duration ? formatDuration(duration) : '00:00:00'}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Last Speed
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {speed}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Stops
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {numberstops}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Max Speed
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {maxSpeed}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
-                      <Typography className="text-[12px]! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Odometer
                       </Typography>
-                      <Typography className="text-sm text-gray-700 dark:text-gray-200 font-bold truncate">
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {endOdometer}
                       </Typography>
                     </div>

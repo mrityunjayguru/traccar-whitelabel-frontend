@@ -13,6 +13,7 @@ const ReportLayout = ({
   children,
   filterExtension,
   fullWidth = false,
+  showExportButton = false,
 }) => {
   return (
     <PageLayout
@@ -31,6 +32,7 @@ const ReportLayout = ({
               loading={loading}
               multiDevice={multiDevice}
               includeGroups={includeGroups}
+              showExportButton={showExportButton}
               className="m-0! shadow-lg"
             >
               {filterExtension}

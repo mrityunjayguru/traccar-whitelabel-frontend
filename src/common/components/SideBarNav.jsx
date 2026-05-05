@@ -105,7 +105,8 @@ const SideBarNav = () => {
   };
 
   return (
-    <div className="flex flex-col items-center  w-16 py-3 z-10">
+    <div className="flex flex-col items-center justify-between h-full  w-16 py-3 z-10">
+      <div className="">
       <div className="mb-3 flex items-center justify-center  cursor-pointer">
         <img src={SIDELOGO} alt="sidebar-icon" className="w-14 h-14" />
       </div>
@@ -157,6 +158,7 @@ const SideBarNav = () => {
             </Badge>
           </div>
         </div>
+      </div>
       </div>
       <ActivityStatus/>
 

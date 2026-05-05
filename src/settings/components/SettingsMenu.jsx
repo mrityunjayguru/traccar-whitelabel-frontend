@@ -67,7 +67,7 @@ const SettingsMenu = () => {
   return (
     <>
       <div className="flex flex-col bg-white dark:bg-[#222427] rounded-full mx-1 my-1 px-3 py-1 shadow-md border border-gray-100 w-fit dark:border-[#333]">
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center">
           {topItems.map((item) => (
             <MenuItem
               key={item.link}

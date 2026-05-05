@@ -119,6 +119,7 @@ const RouteReportPage = () => {
       handleSchedule={handleSchedule}
       loading={loading}
       multiDevice
+      showExportButton
       filterExtension={(
         <ColumnSelect
           columns={columns}

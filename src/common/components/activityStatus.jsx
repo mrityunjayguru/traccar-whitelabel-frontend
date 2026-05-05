@@ -37,7 +37,7 @@ const ActivityStatus = () => {
     );
 
     return (
-        <div className="flex flex-col items-center mt-4 p-1.5 bg-white dark:bg-[#1D1D1D] rounded-full shadow-md border border-gray-100 dark:border-gray-800">
+        <div className="flex flex-col items-center  mt-4 p-1.5 bg-white dark:bg-[#1D1D1D] rounded-full shadow-md border border-gray-100 dark:border-gray-800">
             <StatusItem
                 icon={TotalIcon}
                 count={counts.total}

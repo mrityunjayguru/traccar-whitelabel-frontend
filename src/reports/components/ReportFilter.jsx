@@ -28,6 +28,7 @@ const ReportFilter = ({
   multiDevice,
   includeGroups,
   loading,
+  showExportButton = false,
 }) => {
   const dispatch = useDispatch();
   const t = useTranslation();
@@ -314,15 +315,32 @@ const ReportFilter = ({
       {children && <div className="mb-3 pt-5">{children}</div>}
 
       <div className="mt-auto pt-6">
-        <Button
-          fullWidth
-          variant="contained"
-          disabled={disabled}
-          onClick={() => handleClick(button)}
-          className="bg-[#1a1a1a]! text-white! dark:text-black! dark:bg-white! rounded-full! py-4! normal-case! font-bold!  hover:bg-black! dark:hover:bg-gray-200! transition-transform!"
-        >
-          {t(loading ? "sharedLoading" : "reportShow")}
-        </Button>
+        {showExportButton ? (
+          <SplitButton
+            fullWidth
+            variant="contained"
+            disabled={disabled}
+            onClick={handleClick}
+            options={{
+              json: t("reportShow"),
+              export: "Export",
+              mail: "Email Report",
+              schedule: "Schedule",
+            }}
+            selected={button}
+            setSelected={setButton}
+          />
+        ) : (
+          <Button
+            fullWidth
+            variant="contained"
+            disabled={disabled}
+            onClick={() => handleClick(button)}
+            className="bg-[#1a1a1a]! text-white! dark:text-black! dark:bg-white! rounded-full! py-4! normal-case! font-bold!  hover:bg-black! dark:hover:bg-gray-200! transition-transform!"
+          >
+            {t(loading ? "sharedLoading" : "reportShow")}
+          </Button>
+        )}
       </div>
     </div>
   );

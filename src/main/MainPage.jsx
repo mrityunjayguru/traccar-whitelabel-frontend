@@ -94,7 +94,7 @@ const MainPage = () => {
         </div>
       )}
 
-      <div className={`pointer-events-none absolute inset-0 flex flex-col md:p-0 ${desktop ? 'md:left-20 md:top-20' : 'md:left-2 md:top-3'} md:bottom-10 md:w-80 md:z-10 md:h-auto md:inset-auto`}>
+      <div className={`pointer-events-none absolute inset-0 flex flex-col md:p-0 ${desktop ? 'md:left-20 md:top-20' : 'md:left-2 md:top-3'} md:bottom-3 md:w-65 md:z-10 md:h-auto md:inset-auto`}>
         {!desktop && (
           <div className="pointer-events-auto z-6 bg-white dark:bg-[#1A1C1E]! dark:text-white rounded-2xl border border-gray-100 dark:border-gray-800">
             <MainToolbar
