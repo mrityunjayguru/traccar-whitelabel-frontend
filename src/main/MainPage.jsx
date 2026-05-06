@@ -114,7 +114,7 @@ const MainPage = () => {
 
         {desktop && (
           <>
-            <div className={`pointer-events-auto z-5 bg-white dark:bg-[#1A1C1E]! dark:text-white p-1 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 ${isDeviceListCollapsed ? 'h-auto' : 'flex-1 overflow-y-auto'}`}>
+            <div className={`pointer-events-auto z-5 bg-white dark:bg-[#1A1C1E]! dark:text-white p-1 mt-4 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 ${isDeviceListCollapsed ? 'h-auto' : 'flex-1 overflow-y-auto'}`}>
               <DeviceList 
                 devices={filteredDevices} 
                 isCollapsed={isDeviceListCollapsed} 
