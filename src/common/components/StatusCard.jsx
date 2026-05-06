@@ -233,7 +233,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
           top: '10px',
           right: '10px',
           bottom: '10px',
-          width: '280px',
+          width: '180px',
         }}
       >
         {device && (
@@ -259,10 +259,10 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                 <Typography variant="body2" color="textSecondary" className="flex flex-col text-md! text-black! dark:text-white! font-medium!">
                   <span>
                     {device.name} :
-                    </span>
+                  </span>
                   <span>
                     {device.uniqueId}
-                    </span>
+                  </span>
                 </Typography>
                 <IconButton
                   size="small"
@@ -401,75 +401,81 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                   className="flex flex-row justify-center p-2 border-t border-gray-200 dark:border-gray-800 gap-2 flex-wrap"
                   disableSpacing
                 >
-                  <Tooltip title={t('sharedExtra')}>
-                    <IconButton
-                      size="small"
-                      color="secondary"
-                      onClick={(e) => setAnchorEl(e.currentTarget)}
-                      disabled={!position}
-                    >
-                      <PendingIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={t('reportReplay')}>
-                    <IconButton
-                      size="small"
-                      onClick={() => navigate('/replay')}
-                      disabled={disableActions || !position}
-                    >
-                      <ReplayIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={t('commandTitle')}>
-                    <IconButton
-                      size="small"
-                      onClick={() => navigate(`/settings/device/${deviceId}/command`)}
-                      disabled={disableActions}
-                    >
-                      <PublishIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={t('linkGoogleMaps')}>
-                    <IconButton
-                      size="small"
-                      component="a"
-                      target="_blank"
-                      href={`https://www.google.com/maps/search/?api=1&query=${position?.latitude}%2C${position?.longitude}`}
-                      disabled={!position}
-                    >
-                      <MapIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  {!shareDisabled && !user.temporary && (
-                    <Tooltip title={t('deviceShare')}>
-                      <IconButton
-                        size="small"
-                        color="secondary"
-                        onClick={() => navigate(`/settings/device/${deviceId}/share`)}
-                      >
-                        <ShareIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  <Tooltip title={t('sharedEdit')}>
-                    <IconButton
-                      size="small"
-                      onClick={() => navigate(`/settings/device/${deviceId}`)}
-                      disabled={disableActions || deviceReadonly}
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={t('sharedRemove')}>
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => setRemoving(true)}
-                      disabled={disableActions || deviceReadonly}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
+                  <div className="flex flex-col justify-center items-center">
+                    <div className="">
+                      <Tooltip title={t('sharedExtra')}>
+                        <IconButton
+                          size="small"
+                          color="secondary"
+                          onClick={(e) => setAnchorEl(e.currentTarget)}
+                          disabled={!position}
+                        >
+                          <PendingIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={t('reportReplay')}>
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate('/replay')}
+                          disabled={disableActions || !position}
+                        >
+                          <ReplayIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={t('commandTitle')}>
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/settings/device/${deviceId}/command`)}
+                          disabled={disableActions}
+                        >
+                          <PublishIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={t('linkGoogleMaps')}>
+                        <IconButton
+                          size="small"
+                          component="a"
+                          target="_blank"
+                          href={`https://www.google.com/maps/search/?api=1&query=${position?.latitude}%2C${position?.longitude}`}
+                          disabled={!position}
+                        >
+                          <MapIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
+                    <div className="">
+                      {!shareDisabled && !user.temporary && (
+                        <Tooltip title={t('deviceShare')}>
+                          <IconButton
+                            size="small"
+                            color="secondary"
+                            onClick={() => navigate(`/settings/device/${deviceId}/share`)}
+                          >
+                            <ShareIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      <Tooltip title={t('sharedEdit')}>
+                        <IconButton
+                          size="small"
+                          onClick={() => navigate(`/settings/device/${deviceId}`)}
+                          disabled={disableActions || deviceReadonly}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={t('sharedRemove')}>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => setRemoving(true)}
+                          disabled={disableActions || deviceReadonly}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
+                  </div>
                 </CardActions>
               </div>
             )}
