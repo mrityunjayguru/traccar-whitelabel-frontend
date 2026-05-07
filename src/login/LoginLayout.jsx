@@ -16,7 +16,6 @@ const LoginLayout = ({ children }) => {
               <div className="flex items-center gap-2">
                 <LogoImage color="#E2E8F0" />
               </div>
-
               <h1 className="text-4xl md:text-7xl font-normal text-[#B5BAD2] leading-tight my-auto">
                 Tracking Portal
               </h1>
