@@ -47,6 +47,8 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   let speed = 0;
   let maxSpeed = 0;
   let distance = 0;
+  let tripdistance = 0;
+
 
   let startTime = 0;
   let endTime = 0;
@@ -127,12 +129,19 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
       const data = await response.json(); // ✅ FIX
 
 
-      setTrip(data.length > 0 ? data[0] : null);
+      setTrip(data.length > 0 ? data[data.length-1] : null);
 
     } else {
       throw Error(await response.text());
     }
   }, [deviceId, from, to]); // 👈 REQUIRED 
+
+  console.log(" Trip Distance ");
+  console.log(trip);
+
+  tripdistance = trip ? Number(trip.distance || 0) : 0;
+  console.log(" Trip Distance ");
+
 
   useEffectAsync(async () => {
     const query = new URLSearchParams({
@@ -179,7 +188,15 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   startTime = trip?.startTime ? new Date(trip.startTime).getTime() : 0;
   endTime = trip?.endTime ? new Date(trip.endTime).getTime() : 0;
 
-  tripTime = endTime - startTime; // ✅ correct order 
+   tripTime = trip?.duration; // duration in milliseconds
+
+const hours = Math.floor(tripTime / (1000 * 60 * 60));
+const minutes = Math.floor((tripTime % (1000 * 60 * 60)) / (1000 * 60));
+const seconds = Math.floor((tripTime % (1000 * 60)) / 1000);
+
+const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
+
+console.log(formattedTime); // ✅ correct order 
 
 
   const formatDuration = (ms) => {
@@ -331,12 +348,12 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                         Trip Dist
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {distance}
+                        {tripdistance}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Daily Dist
+                        Daily Dist : {distance}
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {t('dailyDistance')}
@@ -347,7 +364,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                         Trip Time
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {tripTime}
+                        {formattedTime}
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
