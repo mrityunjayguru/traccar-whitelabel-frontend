@@ -54,7 +54,7 @@ const ReportsMenu = () => {
 
   return (
     <div className="flex flex-col gap-1 ">
-      <div className="flex flex-row items-center  bg-white dark:bg-[#222427] rounded-full mx-1 px-1 py-2 shadow-md overflow-x-auto no-scrollbar border border-gray-100 w-fit dark:border-[#333]">
+      <div className="flex flex-row items-center  bg-white! dark:bg-[#222427]! rounded-full mx-1 px-1 py-2 shadow-md overflow-x-auto no-scrollbar border border-gray-100! w-fit dark:border-[#333]!">
         {menuItems.map((item) => (
           <MenuItem
             key={item.link}
@@ -62,9 +62,9 @@ const ReportsMenu = () => {
             link={item.link}
             icon={item.icon}
             selected={location.pathname === item.link}
-            className={`w-auto rounded-full! transition-all shrink-0 ${location.pathname === item.link ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100  dark:hover:bg-gray-500 dark:text-white!'}`}
-            iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
-            textClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
+            className={`w-auto rounded-full! transition-all shrink-0 ${location.pathname === item.link ? 'bg-[#D9E821]! dark:bg-[#D9E821]! dark:text-white! text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100!  dark:hover:bg-gray-500! dark:text-white!'}`}
+            iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white!'}`}
+            textClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white!'}`}
           />
         ))}
       </div>
@@ -77,9 +77,9 @@ const ReportsMenu = () => {
               link={item.link}
               icon={item.icon}
               selected={location.pathname === item.link}
-              className={`w-auto rounded-full! transition-all shrink-0 ${location.pathname === item.link ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100  dark:hover:bg-gray-500 dark:text-white!'}`}
-              iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
-              textClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
+              className={`w-auto rounded-full! transition-all shrink-0 ${location.pathname === item.link ? 'bg-[#D9E821]! dark:bg-[#D9E821]! dark:text-white! text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100!  dark:hover:bg-gray-500! dark:text-white!'}`}
+              iconClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white!'}`}
+              textClassName={`${location.pathname === item.link ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white!'}`}
             />
           ))}
         </div>

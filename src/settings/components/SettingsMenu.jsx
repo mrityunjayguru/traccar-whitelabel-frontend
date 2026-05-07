@@ -75,14 +75,14 @@ const SettingsMenu = () => {
               link={item.link}
               icon={item.icon}
               selected={item.selected}
-              className={`w-auto! rounded-full! transition-all ${item.selected ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100 dark:hover:bg-gray-500 dark:text-white!'}`}
-              iconClassName={`${item.selected ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
-              textClassName={`${item.selected ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
+              className={`w-auto! rounded-full! transition-all ${item.selected ? 'bg-[#D9E821]! dark:bg-[#D9E821]! dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100 dark:hover:bg-gray-500! dark:text-white!'}`}
+              iconClassName={`${item.selected ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white!'}`}
+              textClassName={`${item.selected ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white!'}`}
             />
           ))}
         </div>
       </div>
-      <div className="flex flex-col bg-white dark:bg-[#222427] rounded-full mx-1 my-1 px-3 py-1 shadow-md border border-gray-100 w-fit dark:border-[#333]">
+      <div className="flex flex-col bg-white! dark:bg-[#222427]! rounded-full mx-1 my-1 px-3 py-1 shadow-md border border-gray-100! w-fit dark:border-[#333]!">
         {bottomItems.length > 0 && (
           <div className="flex flex-wrap items-center gap-2">
             {bottomItems.map((item) => (
@@ -92,9 +92,9 @@ const SettingsMenu = () => {
                 link={item.link}
                 icon={item.icon}
                 selected={item.selected}
-                className={`w-auto rounded-full! transition-all ${item.selected ? 'bg-[#D9E821]! dark:bg-[#D9E821]/10 dark:text-white text-black! shadow-sm' : 'text-gray-800! hover:bg-gray-50!'}`}
-                iconClassName={`${item.selected ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
-                textClassName={`${item.selected ? '!text-black dark:text-white' : '!text-gray-800 dark:text-white'}`}
+                className={`w-auto! rounded-full! transition-all ${item.selected ? 'bg-[#D9E821]! dark:bg-[#D9E821]! dark:text-white text-black! shadow-sm ' : 'text-gray-800! hover:bg-gray-100 dark:hover:bg-gray-500! dark:text-white!'}`}
+                iconClassName={`${item.selected ? 'text-black! dark:text-black!' : '!text-gray-800 dark:text-white!'}`}
+                textClassName={`${item.selected ? 'text-black! dark:text-black!' : '!text-gray-800 dark:text-white!'}`}
               />
             ))}
           </div>

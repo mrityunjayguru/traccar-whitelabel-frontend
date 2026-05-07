@@ -59,10 +59,31 @@
 .maplibregl-style-list[style*="display: block"] {
   display: flex !important;
   flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 12px !important;
-  border-radius: 4px !important;
-  text-align: center !important;
-  width: 100% !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  padding: 4px 0 !important;
+  border-radius: 10px !important;
+  text-align: left !important;
+  width: auto !important;
+  min-width: 160px !important;
+  position: absolute !important;
+  bottom: calc(100% + 8px) !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  z-index: 1000 !important;
+}
+
+.dark .maplibregl-style-list[style*="display: block"] {
+  background-color: #1A1C1E !important;
+  border-color: #374151 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+.maplibregl-style-list[style*="display: block"] button {
+  text-align: left !important;
+  padding: 8px 16px !important;
+  white-space: nowrap !important;
 }
