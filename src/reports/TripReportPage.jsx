@@ -178,6 +178,7 @@ const TripReportPage = () => {
       handleSubmit={handleSubmit}
       handleSchedule={handleSchedule}
       loading={loading}
+      showExportButton
       filterExtension={(
         <ColumnSelect columns={columns} setColumns={setColumns} columnsArray={columnsArray} />
       )}

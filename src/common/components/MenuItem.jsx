@@ -6,7 +6,7 @@ const MenuItem = ({ title, link, icon, selected, className, iconClassName, textC
     <Link
       key={link}
       to={link}
-      className={`flex items-center justify-center px-2 md:px-3 py-1.5 md:py-2 transition-all cursor-pointer no-underline shrink-0 ${className}`}
+      className={`flex items-center justify-center px-2 md:px-2.5 py-1.5 md:py-2 transition-all cursor-pointer no-underline shrink-0 ${className}`}
     >
       {icon && (
         <div className={`flex items-center justify-center mr-1 md:mr-2 ${iconClassName}`}>

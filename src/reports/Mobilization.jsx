@@ -175,6 +175,7 @@ const user = useSelector(state => state.session.user);
       handleSchedule={handleSchedule}
       multiDevice
       loading={loading}
+      showExportButton
       filterExtension={(
         <ColumnSelect
           columns={columns.map(c => c.key)}

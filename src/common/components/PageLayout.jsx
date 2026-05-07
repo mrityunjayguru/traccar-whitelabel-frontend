@@ -114,7 +114,7 @@ const PageLayout = ({
           {menu}
         </Drawer>
       )}
-      <div className={classes.content + " md:pl-20"}>
+      <div className={classes.content + " md:pl-16"}>
         {!menu && !hideToolbar && (
           <Toolbar className="bg-white border-b border-gray-200">
             <IconButton color="inherit" edge="start" sx={{ mr: 2 }} onClick={() => navigate('/')} aria-label="back" fontSize="large">

@@ -272,6 +272,7 @@ case 'stopTime':
       handleSchedule={handleSchedule}
       multiDevice
       loading={loading}
+      showExportButton
       filterExtension={(
         <ColumnSelect
           columns={columns}

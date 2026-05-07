@@ -134,6 +134,7 @@ const SummaryReportPage = () => {
       multiDevice
       includeGroups
       loading={loading}
+      showExportButton
       filterExtension={(
         <>
           <div className="mb-4">

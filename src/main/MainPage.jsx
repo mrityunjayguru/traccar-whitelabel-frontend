@@ -45,6 +45,7 @@ const MainPage = () => {
   const [filterMap, setFilterMap] = usePersistedState('filterMap', false);
 
   const [devicesOpen, setDevicesOpen] = useState(desktop);
+  const [isDeviceListCollapsed, setIsDeviceListCollapsed] = useState(false);
   const [eventsOpen, setEventsOpen] = useState(false);
 
   const onEventsClick = useCallback(() => setEventsOpen(true), [setEventsOpen]);
@@ -94,7 +95,7 @@ const MainPage = () => {
         </div>
       )}
 
-      <div className={`pointer-events-none absolute inset-0 flex flex-col md:p-0 ${desktop ? 'md:left-20 md:top-20' : 'md:left-2 md:top-3'} md:bottom-10 md:w-80 md:z-10 md:h-auto md:inset-auto`}>
+      <div className={`pointer-events-none absolute inset-0 flex flex-col md:p-0 ${desktop ? 'md:left-20 md:top-16' : 'md:left-2 md:top-3'} md:bottom-3 md:w-65 md:z-10 md:h-auto md:inset-auto`}>
         {!desktop && (
           <div className="pointer-events-auto z-6 bg-white dark:bg-[#1A1C1E]! dark:text-white rounded-2xl border border-gray-100 dark:border-gray-800">
             <MainToolbar
@@ -113,8 +114,12 @@ const MainPage = () => {
 
         {desktop && (
           <>
-            <div className="pointer-events-auto flex-1 overflow-y-auto z-5 bg-white dark:bg-[#1A1C1E]! dark:text-white p-2 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
-              <DeviceList devices={filteredDevices} />
+            <div className={`pointer-events-auto z-5 bg-white dark:bg-[#1A1C1E]! dark:text-white p-1 mt-4 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 ${isDeviceListCollapsed ? 'h-auto' : 'flex-1 overflow-y-auto'}`}>
+              <DeviceList 
+                devices={filteredDevices} 
+                isCollapsed={isDeviceListCollapsed} 
+                setIsCollapsed={setIsDeviceListCollapsed} 
+              />
             </div>
           </>
         )}

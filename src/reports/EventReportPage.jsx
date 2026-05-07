@@ -170,6 +170,7 @@ const EventReportPage = () => {
       handleSubmit={handleSubmit}
       handleSchedule={handleSchedule}
       loading={loading}
+      showExportButton
       filterExtension={(
         <>
           <div className="flex flex-col gap-4 mb-4">
