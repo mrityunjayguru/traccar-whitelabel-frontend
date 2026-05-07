@@ -9,8 +9,8 @@ export default defineConfig(() => ({
   server: {
     port: 3000,
     proxy: {
-      '/api/socket': 'wss://stagetrackwhitelabel.trackroutepro.com/',
-      '/api': 'https://stagetrackwhitelabel.trackroutepro.com/',
+      '/api/socket': 'wss://stagetrackbackend.trackroutepro.com/',
+      '/api': 'https://stagetrackbackend.trackroutepro.com/',
       '/auth-api': {
           target: 'https://app.trackroutepro.com',
           changeOrigin: true,
