@@ -37,6 +37,8 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   const dispatch = useDispatch();
   const t = useTranslation();
 
+  
+  const [summarydata, setSummarydata] = useState(null);
   const [trip, setTrip] = useState(null);
   const [stops, setStops] = useState(null);
   const [stopsall, setStopsall] = useState(null);
@@ -111,6 +113,41 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
     23, 59, 59, 999
   )).toISOString();
 
+ // /reports/summary
+
+
+
+  useEffectAsync(async () => {
+    const query = new URLSearchParams({
+      deviceId,
+      from,
+      to,
+    });
+
+    const response = await fetch(`/api/reports/summary?${query.toString()}`, {
+      headers: {
+        Accept: 'application/json',
+      },
+    });
+
+    if (response.ok) {
+
+      const summarydatanew = await response.json(); // ✅ FIX
+      setSummarydata(summarydatanew[0]);
+
+    } else {
+      throw Error(await response.text());
+    }
+  }, [deviceId, from, to]); // 👈 REQUIRED 
+
+
+console.log(" Summary Data ");
+console.log(summarydata);
+console.log(" Summary Data ");
+
+
+
+
   useEffectAsync(async () => {
     const query = new URLSearchParams({
       deviceId,
@@ -127,8 +164,6 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
     if (response.ok) {
 
       const data = await response.json(); // ✅ FIX
-
-
       setTrip(data.length > 0 ? data[data.length-1] : null);
 
     } else {
@@ -180,7 +215,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
 
 
   maxSpeed = trip ? Number(trip.maxSpeed || 0) : 0;
-  distance = trip ? Number(trip.distance || 0) : 0;
+  distance = summarydata ? Number(summarydata.distance || 0) : 0;
 
   endOdometer = trip ? Number(trip.endOdometer || 0) : 0;
 
