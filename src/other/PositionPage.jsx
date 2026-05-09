@@ -25,6 +25,8 @@ const PositionPage = () => {
 
   const { id } = useParams();
 
+
+
   const [item, setItem] = useState();
 
   useEffectAsync(async () => {

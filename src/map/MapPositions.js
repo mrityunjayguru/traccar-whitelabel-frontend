@@ -46,8 +46,7 @@ const MapPositions = ({ positions, onClick, showStatus, selectedPosition, titleF
       speed: Number(position.speed?.toFixed(2)),
       label: `${device.name}
 Time: ${formatTime(position.fixTime, 'seconds')}
-Speed: ${Number(position.speed?.toFixed(2))}
-Distance : ${Number(position.attributes.distance?.toFixed(2))}
+Speed: ${position?.speed ? (position.speed * 1.852).toFixed(2) : '0'} km/h
 `,
       category: mapIconKey(device.category),
       color: showStatus ? position.attributes.color || getStatusColor(device.status) : 'neutral',

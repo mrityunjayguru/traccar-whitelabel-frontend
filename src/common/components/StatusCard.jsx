@@ -31,6 +31,25 @@ import { devicesActions } from '../../store';
 import { useCatch, useCatchCallback, useEffectAsync } from '../../reactHelper';
 import { useAttributePreference } from '../util/preferences';
 
+import {
+  formatAlarm,
+  formatAltitude,
+  formatBoolean,
+  formatCoordinate,
+  formatCourse,
+  formatDistance,
+  formatNumber,
+  formatNumericHours,
+  formatPercentage,
+  formatSpeed,
+  formatTime,
+  formatTemperature,
+  formatVoltage,
+  formatVolume,
+  formatConsumption,
+} from '../util/formatter';
+import { speedToKnots } from '../util/converter';
+
 
 const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPadding = 0 }) => {
   const navigate = useNavigate();
@@ -47,6 +66,13 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   const [stops, setStops] = useState(null);
   const [stopsall, setStopsall] = useState(null);
 
+  
+    const distanceUnit = useAttributePreference('distanceUnit');
+    const altitudeUnit = useAttributePreference('altitudeUnit');
+    const speedUnit = useAttributePreference('speedUnit');
+    const volumeUnit = useAttributePreference('volumeUnit');
+    
+  
 
   let power =  0;
   let sat = 0;
@@ -67,9 +93,8 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
 
   if (position != undefined) {
     sat = Number(position?.attributes?.sat || 0);
-    //speed = Number(position?.speed   * 1.852 || 0);
-     speed = (position?.speed * 1.852 || 0).toFixed(2);
-  
+    speed = position?.speed ? formatSpeed(position.speed, speedUnit, t) : '0';
+    
       power = position.attributes.power.toFixed(2);
   }
   const isConnected = sat > 0;
@@ -315,11 +340,8 @@ console.log("idleTime");
 
   numberstops = stopsall ? Number(stopsall.length || 0) : 0
 
+  maxSpeed = trip?.maxSpeed ? formatSpeed(trip.maxSpeed, speedUnit, t) : '';
 
-
-   maxSpeed = trip
-  ? Number(Number(trip.maxSpeed || 0).toFixed(2))
-  : 0;
   distance = summarydata ? Number(summarydata.distance/1000 || 0) : 0;
 
   endOdometer = trip ? Number(trip.endOdometer || 0) : 0;
@@ -466,7 +488,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                         Speed
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {position ? `${position.speed} km/h` : 'No Data'}
+                        {speed}
                       </Typography>
                     </div>
 
@@ -509,15 +531,15 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                         Trip Dist
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {tripdistance}
+                        {tripdistance} km/h
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Daily Dist : {distance}
+                        Daily Dist 
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('dailyDistance')}
+                         {distance} km/h
                       </Typography>
                     </div>
                     <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
@@ -581,7 +603,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                   </div>
                   <div className="px-4 pb-2 mt-1">
                     <Typography variant="body2" className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium">
-                      <Link className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium" component={RouterLink} to={`/position/${position.id}`} underline="none">{t('sharedShowDetails')}</Link>
+                      <Link className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium" component={RouterLink} to={`/position/${position.id}`} underline="none">{t('sharedShowDetails') }</Link>
                     </Typography>
                   </div>
                 </CardContent>
