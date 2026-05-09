@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
@@ -37,14 +37,18 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   const dispatch = useDispatch();
   const t = useTranslation();
 
+
+
+
   
+  const [trackVehiclData, setTrackVehiclData] = useState(null);
   const [summarydata, setSummarydata] = useState(null);
   const [trip, setTrip] = useState(null);
   const [stops, setStops] = useState(null);
   const [stopsall, setStopsall] = useState(null);
 
 
-
+  let power =  0;
   let sat = 0;
   let speed = 0;
   let maxSpeed = 0;
@@ -59,10 +63,14 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   let engineHours = 0;
   let numberstops = 0;
   let duration = null;
+  let idleTime = "00:00:00";
 
   if (position != undefined) {
     sat = Number(position?.attributes?.sat || 0);
-    speed = Number(position?.speed || 0);
+    //speed = Number(position?.speed   * 1.852 || 0);
+     speed = (position?.speed * 1.852 || 0).toFixed(2);
+  
+      power = position.attributes.power.toFixed(2);
   }
   const isConnected = sat > 0;
   const deviceReadonly = useDeviceReadonly();
@@ -115,6 +123,57 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
 
  // /reports/summary
 
+const imei = device.uniqueId;
+
+/*
+
+useEffect(() => {
+  const fetchTripReport = async () => {
+    try {
+      const data = {
+        deviceId,
+        imei,
+      };
+
+      const response = await fetch(
+        "https://app.trackroutepro.com/trackVehicle/tripReport",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      const result = await response.json();
+
+      console.log("API Response:", result);
+
+      if (!response.ok) {
+        throw new Error(JSON.stringify(result));
+      }
+
+      setTrackVehiclData(result.data || result);
+    } catch (error) {
+      console.error("API Error:", error);
+    }
+  };
+
+  if (deviceId && imei) {
+    fetchTripReport();
+  }
+}, [deviceId, imei]);
+
+console.log("Trac veichel data ");
+console.log(trackVehiclData);
+console.log("Trac veichel data ");
+
+*/
+
+
+
 
 
   useEffectAsync(async () => {
@@ -141,9 +200,55 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   }, [deviceId, from, to]); // 👈 REQUIRED 
 
 
-console.log(" Summary Data ");
-console.log(summarydata);
-console.log(" Summary Data ");
+
+/*
+
+// totalTravelTime example: "8 h 33 m"
+
+const ignitionHours = summarydata?.engineHours ?? "00h00m";
+const moveTime = summarydata?.moveTime ?? "00h00m";
+
+// Convert "8 h 33 m" => total minutes
+const timeToMinutes = (time) => {
+  if (!time) return 0;
+
+  const hourMatch = time.match(/(\d+)\s*h/i);
+  const minuteMatch = time.match(/(\d+)\s*m/i);
+
+  const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+  const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
+
+  return hours * 60 + minutes;
+};
+
+// Convert minutes => "08h 33m"
+const minutesToTime = (totalMinutes) => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  return `${String(hours).padStart(2, "0")}h ${String(
+    minutes
+  ).padStart(2, "0")}m`;
+};
+
+const ignitionMin = timeToMinutes(ignitionHours);
+const moveMin = timeToMinutes(moveTime);
+
+const idleMin = Math.max(0, ignitionMin - moveMin);
+
+const idleTime = minutesToTime(idleMin);
+
+console.log("idleTime");
+console.log(idleTime);
+console.log("idleTime");
+*/
+
+
+
+
+
+
+
 
 
 
@@ -171,11 +276,9 @@ console.log(" Summary Data ");
     }
   }, [deviceId, from, to]); // 👈 REQUIRED 
 
-  console.log(" Trip Distance ");
-  console.log(trip);
 
-  tripdistance = trip ? Number(trip.distance || 0) : 0;
-  console.log(" Trip Distance ");
+  tripdistance = trip ? Number(trip.distance/1000 || 0) : 0;
+  
 
 
   useEffectAsync(async () => {
@@ -214,8 +317,10 @@ console.log(" Summary Data ");
 
 
 
-  maxSpeed = trip ? Number(trip.maxSpeed || 0) : 0;
-  distance = summarydata ? Number(summarydata.distance || 0) : 0;
+   maxSpeed = trip
+  ? Number(Number(trip.maxSpeed || 0).toFixed(2))
+  : 0;
+  distance = summarydata ? Number(summarydata.distance/1000 || 0) : 0;
 
   endOdometer = trip ? Number(trip.endOdometer || 0) : 0;
 
@@ -225,13 +330,22 @@ console.log(" Summary Data ");
 
    tripTime = trip?.duration; // duration in milliseconds
 
-const hours = Math.floor(tripTime / (1000 * 60 * 60));
-const minutes = Math.floor((tripTime % (1000 * 60 * 60)) / (1000 * 60));
-const seconds = Math.floor((tripTime % (1000 * 60)) / 1000);
+
+const safeTripTime = tripTime ?? 0;
+
+const hours = String(Math.floor(safeTripTime / (1000 * 60 * 60))).padStart(2, "0");
+
+const minutes = String(
+  Math.floor((safeTripTime % (1000 * 60 * 60)) / (1000 * 60))
+).padStart(2, "0");
+
+const seconds = String(
+  Math.floor((safeTripTime % (1000 * 60)) / 1000)
+).padStart(2, "0");
 
 const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
 
-console.log(formattedTime); // ✅ correct order 
+
 
 
   const formatDuration = (ms) => {
@@ -332,7 +446,7 @@ console.log(formattedTime); // ✅ correct order
                 <CardContent className="pt-2 pb-2 flex-1 overflow-auto">
                   <div className="grid grid-cols-1 gap-2 p-2">
                     {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
-                      <div key={key} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <div   style={{display:"none" }} key={key} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                         <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                           {positionAttributes[key]?.name || key}
                         </Typography>
@@ -346,6 +460,18 @@ console.log(formattedTime); // ✅ correct order
                       </div>
                     ))}
                     {/* Extra tiles */}
+
+                  <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Speed
+                      </Typography>
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {position ? `${position.speed} km/h` : 'No Data'}
+                      </Typography>
+                    </div>
+
+
+
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Geofence
@@ -372,10 +498,10 @@ console.log(formattedTime); // ✅ correct order
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Vehicle BTT
+                        Vehicle BTT 
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {t('vehicleBTT')}
+                        {power} V
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
@@ -394,7 +520,7 @@ console.log(formattedTime); // ✅ correct order
                         {t('dailyDistance')}
                       </Typography>
                     </div>
-                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Trip Time
                       </Typography>
@@ -404,13 +530,13 @@ console.log(formattedTime); // ✅ correct order
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Idle Time
+                        Idle Time 
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {duration ? formatDuration(duration) : '00:00:00'}
+                        {idleTime}
                       </Typography>
                     </div>
-                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Last Speed
                       </Typography>
@@ -434,7 +560,7 @@ console.log(formattedTime); // ✅ correct order
                         {maxSpeed}
                       </Typography>
                     </div>
-                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Odometer
                       </Typography>
@@ -442,6 +568,16 @@ console.log(formattedTime); // ✅ correct order
                         {endOdometer}
                       </Typography>
                     </div>
+
+                      <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
+                        Altitude
+                      </Typography>
+                      <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
+                        {position ? `${position.altitude} m` : 'No Data'}
+                      </Typography>
+                    </div>
+
                   </div>
                   <div className="px-4 pb-2 mt-1">
                     <Typography variant="body2" className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium">
