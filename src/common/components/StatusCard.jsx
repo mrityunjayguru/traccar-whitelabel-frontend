@@ -225,6 +225,14 @@ console.log("Trac veichel data ");
   }, [deviceId, from, to]); // 👈 REQUIRED 
 
 
+console.log(" summarydata ==================");
+
+console.log(summarydata);
+console.log(" summarydata ==================");
+
+
+
+
 
 /*
 
@@ -340,7 +348,7 @@ console.log("idleTime");
 
   numberstops = stopsall ? Number(stopsall.length || 0) : 0
 
-  maxSpeed = trip?.maxSpeed ? formatSpeed(trip.maxSpeed, speedUnit, t) : '';
+  maxSpeed = summarydata?.maxSpeed ? formatSpeed(summarydata.maxSpeed, speedUnit, t) : '';
 
   distance = summarydata ? Number(summarydata.distance/1000 || 0) : 0;
 
@@ -494,7 +502,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
 
 
 
-                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Geofence
                       </Typography>
@@ -550,7 +558,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                         {formattedTime}
                       </Typography>
                     </div>
-                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Idle Time 
                       </Typography>
