@@ -22,12 +22,12 @@ const ActivityStatus = () => {
     };
 
     const StatusItem = ({ icon: Icon, count, color, label, bgColor }) => (
-        <div 
-            className="relative group flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all cursor-pointer mb-2 border border-transparent dark:border-gray-800 hover:scale-110 active:scale-95"
+        <div
+            className="relative group flex flex-col items-center justify-center w-11 h-11 rounded-full transition-all cursor-pointer mb-2 border border-transparent dark:border-gray-800 hover:scale-110 active:scale-95"
             style={{ backgroundColor: bgColor }}
         >
             <div style={{ color }} className="flex flex-col items-center">
-                <Icon sx={{ fontSize: 16 }} />
+                <Icon size={20} sx={{ fontSize: 20 }} />
                 <span className="text-[12px] font-bold leading-none mt-0.5">{count}</span>
             </div>
             <div className="absolute left-full ml-3 px-2 py-1 bg-gray-900 text-white text-[12px] rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
