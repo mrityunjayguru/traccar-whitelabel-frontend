@@ -350,8 +350,10 @@ console.log("idleTime");
 
   maxSpeed = summarydata?.maxSpeed ? formatSpeed(summarydata.maxSpeed, speedUnit, t) : '';
 
-  distance = summarydata ? Number(summarydata.distance/1000 || 0) : 0;
+    distance = summarydata?.  distance ? formatDistance(summarydata.  distance, distanceUnit, t) : '';
 
+
+  
   endOdometer = trip ? Number(trip.endOdometer || 0) : 0;
 
 
@@ -539,7 +541,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                         Trip Dist
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {tripdistance} km/h
+                        {tripdistance} km
                       </Typography>
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
@@ -547,7 +549,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                         Daily Dist 
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                         {distance} km/h
+                         {distance} km
                       </Typography>
                     </div>
                     <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
