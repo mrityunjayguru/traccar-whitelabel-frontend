@@ -37,7 +37,7 @@ const ReportsMenu = () => {
     { title: t('reportTrips'), link: '/reports/trip', icon: <ModeOfTravelRoundedIcon /> },
     { title: t('reportStops'), link: '/reports/stop', icon: <FmdGoodRoundedIcon /> },
     { title: t('reportSummary'), link: '/reports/summary', icon: <ListIcon /> },
-    { title: "Summary Livi", link: '/reports/summarylivi', icon: <PlayArrowIcon /> },
+    { title: "Detailed Summary", link: '/reports/summarylivi', icon: <PlayArrowIcon /> },
     { title: "Consolidated Summary", link: '/reports/ConsolidatedSummary', icon: <ShowChartIcon /> },
     { title: "Mobilization", link: '/reports/Mobilization', icon: <StopIcon /> },
     { title: "Summary Position", link: '/reports/SummaryPosition', icon: <TimelineIcon /> },
