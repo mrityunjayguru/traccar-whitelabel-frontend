@@ -31,6 +31,13 @@ const SideBarNav = () => {
   const readonly = useRestriction('readonly');
   const disableReports = useRestriction('disableReports');
   const user = useSelector((state) => state.session.user);
+
+
+console.log(" User ============");
+console.log(user.administrator);
+console.log(" User ============");
+
+
   const socket = useSelector((state) => state.session.socket);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -83,6 +90,7 @@ const SideBarNav = () => {
   };
 
   const handleSelection = (value) => {
+
     switch (value) {
       case 'map':
         navigate('/');
@@ -139,11 +147,20 @@ const SideBarNav = () => {
           onClick={() => handleSelection('settings')}
           className={`flex items-center justify-center p-2.5 cursor-pointer transition-all rounded-full m-1 ${currentSelection() === 'settings' ? 'bg-[#D9E821] text-[#1D1D1D] shadow-sm' : 'text-[#1D1D1D] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800'}`}
         >
-          <div className="relative">
-            <Badge color="error" variant="dot" invisible={socket !== false}>
-              <img src={SETTINGS} alt="settings-icon" className={`w-6 h-6 ${currentSelection() === 'settings' ? 'brightness-0' : 'dark:invert'}`} />
-            </Badge>
-          </div>
+
+
+          {user?.administrator === true && (
+                <div className="relative">
+
+                  
+                  <Badge color="error" variant="dot" invisible={socket !== false}>
+                    <img src={SETTINGS} alt="settings-icon" className={`w-6 h-6 ${currentSelection() === 'settings' ? 'brightness-0' : 'dark:invert'}`} />
+                  </Badge>
+                </div>
+
+          )}
+
+
         </div>
 
         <div
@@ -152,20 +169,34 @@ const SideBarNav = () => {
           }}
           className={`flex items-center justify-center p-2.5 cursor-pointer transition-all rounded-full m-1 ${currentSelection() === 'account' ? 'bg-[#D9E821] text-[#1D1D1D] shadow-sm' : 'text-[#1D1D1D] dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800'}`}
         >
-          <div className="relative">
-            <Badge color="error" variant="dot" invisible={socket !== false}>
-              <img src={ACCOUNT} alt="account-icon" className={`w-6 h-6 ${currentSelection() === 'account' ? 'brightness-0' : 'dark:invert'}`} />
-            </Badge>
-          </div>
+          
+  <div className="relative">
+    <Badge color="error" variant="dot" invisible={socket !== false}>
+      <img
+        src={ACCOUNT}
+        alt="account-icon"
+        className={`w-6 h-6 ${
+          currentSelection() === 'account'
+            ? 'brightness-0'
+            : 'dark:invert'
+        }`}
+      />
+    </Badge>
+  </div>
+
         </div>
       </div>
       </div>
       <ActivityStatus/>
 
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+        
+          {user?.administrator === true && (
         <MenuItem onClick={handleAccount}>
           <Typography color="textPrimary">{t('settingsUser')}</Typography>
         </MenuItem>
+          )}
+
         <MenuItem onClick={handleLogout}>
           <Typography color="error">{t('loginLogout')}</Typography>
         </MenuItem>
