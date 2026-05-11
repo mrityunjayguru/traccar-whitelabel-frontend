@@ -348,9 +348,9 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
 
   numberstops = stopsall ? Number(stopsall.length || 0) : 0
 
-  maxSpeed = summarydata?.maxSpeed ? formatSpeed(summarydata.maxSpeed, speedUnit, t) : '';
+  maxSpeed = summarydata?.maxSpeed ? formatSpeed(summarydata.maxSpeed, speedUnit, t) : '0';
 
-  distance = summarydata?.distance ? formatDistance(summarydata.distance, distanceUnit, t) : '';
+  distance = summarydata?.distance ? formatDistance(summarydata.distance, distanceUnit, t) : '0';
 
 
 
@@ -549,7 +549,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                         Daily Dist
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                        {distance} km
+                        {distance} 
                       </Typography>
                     </div>
                     <div style={{ display: "none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
