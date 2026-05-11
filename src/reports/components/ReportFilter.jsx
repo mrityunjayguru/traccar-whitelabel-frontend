@@ -209,7 +209,7 @@ const ReportFilter = ({
               />
             </div>
 
-            <div className="flex flex-col pb-3 gap-3">
+            <div className="flex flex-col pb-1 gap-3">
               <TextField
                 label="from"
                 type={period === "custom" ? "datetime-local" : "text"}
@@ -237,7 +237,7 @@ const ReportFilter = ({
             </div>
 
             {button === "schedule" && (
-              <div className="flex flex-col gap-4 mb-4 mt-4">
+              <div className="flex flex-col gap-4 mt-4">
                 <TextField
                   value={description || ""}
                   onChange={(event) => setDescription(event.target.value)}
