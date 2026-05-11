@@ -209,7 +209,7 @@ const ReportFilter = ({
               />
             </div>
 
-            <div className="flex  gap-3">
+            <div className="flex flex-col pb-3 gap-3">
               <TextField
                 label="from"
                 type={period === "custom" ? "datetime-local" : "text"}
