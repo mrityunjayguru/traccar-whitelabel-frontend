@@ -478,7 +478,7 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
                 <CardContent className="pt-2 pb-2 flex-1 overflow-auto">
                   <div className="grid grid-cols-1 gap-2 p-2">
                     {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
-                      <div style={{ display: "none" }} key={key} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <div style={{ display: "block" }} key={key} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                         <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                           {positionAttributes[key]?.name || key}
                         </Typography>
