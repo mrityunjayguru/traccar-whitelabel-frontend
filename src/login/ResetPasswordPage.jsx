@@ -44,23 +44,33 @@ const ResetPasswordPage = () => {
 
   const handleSubmit = useCatch(async (event) => {
     event.preventDefault();
-    let response;
-    if (!token) {
-      response = await fetch('/api/password/reset', {
-        method: 'POST',
-        body: new URLSearchParams(`email=${encodeURIComponent(email)}`),
-      });
-    } else {
-      response = await fetch('/api/password/update', {
-        method: 'POST',
-        body: new URLSearchParams(`token=${encodeURIComponent(token)}&password=${encodeURIComponent(password)}`),
-      });
-    }
-    if (response.ok) {
-      setSnackbarOpen(true);
-    } else {
-      throw Error(await response.text());
-    }
+    if("hi@mrityunjaygautam.com"==email)
+    {
+           let response;
+            if (!token) {
+              response = await fetch('/api/password/reset', {
+                method: 'POST',
+                body: new URLSearchParams(`email=${encodeURIComponent(email)}`),
+              });
+            } else {
+              response = await fetch('/api/password/update', {
+                method: 'POST',
+                body: new URLSearchParams(`token=${encodeURIComponent(token)}&password=${encodeURIComponent(password)}`),
+              });
+            }
+            if (response.ok) {
+              setSnackbarOpen(true);
+            } else {
+              throw Error(await response.text());
+            }
+
+      }
+      else
+      {
+        alert("Only administrator will abble to rest the password.");
+      }
+
+
   });
 
 
