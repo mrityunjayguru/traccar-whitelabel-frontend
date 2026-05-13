@@ -308,9 +308,12 @@ const LoginPage = () => {
             >
               Reset Password
             </Link>
+
+            {registrationEnabled && (
             <div className="text-gray-400 text-sm">
               Go to <span className="text-blue-500 font-medium cursor-pointer hover:underline" onClick={() => navigate("/login")}>Admin Portal</span>
             </div>
+            )}
           </div>
 
           {registrationEnabled && (
