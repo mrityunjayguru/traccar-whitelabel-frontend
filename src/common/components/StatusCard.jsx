@@ -601,7 +601,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                       </Typography>
                     </div>
 
-                      <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <div  style={{display:"none" }}  className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Altitude
                       </Typography>
