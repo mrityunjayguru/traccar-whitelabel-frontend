@@ -37,7 +37,7 @@ const ReportsMenu = () => {
     { title: t('reportTrips'), link: '/reports/trip', icon: <ModeOfTravelRoundedIcon /> },
     { title: t('reportStops'), link: '/reports/stop', icon: <FmdGoodRoundedIcon /> },
     { title: t('reportSummary'), link: '/reports/summary', icon: <ListIcon /> },
-    { title: "Summary Livi", link: '/reports/summarylivi', icon: <PlayArrowIcon /> },
+    { title: "Detailed Summary", link: '/reports/summarylivi', icon: <PlayArrowIcon /> },
     { title: "Consolidated Summary", link: '/reports/ConsolidatedSummary', icon: <ShowChartIcon /> },
     { title: "Mobilization", link: '/reports/Mobilization', icon: <StopIcon /> },
     { title: "Summary Position", link: '/reports/SummaryPosition', icon: <TimelineIcon /> },
@@ -53,8 +53,8 @@ const ReportsMenu = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-1 ">
-      <div className="flex flex-row items-center  bg-white! dark:bg-[#222427]! rounded-full mx-1 px-1 py-2 shadow-md overflow-x-auto no-scrollbar border border-gray-100! w-fit dark:border-[#333]!">
+    <div className="flex flex-col">
+      <div className="flex flex-row items-center  bg-white! dark:bg-[#222427]! rounded-full mx-1 my-1 px-3 py-1 shadow-md overflow-x-auto no-scrollbar border border-gray-100! w-fit dark:border-[#333]!">
         {menuItems.map((item) => (
           <MenuItem
             key={item.link}
@@ -69,7 +69,7 @@ const ReportsMenu = () => {
         ))}
       </div>
       {secondaryItems.length > 0 && (
-        <div className="flex flex-row items-center bg-white dark:bg-[#222427] rounded-full mx-1 px-2 py-2 shadow-md overflow-x-auto no-scrollbar border border-gray-100 w-fit dark:border-[#333]">
+        <div className="flex flex-row items-center bg-white dark:bg-[#222427] rounded-full mx-1 my-1 px-3 py-1 shadow-md overflow-x-auto no-scrollbar border border-gray-100 w-fit dark:border-[#333]">
           {secondaryItems.map((item) => (
             <MenuItem
               key={item.link}

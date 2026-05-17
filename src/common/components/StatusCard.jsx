@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
@@ -59,22 +59,22 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
 
 
 
-  
+
   const [trackVehiclData, setTrackVehiclData] = useState(null);
   const [summarydata, setSummarydata] = useState(null);
   const [trip, setTrip] = useState(null);
   const [stops, setStops] = useState(null);
   const [stopsall, setStopsall] = useState(null);
 
-  
-    const distanceUnit = useAttributePreference('distanceUnit');
-    const altitudeUnit = useAttributePreference('altitudeUnit');
-    const speedUnit = useAttributePreference('speedUnit');
-    const volumeUnit = useAttributePreference('volumeUnit');
-    
-  
 
-  let power =  0;
+  const distanceUnit = useAttributePreference('distanceUnit');
+  const altitudeUnit = useAttributePreference('altitudeUnit');
+  const speedUnit = useAttributePreference('speedUnit');
+  const volumeUnit = useAttributePreference('volumeUnit');
+
+
+
+  let power = 0;
   let sat = 0;
   let speed = 0;
   let maxSpeed = 0;
@@ -94,8 +94,8 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
   if (position != undefined) {
     sat = Number(position?.attributes?.sat || 0);
     speed = position?.speed ? formatSpeed(position.speed, speedUnit, t) : '0';
-    
-      power = position.attributes.power.toFixed(2);
+
+    power = position.attributes.power.toFixed(2);
   }
   const isConnected = sat > 0;
   const deviceReadonly = useDeviceReadonly();
@@ -146,56 +146,56 @@ const StatusCard = ({ deviceId, position, onClose, disableActions, desktopPaddin
     23, 59, 59, 999
   )).toISOString();
 
- // /reports/summary
+  // /reports/summary
 
-const imei = device.uniqueId;
+  const imei = device.uniqueId;
 
-/*
-
-useEffect(() => {
-  const fetchTripReport = async () => {
-    try {
-      const data = {
-        deviceId,
-        imei,
-      };
-
-      const response = await fetch(
-        "https://app.trackroutepro.com/trackVehicle/tripReport",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(data),
+  /*
+  
+  useEffect(() => {
+    const fetchTripReport = async () => {
+      try {
+        const data = {
+          deviceId,
+          imei,
+        };
+  
+        const response = await fetch(
+          "https://app.trackroutepro.com/trackVehicle/tripReport",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
+  
+        const result = await response.json();
+  
+        console.log("API Response:", result);
+  
+        if (!response.ok) {
+          throw new Error(JSON.stringify(result));
         }
-      );
-
-      const result = await response.json();
-
-      console.log("API Response:", result);
-
-      if (!response.ok) {
-        throw new Error(JSON.stringify(result));
+  
+        setTrackVehiclData(result.data || result);
+      } catch (error) {
+        console.error("API Error:", error);
       }
-
-      setTrackVehiclData(result.data || result);
-    } catch (error) {
-      console.error("API Error:", error);
+    };
+  
+    if (deviceId && imei) {
+      fetchTripReport();
     }
-  };
-
-  if (deviceId && imei) {
-    fetchTripReport();
-  }
-}, [deviceId, imei]);
-
-console.log("Trac veichel data ");
-console.log(trackVehiclData);
-console.log("Trac veichel data ");
-
-*/
+  }, [deviceId, imei]);
+  
+  console.log("Trac veichel data ");
+  console.log(trackVehiclData);
+  console.log("Trac veichel data ");
+  
+  */
 
 
 
@@ -225,56 +225,56 @@ console.log("Trac veichel data ");
   }, [deviceId, from, to]); // 👈 REQUIRED 
 
 
-console.log(" summarydata ==================");
+  console.log(" summarydata ==================");
 
-console.log(summarydata);
-console.log(" summarydata ==================");
-
-
+  console.log(summarydata);
+  console.log(" summarydata ==================");
 
 
 
-/*
 
-// totalTravelTime example: "8 h 33 m"
 
-const ignitionHours = summarydata?.engineHours ?? "00h00m";
-const moveTime = summarydata?.moveTime ?? "00h00m";
-
-// Convert "8 h 33 m" => total minutes
-const timeToMinutes = (time) => {
-  if (!time) return 0;
-
-  const hourMatch = time.match(/(\d+)\s*h/i);
-  const minuteMatch = time.match(/(\d+)\s*m/i);
-
-  const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
-  const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
-
-  return hours * 60 + minutes;
-};
-
-// Convert minutes => "08h 33m"
-const minutesToTime = (totalMinutes) => {
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-
-  return `${String(hours).padStart(2, "0")}h ${String(
-    minutes
-  ).padStart(2, "0")}m`;
-};
-
-const ignitionMin = timeToMinutes(ignitionHours);
-const moveMin = timeToMinutes(moveTime);
-
-const idleMin = Math.max(0, ignitionMin - moveMin);
-
-const idleTime = minutesToTime(idleMin);
-
-console.log("idleTime");
-console.log(idleTime);
-console.log("idleTime");
-*/
+  /*
+  
+  // totalTravelTime example: "8 h 33 m"
+  
+  const ignitionHours = summarydata?.engineHours ?? "00h00m";
+  const moveTime = summarydata?.moveTime ?? "00h00m";
+  
+  // Convert "8 h 33 m" => total minutes
+  const timeToMinutes = (time) => {
+    if (!time) return 0;
+  
+    const hourMatch = time.match(/(\d+)\s*h/i);
+    const minuteMatch = time.match(/(\d+)\s*m/i);
+  
+    const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+    const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
+  
+    return hours * 60 + minutes;
+  };
+  
+  // Convert minutes => "08h 33m"
+  const minutesToTime = (totalMinutes) => {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+  
+    return `${String(hours).padStart(2, "0")}h ${String(
+      minutes
+    ).padStart(2, "0")}m`;
+  };
+  
+  const ignitionMin = timeToMinutes(ignitionHours);
+  const moveMin = timeToMinutes(moveTime);
+  
+  const idleMin = Math.max(0, ignitionMin - moveMin);
+  
+  const idleTime = minutesToTime(idleMin);
+  
+  console.log("idleTime");
+  console.log(idleTime);
+  console.log("idleTime");
+  */
 
 
 
@@ -302,7 +302,7 @@ console.log("idleTime");
     if (response.ok) {
 
       const data = await response.json(); // ✅ FIX
-      setTrip(data.length > 0 ? data[data.length-1] : null);
+      setTrip(data.length > 0 ? data[data.length - 1] : null);
 
     } else {
       throw Error(await response.text());
@@ -310,8 +310,8 @@ console.log("idleTime");
   }, [deviceId, from, to]); // 👈 REQUIRED 
 
 
-  tripdistance = trip ? Number(trip.distance/1000 || 0) : 0;
-  
+  tripdistance = trip ? Number(trip.distance / 1000 || 0) : 0;
+
 
 
   useEffectAsync(async () => {
@@ -348,34 +348,34 @@ console.log("idleTime");
 
   numberstops = stopsall ? Number(stopsall.length || 0) : 0
 
-  maxSpeed = summarydata?.maxSpeed ? formatSpeed(summarydata.maxSpeed, speedUnit, t) : '';
+  maxSpeed = summarydata?.maxSpeed ? formatSpeed(summarydata.maxSpeed, speedUnit, t) : '0';
 
-    distance = summarydata?.  distance ? formatDistance(summarydata.  distance, distanceUnit, t) : '';
+  distance = summarydata?.distance ? formatDistance(summarydata.distance, distanceUnit, t) : '0';
 
 
-  
+
   endOdometer = trip ? Number(trip.endOdometer || 0) : 0;
 
 
   startTime = trip?.startTime ? new Date(trip.startTime).getTime() : 0;
   endTime = trip?.endTime ? new Date(trip.endTime).getTime() : 0;
 
-   tripTime = trip?.duration; // duration in milliseconds
+  tripTime = trip?.duration; // duration in milliseconds
 
 
-const safeTripTime = tripTime ?? 0;
+  const safeTripTime = tripTime ?? 0;
 
-const hours = String(Math.floor(safeTripTime / (1000 * 60 * 60))).padStart(2, "0");
+  const hours = String(Math.floor(safeTripTime / (1000 * 60 * 60))).padStart(2, "0");
 
-const minutes = String(
-  Math.floor((safeTripTime % (1000 * 60 * 60)) / (1000 * 60))
-).padStart(2, "0");
+  const minutes = String(
+    Math.floor((safeTripTime % (1000 * 60 * 60)) / (1000 * 60))
+  ).padStart(2, "0");
 
-const seconds = String(
-  Math.floor((safeTripTime % (1000 * 60)) / 1000)
-).padStart(2, "0");
+  const seconds = String(
+    Math.floor((safeTripTime % (1000 * 60)) / 1000)
+  ).padStart(2, "0");
 
-const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
+  const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
 
 
 
@@ -478,7 +478,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                 <CardContent className="pt-2 pb-2 flex-1 overflow-auto">
                   <div className="grid grid-cols-1 gap-2 p-2">
                     {positionItems.split(',').filter((key) => position.hasOwnProperty(key) || position.attributes.hasOwnProperty(key)).map((key) => (
-                      <div   style={{display:"block" }} key={key} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                      <div style={{ display: "none" }} key={key} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                         <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                           {positionAttributes[key]?.name || key}
                         </Typography>
@@ -493,7 +493,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                     ))}
                     {/* Extra tiles */}
 
-                  <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Speed
                       </Typography>
@@ -504,7 +504,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
 
 
 
-                    <div style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div style={{ display: "none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Geofence
                       </Typography>
@@ -530,7 +530,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Vehicle BTT 
+                        Vehicle BTT
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {power} V
@@ -546,13 +546,13 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                     </div>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Daily Dist 
+                        Daily Dist
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
-                         {distance} km
+                        {distance} 
                       </Typography>
                     </div>
-                    <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div style={{ display: "none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Trip Time
                       </Typography>
@@ -560,15 +560,15 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                         {formattedTime}
                       </Typography>
                     </div>
-                    <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div style={{ display: "none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
-                        Idle Time 
+                        Idle Time
                       </Typography>
                       <Typography className="text-sm! text-gray-700 dark:text-gray-200 font-bold truncate">
                         {idleTime}
                       </Typography>
                     </div>
-                    <div style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div style={{ display: "none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Last Speed
                       </Typography>
@@ -592,7 +592,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                         {maxSpeed}
                       </Typography>
                     </div>
-                    <div  style={{display:"none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div style={{ display: "none" }} className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Odometer
                       </Typography>
@@ -601,7 +601,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                       </Typography>
                     </div>
 
-                      <div  style={{display:"none" }}  className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
+                    <div className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl! border border-gray-200 dark:border-gray-700">
                       <Typography className="text-xs! text-gray-400 dark:text-gray-500 uppercase tracking-wider font-semibold mb-1">
                         Altitude
                       </Typography>
@@ -613,7 +613,7 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                   </div>
                   <div className="px-4 pb-2 mt-1">
                     <Typography variant="body2" className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium">
-                      <Link className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium" component={RouterLink} to={`/position/${position.id}`} underline="none">{t('sharedShowDetails') }</Link>
+                      <Link className="text-gray-600! dark:text-gray-400! hover:text-gray-800! dark:hover:text-gray-200! font-medium" component={RouterLink} to={`/position/${position.id}`} underline="none">{t('sharedShowDetails')}</Link>
                     </Typography>
                   </div>
                 </CardContent>
@@ -621,81 +621,81 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
                   className="flex flex-row justify-center p-2 border-t border-gray-200 dark:border-gray-800 gap-2 flex-wrap"
                   disableSpacing
                 >
-                  <div className="flex flex-col justify-center items-center">
-                    <div className="">
-                      <Tooltip title={t('sharedExtra')}>
+                  <div className="flex gap-1 justify-center items-center">
+
+                    <Tooltip title={t('sharedExtra')}>
+                      <IconButton
+                        size="small"
+                        color="secondary"
+                        onClick={(e) => setAnchorEl(e.currentTarget)}
+                        disabled={!position}
+                      >
+                        <PendingIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t('reportReplay')}>
+                      <IconButton
+                        size="small"
+                        onClick={() => navigate('/replay')}
+                        disabled={disableActions || !position}
+                      >
+                        <ReplayIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t('commandTitle')}>
+                      <IconButton
+                        size="small"
+                        onClick={() => navigate(`/settings/device/${deviceId}/command`)}
+                        disabled={disableActions}
+                      >
+                        <PublishIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t('linkGoogleMaps')}>
+                      <IconButton
+                        size="small"
+                        component="a"
+                        target="_blank"
+                        href={`https://www.google.com/maps/search/?api=1&query=${position?.latitude}%2C${position?.longitude}`}
+                        disabled={!position}
+                      >
+                        <MapIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+
+
+                    {!shareDisabled && !user.temporary && (
+                      <Tooltip title={t('deviceShare')}>
                         <IconButton
                           size="small"
                           color="secondary"
-                          onClick={(e) => setAnchorEl(e.currentTarget)}
-                          disabled={!position}
+                          onClick={() => navigate(`/settings/device/${deviceId}/share`)}
                         >
-                          <PendingIcon fontSize="small" />
+                          <ShareIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
-                      <Tooltip title={t('reportReplay')}>
-                        <IconButton
-                          size="small"
-                          onClick={() => navigate('/replay')}
-                          disabled={disableActions || !position}
-                        >
-                          <ReplayIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={t('commandTitle')}>
-                        <IconButton
-                          size="small"
-                          onClick={() => navigate(`/settings/device/${deviceId}/command`)}
-                          disabled={disableActions}
-                        >
-                          <PublishIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={t('linkGoogleMaps')}>
-                        <IconButton
-                          size="small"
-                          component="a"
-                          target="_blank"
-                          href={`https://www.google.com/maps/search/?api=1&query=${position?.latitude}%2C${position?.longitude}`}
-                          disabled={!position}
-                        >
-                          <MapIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </div>
-                    <div className="">
-                      {!shareDisabled && !user.temporary && (
-                        <Tooltip title={t('deviceShare')}>
-                          <IconButton
-                            size="small"
-                            color="secondary"
-                            onClick={() => navigate(`/settings/device/${deviceId}/share`)}
-                          >
-                            <ShareIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      )}
-                      <Tooltip title={t('sharedEdit')}>
-                        <IconButton
-                          size="small"
-                          onClick={() => navigate(`/settings/device/${deviceId}`)}
-                          disabled={disableActions || deviceReadonly}
-                        >
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={t('sharedRemove')}>
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={() => setRemoving(true)}
-                          disabled={disableActions || deviceReadonly}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
-                    </div>
+                    )}
+                    <Tooltip title={t('sharedEdit')}>
+                      <IconButton
+                        size="small"
+                        onClick={() => navigate(`/settings/device/${deviceId}`)}
+                        disabled={disableActions || deviceReadonly}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={t('sharedRemove')}>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => setRemoving(true)}
+                        disabled={disableActions || deviceReadonly}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
                   </div>
+
                 </CardActions>
               </div>
             )}
@@ -704,9 +704,9 @@ const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
         )}
       </div>
       {position && (
-        <Menu 
-          anchorEl={anchorEl} 
-          open={Boolean(anchorEl)} 
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
           onClose={() => setAnchorEl(null)}
           anchorOrigin={{
             vertical: 'top',
